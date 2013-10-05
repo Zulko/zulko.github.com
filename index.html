@@ -310,12 +310,14 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
+<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-ss&quot;</span><span class="p">,</span> <span class="s">&quot;00:59;59&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">]</span>
+</span><span class='line'>            <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">],</span>
+</span><span class='line'>            <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -386,214 +388,6 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/">A Basic Example of Threads Synchronization in Python</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-09-19T22:58:00+02:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p><em>This blog explains how to use threading Events to have functions in different Python threads start at the same time.</em></p>
-
-<p>I made a <a href="http://zulko.github.io/moviepy/">little program to make movies in Python</a>, and I needed a method to preview a movie. This means generating/displaying video frames, and in the same time (in a parralel thread) generating and playing the audio.  Schematically, the code looks like this:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">preview</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this example, <code>play_audio()</code> and <code>play_video()</code> will start at (almost) the same time and will run parallely. The problem is that these functions need some preparation before actually starting playing stuff. Their code looks like that:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To have a well-synchronized movie we need the internal functions <code>audio.start_playing()</code> and <code>video.start_playing()</code>, which are run in two separate threads, to start at exactly the same time. How do we do that ?</p>
-
-<p>The solution seems to be using <code>threading.Event</code> objects. An <code>Event</code> is an object that can be accessed from all the threads and allows very basic communication between them : each thread can <em>set</em> or <em>unset</em> an Event, or check whether this event has already been been <em>set</em> (by another thread).</p>
-
-<p>For our problem we will use two events <code>video_ready</code> and <code>audio_ready</code> which will enable our two threads to scream at each other <em>&ldquo;I am ready ! Are you ?&rdquo;</em></p>
-
-<p>In pseudo-code:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_video()</span>
-</span><span class='line'>    <span class="n">wait_until</span><span class="p">(</span> <span class="n">video_ready</span> <span class="p">)</span> <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
-</span><span class='line'>    <span class="n">wait_until</span><span class="p">(</span> <span class="n">audio_ready</span> <span class="p">)</span> <span class="c"># Wait for play_audio() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And that does the trick !</p>
-
-<p>Now the same code, with the actual Python syntax:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_video()</span>
-</span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">video_ready</span><span class="o">.</span><span class="n">isset</span><span class="p">():</span>
-</span><span class='line'>        <span class="k">pass</span>  <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
-</span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">audio_ready</span><span class="o">.</span><span class="n">isset</span><span class="p">():</span>
-</span><span class='line'>        <span class="k">pass</span>  <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">preview</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># launch the parrallel audio thread</span>
-</span><span class='line'>    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
-</span><span class='line'>                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Two tips to go further:</p>
-
-<ul>
-<li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can take advantage of it by using the <code>multiprocessing</code> module instead. Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
-<li>In my original program, I also use an Event to stop <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits.</li>
-</ul>
-
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
     <a href="/blog/archives">Blog Archives</a>
@@ -612,10 +406,6 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
       <li class="post">
         <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/">A Basic Example of Threads Synchronization in Python</a>
       </li>
     
   </ul>

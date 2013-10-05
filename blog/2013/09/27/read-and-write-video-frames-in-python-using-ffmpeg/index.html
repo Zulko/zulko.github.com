@@ -146,12 +146,14 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 <span class='line-number'>4</span>
 <span class='line-number'>5</span>
 <span class='line-number'>6</span>
+<span class='line-number'>7</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-ss&quot;</span><span class="p">,</span> <span class="s">&quot;00:59;59&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
-</span><span class='line'>                    <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">]</span>
+</span><span class='line'>            <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class='line'>            <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">],</span>
+</span><span class='line'>            <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
@@ -260,8 +262,6 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/" title="Previous Post: A basic example of threads synchronization in Python">&laquo; A basic example of threads synchronization in Python</a>
-      
       
         <a class="basic-alignment right" href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/" title="Next Post: Read and write audio files in Python using FFMPEG">Read and write audio files in Python using FFMPEG &raquo;</a>
       
@@ -283,10 +283,6 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
       <li class="post">
         <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/">A Basic Example of Threads Synchronization in Python</a>
       </li>
     
   </ul>
