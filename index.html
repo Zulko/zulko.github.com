@@ -255,7 +255,7 @@
   </header>
 
 
-  <div class="entry-content"><p><em>This article shows how easy it is to read or write video frames to a file in Python, by calling the external software FFMPEG through pipes. Check also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
+  <div class="entry-content"><p><em>This article shows how easy it is to read or write video frames with Python, by calling the external software FFMPEG through pipes. Check also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
 
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
 
@@ -360,7 +360,7 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 </span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span><span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
 </span><span class='line'>        <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;420x360&#39;</span><span class="p">,</span> <span class="c"># size of one frame</span>
 </span><span class='line'>        <span class="s">&#39;-pix_fmt&#39;</span><span class="p">,</span> <span class="s">&#39;rgb24&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="c"># frames per second</span>
+</span><span class='line'>        <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&#39;24&#39;</span><span class="p">,</span> <span class="c"># frames per second</span>
 </span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># The imput comes from a pipe</span>
 </span><span class='line'>        <span class="s">&#39;-an&#39;</span><span class="p">,</span> <span class="c"># Tells FFMPEG not to expect any audio</span>
 </span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s">&#39;mpeg&#39;&quot;,</span>
