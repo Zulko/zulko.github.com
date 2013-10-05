@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2013-09-26T09:46:17+02:00</updated>
+  <updated>2013-10-05T10:56:22+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,272 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Read and write audio files in Python using FFMPEG]]></title>
+    <link href="http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/"/>
+    <updated>2013-10-04T21:28:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg</id>
+    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write audio files in Python, by calling the external software FFMPEG through pipes. Check also <a href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">that other article</a> for the same with video files.</em></p>
+
+<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reading</h2>
+
+<p>To read the audio file &ldquo;mySong.mp3&rdquo; we first ask FFMPEG to open this file and to direct its output to Python:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
+</span><span class='line'>        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
+</span><span class='line'>        <span class="s">&#39;-&#39;</span><span class="p">]],</span>
+</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above <code>-i mySong.mp3</code> indicates the input file, while <code>s16le/pcm_s16le</code> asks for a raw 16-bit sound output. The <code>-</code> at the end tells FFMPEG that it is being used with a pipe by another program.</p>
+
+<p>Now you just have to read the output of FFMPEG. In our case we have two channels (stereo sound) so one <em>frame</em> of out output will be represented by a pair of integers, each coded on 16 bits (2 bytes). Therefore one frame will be 4-bytes long. To read 88200 audio frames (2 seconds of sound in our case) we will write:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">raw_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class='line'><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can now play this sound using for instance Pygame&rsquo;s sound mixer:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pygame</span>
+</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">44100</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># 44100 Hz, 16bit, 2 channels</span>
+</span><span class='line'><span class="n">sound</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">(</span> <span class="n">audio_array</span> <span class="p">)</span>
+</span><span class='line'><span class="n">sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Finally, you can get informations on a file (audio format, frequency, etc.) by calling</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
+</span><span class='line'>                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See section <em>Going Further</em> below for a link to an implementation.</p>
+
+<h2>Writing</h2>
+
+<p>To write an audio file we open FFMPEG and specify that the input will be piped and that it will consist in raw audio data:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) means overwrite the output file if it already exists.</span>
+</span><span class='line'>       <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span> <span class="c"># means 16bit input</span>
+</span><span class='line'>       <span class="s">&quot;-acodec&quot;</span><span class="p">,</span> <span class="s">&quot;pcm_s16le&quot;</span><span class="p">,</span> <span class="c"># means raw 16bit input</span>
+</span><span class='line'>       <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&quot;44100&quot;</span><span class="p">,</span> <span class="c"># the input will have 44100 Hz</span>
+</span><span class='line'>       <span class="s">&#39;-ac&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># the input will have 2 channels (stereo)</span>
+</span><span class='line'>       <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># means that the input will arrive from the pipe</span>
+</span><span class='line'>       <span class="s">&#39;-vn&#39;</span><span class="p">,</span> <span class="c"># means &quot;don&#39;t expect any video input&quot;</span>
+</span><span class='line'>       <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&quot;libfdk_aac&quot;</span> <span class="c"># output audio codec</span>
+</span><span class='line'>       <span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&quot;3000k&quot;</span><span class="p">,</span> <span class="c"># output bitrate (=quality). Here, 3000kb/second</span>
+</span><span class='line'>       <span class="s">&#39;my_awesome_output_audio_file.mp3&#39;</span><span class="p">],</span>
+</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The codec can be any valid FFMPEG audio codec. For some codecs providing the output bitrate is optional. Now you just have to write raw audio data into the file. For instance, if your sound is represented have a Nx2 Numpy array of integers, you will just write</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">audio_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Going further</h2>
+
+<p>I tried to keep the code as simple as possible here. With a few more lines you can make useful classes to manipulate video files, like <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/ffmpeg_reader.py">FFMPEG_AudioReader</a> and <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/ffmpeg_writer.py">FFMPEG_AudioWriter</a> that I wrote for my video editing software. In these files in particular how to parse the information on the video, how to save/load pictures using FFMPEG, etc.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Read and write video frames in Python using FFMPEG]]></title>
+    <link href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/"/>
+    <updated>2013-09-27T23:53:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg</id>
+    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write video frames to a file in Python, by calling the external software FFMPEG through pipes. Check also <a href="http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
+
+<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Reading</h2>
+
+<p>To read the frames of the video &ldquo;myHolidays.mp4&rdquo; we first ask FFMPEG to open this file and to direct its output to Python:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class='line'>                   <span class="s">&quot;-vcodec&#39;, &quot;</span><span class="n">rawvideo</span><span class="s">&quot;, &quot;</span><span class="o">-</span><span class="s">&quot;],</span>
+</span><span class='line'>                   <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program.</p>
+
+<p>Now you just have to read the output of FFMPEG. If the video has a size of 420x320 pixels, then the first 420x360x3 bytes outputed by
+FFMPEG will be the RGB representation of the first frame, the next 420x360x3 bytes will represent the second frame, etc.
+In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class='line'><span class="n">raw_image</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">420</span><span class="o">*</span><span class="mi">360</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span> <span class="c"># read 420*360*3 bytes (= 1 frame)</span>
+</span><span class='line'><span class="n">image</span> <span class="o">=</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">360</span><span class="p">,</span><span class="mi">420</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can now view the image with for instance Pylab&rsquo;s <code>imshow( image )</code>. By repeating the two lines above you can read all the frames of the video one after the other. Reading one frame with this method takes 2 milliseconds on my computer.</p>
+
+<p>What if you want to read the frame that is at time 01h00 in the video ? You could do as above: open the pipe, and read all the frames of the video one by one until you reach that corresponding to t=01h00. But this may be VERY long. A better solution is to call FFMPEG with arguments telling it to start reading &ldquo;myHolidays.mp4&rdquo; at time 01h00:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-ss&quot;</span><span class="p">,</span> <span class="s">&quot;00:59;59&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class='line'>                    <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the code above we ask FFMPEG to quickly (and imprecisely) reach 00:59:59, then to skip 1 second of movie with precision (<code>-ss 1</code>), so that it will effectively start at 01:00:00 sharp (see <a href="https://trac.ffmpeg.org/wiki/Seeking%20with%20FFmpeg">this page</a> for more infos).Then you can start reading frames as previously shown. Seeking a frame with this method takes at most 0.1 second on my computer.</p>
+
+<p>Finally, you can get informations on a file (frames size, number of frames per second, etc.) by calling</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;my_video.mp4&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
+</span><span class='line'>                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See section <em>Going Further</em> below for a link to an implementation.</p>
+
+<h2>Writing</h2>
+
+<p>To write a series of frames of size 460x360 into the file <code>'my_output_videofile.mp4'</code>, we open FFMPEG and specify that raw RGB data is going to be piped in:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) overwrite the output file if it already exists</span>
+</span><span class='line'>        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span><span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;420x360&#39;</span><span class="p">,</span> <span class="c"># size of one frame</span>
+</span><span class='line'>        <span class="s">&#39;-pix_fmt&#39;</span><span class="p">,</span> <span class="s">&#39;rgb24&#39;</span><span class="p">,</span>
+</span><span class='line'>        <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="c"># frames per second</span>
+</span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># The imput comes from a pipe</span>
+</span><span class='line'>        <span class="s">&#39;-an&#39;</span><span class="p">,</span> <span class="c"># Tells FFMPEG not to expect any audio</span>
+</span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s">&#39;mpeg&#39;&quot;,</span>
+</span><span class='line'>        <span class="s">&#39;my_output_videofile.mp4&#39;</span> <span class="p">],</span>
+</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. For instance, if our frame is represented as a Numpy array, we simply write:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">image_array</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Going further</h2>
+
+<p>I tried to keep the code as simple as possible here. With a few more lines you can make useful classes to manipulate video files, like <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/video/io/ffmpeg_reader.py">FFMPEG_VideoReader</a> and <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/video/io/ffmpeg_writer.py">FFMPEG_VideoWriter</a> that I wrote for my video editing software. In these files in particular how to parse the information on the video, how to save/load pictures using FFMPEG, etc.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A basic example of threads synchronization in Python]]></title>
@@ -188,7 +454,7 @@
 
 <ul>
 <li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can take advantage of it by using the <code>multiprocessing</code> module instead. Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
-<li>In the original program, if the movie is exited, the main thread <em>unsets</em> the <code>video_ready</code> event. In the parallel audio thread, this event is regularly checked, and when it is seen to be unset, the audio is stopped.</li>
+<li>In my original program, I also use an Event to stop <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits.</li>
 </ul>
 
 ]]></content>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Python, | __del__( self )]]></title>
-  <link href="http://Zulko.github.io/blog/categories/python/atom.xml" rel="self"/>
+  <title><![CDATA[Category: FFMPEG | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/ffmpeg/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
   <updated>2013-10-05T10:56:22+02:00</updated>
   <id>http://Zulko.github.io/</id>

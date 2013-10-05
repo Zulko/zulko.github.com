@@ -4,7 +4,7 @@
   <title><![CDATA[Category: threads | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/threads/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2013-09-26T09:46:17+02:00</updated>
+  <updated>2013-10-05T10:56:22+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -208,7 +208,7 @@
 
 <ul>
 <li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can take advantage of it by using the <code>multiprocessing</code> module instead. Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
-<li>In the original program, if the movie is exited, the main thread <em>unsets</em> the <code>video_ready</code> event. In the parallel audio thread, this event is regularly checked, and when it is seen to be unset, the audio is stopped.</li>
+<li>In my original program, I also use an Event to stop <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits.</li>
 </ul>
 
 ]]></content>

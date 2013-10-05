@@ -1,15 +1,33 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
+        <loc>
+            http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/
+        </loc>
+        <lastmod>2013-10-01T08:30:12+02:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
+        </loc>
+        <lastmod>2013-10-05T02:50:54+02:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/
+        </loc>
+        <lastmod>2013-10-05T02:53:03+02:00</lastmod>
+    </url>
+    <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
         <lastmod>2013-09-19T22:33:13+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2013-09-19T22:33:13+02:00</lastmod>
+        <lastmod>2013-10-05T02:53:03+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2013-09-19T22:33:13+02:00</lastmod>
+        <lastmod>2013-10-05T02:53:03+02:00</lastmod>
     </url>
 </urlset>
