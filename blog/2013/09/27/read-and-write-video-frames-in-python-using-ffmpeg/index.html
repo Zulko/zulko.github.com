@@ -86,6 +86,8 @@
 
 <time datetime="2013-09-27T23:53:00+02:00" pubdate data-updated="true">Sep 27<span>th</span>, 2013</time>
         
+         | <a href="#disqus_thread">Comments</a>
+        
       </p>
     
   </header>
@@ -124,7 +126,7 @@
 <p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program.</p>
 
 <p>Now you just have to read the output of FFMPEG. If the video has a size of 420x320 pixels, then the first 420x360x3 bytes outputed by
-FFMPEG will be the RGB representation of the first frame, the next 420x360x3 bytes will represent the second frame, etc.
+FFMPEG will give the RGB values of the pixels of the first frame, line by line, top to bottom. The next 420x360x3 bytes will represent the second frame, etc.
 In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -159,7 +161,7 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 
 <p>In the code above we ask FFMPEG to quickly (and imprecisely) reach 00:59:59, then to skip 1 second of movie with precision (<code>-ss 1</code>), so that it will effectively start at 01:00:00 sharp (see <a href="https://trac.ffmpeg.org/wiki/Seeking%20with%20FFmpeg">this page</a> for more infos).Then you can start reading frames as previously shown. Seeking a frame with this method takes at most 0.1 second on my computer.</p>
 
-<p>Finally, you can get informations on a file (frames size, number of frames per second, etc.) by calling</p>
+<p>You can also get informations on a file (frames size, number of frames per second, etc.) by calling</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -174,11 +176,11 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See section <em>Going Further</em> below for a link to an implementation.</p>
+<p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See [the last section][Going Further] for a link to an implementation.</p>
 
 <h2>Writing</h2>
 
-<p>To write a series of frames of size 460x360 into the file <code>'my_output_videofile.mp4'</code>, we open FFMPEG and specify that raw RGB data is going to be piped in:</p>
+<p>To write a series of frames of size 460x360 into the file <code>'my_output_videofile.mp4'</code>, we open FFMPEG and indicate that raw RGB data is going to be piped in:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -207,7 +209,7 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. For instance, if our frame is represented as a Numpy array, we simply write:</p>
+<p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. These will be raw frames, like the ones outputed by FFMPEG in the previous section: they should be strings of the form &ldquo;RGBRGBRGB&hellip;&rdquo; where R,G,B are <em>caracters</em> that represent a number between 0 and 255. If our frame is represented as a Numpy array, we simply write:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">image_array</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
@@ -262,12 +264,20 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
     <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/" title="Previous Post: A basic example of threads synchronization in Python">&laquo; A basic example of threads synchronization in Python</a>
+      
       
         <a class="basic-alignment right" href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/" title="Next Post: Read and write audio files in Python using FFMPEG">Read and write audio files in Python using FFMPEG &raquo;</a>
       
     </p>
   </footer>
 </article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
 
 </div>
 
@@ -283,6 +293,10 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
       <li class="post">
         <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/">A Basic Example of Threads Synchronization in Python</a>
       </li>
     
   </ul>
@@ -334,6 +348,22 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 
 </footer>
   
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/';
+        var disqus_url = 'http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
