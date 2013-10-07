@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2013-10-06T08:43:18+02:00</updated>
+  <updated>2013-10-07T20:27:06+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -288,20 +288,20 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     <id>http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python</id>
     <content type="html"><![CDATA[<p><em>This blog explains how to use threading Events to have functions in different Python threads start at the same time.</em></p>
 
-<p>I made a <a href="http://zulko.github.io/moviepy/">little program to make movies in Python</a>, and I needed a method to preview a movie. This means generating/displaying video frames, and in the same time (in a parralel thread) generating and playing the audio.  Schematically, the code looks like this:</p>
+<p>I recently coded a method to view movies in Python : it plays the video, and in the same time, in a parralel thread, it renders the audio. The difficult part is that the audio and video should be exactly synchronized. The pseudo-code looks like this:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">preview</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
 </span><span class='line'>
-</span><span class='line'>    <span class="n">thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">new_thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
 </span><span class='line'>    <span class="n">play_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In this example, <code>play_audio()</code> and <code>play_video()</code> will start at (almost) the same time and will run parallely. The problem is that these functions need some preparation before actually starting playing stuff. Their code looks like that:</p>
+<p>In this code, <code>play_audio()</code> and <code>play_video()</code> will start at approximately the same time and will run parallely, but these functions need some preparation before actually starting playing stuff. Their code looks like that:</p>
 
 <figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -413,7 +413,23 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 <span class='line-number'>34</span>
 <span class='line-number'>35</span>
 <span class='line-number'>36</span>
+<span class='line-number'>37</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># launch the parrallel audio thread</span>
+</span><span class='line'>    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
+</span><span class='line'>                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
+</span><span class='line'>
 </span><span class='line'>
 </span><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
 </span><span class='line'>
@@ -433,30 +449,17 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 </span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
 </span><span class='line'>    <span class="k">while</span> <span class="ow">not</span> <span class="n">audio_ready</span><span class="o">.</span><span class="n">isset</span><span class="p">():</span>
 </span><span class='line'>        <span class="k">pass</span>  <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
 </span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
 </span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">preview</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># launch the parrallel audio thread</span>
-</span><span class='line'>    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
-</span><span class='line'>                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Two tips to go further:</p>
+<p>A few tips tips to go further:</p>
 
 <ul>
 <li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can take advantage of it by using the <code>multiprocessing</code> module instead. Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
-<li>In my original program, I also use an Event to stop <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits.</li>
+<li>In the code above, using <code>pass</code> in the loops will use a lot of resources. You can replace <code>pass</code> by <code>time.sleep(0.001)</code> if you don&rsquo;t mind a 1ms lag between your processes.</li>
+<li>In <a href="http://zulko.github.io/moviepy/">my original program</a>, I also use an Event to terminate <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits too.</li>
 </ul>
 
 ]]></content>
