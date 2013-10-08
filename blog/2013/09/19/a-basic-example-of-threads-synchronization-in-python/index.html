@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>A basic example of threads synchronization in Python - __del__( self )</title>
+  <meta name="author" content="Zulko">
+
+  
+  <meta name="description" content="This blog explains how to use threading Events to have functions in different Python threads start at the same time. I recently coded a method to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="__del__( self )" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">__del__( self )</a></h1>
+  
+    <h2>A blog on <strike>my life</strike> Python.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:Zulko.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">A Basic Example of Threads Synchronization in Python</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-19T22:58:00+02:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>This blog explains how to use threading Events to have functions in different Python threads start at the same time.</em></p>
+
+<p>I recently coded a method to view movies in Python : it plays the video, and in the same time, in a parralel thread, it renders the audio. The difficult part is that the audio and video should be exactly synchronized. The pseudo-code looks like this:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">new_thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this code, <code>play_audio()</code> and <code>play_video()</code> will start at approximately the same time and will run parallely, but these functions need some preparation before actually starting playing stuff. Their code looks like that:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To have a well-synchronized movie we need the internal functions <code>audio.start_playing()</code> and <code>video.start_playing()</code>, which are run in two separate threads, to start at exactly the same time. How do we do that ?</p>
+
+<p>The solution seems to be using <code>threading.Event</code> objects. An <code>Event</code> is an object that can be accessed from all the threads and allows very basic communication between them : each thread can <em>set</em> or <em>unset</em> an Event, or check whether this event has already been been <em>set</em> (by another thread).</p>
+
+<p>For our problem we will use two events <code>video_ready</code> and <code>audio_ready</code> which will enable our two threads to scream at each other <em>&ldquo;I am ready ! Are you ?&rdquo;</em>. Here is the Python fot that:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_video()</span>
+</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
+</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>  <span class="c"># Wait for play_audio() to say &quot;I&#39;m ready&quot;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and finally the code for <code>view(movie)</code>:</p>
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># launch the parrallel audio thread</span>
+</span><span class='line'>    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
+</span><span class='line'>                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A few tips tips to go further:</p>
+
+<ul>
+<li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can also use the <code>multiprocessing</code> module to have your threads played on two different processors (which can be MUCH faster). Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
+<li>In <a href="http://zulko.github.io/moviepy/">my original program</a>, I also use an Event to terminate <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits too.</li>
+<li>Instead of using <code>wait</code> to wait for an Event to be set, you can use a loop to you decide at which frequency you want to check the Event. Only do that if don&rsquo;t mind a lag of a few milliseconds between your processes :</li>
+</ul>
+
+
+<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">time</span>
+</span><span class='line'><span class="k">while</span> <span class="ow">not</span> <span class="n">audio_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+</span><span class='line'>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.002</span><span class="p">)</span> <span class="c"># sleep 2 milliseconds</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zulko</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-19T22:58:00+02:00" pubdate data-updated="true">Sep 19<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/moviepy/'>MoviePy</a>, <a class='category' href='/blog/categories/python/'>Python</a>, <a class='category' href='/blog/categories/threads/'>threads</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/" data-via="" data-counturl="http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/" title="Next Post: Read and write video frames in Python using FFMPEG">Read and write video frames in Python using FFMPEG &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/">A Basic Example of Threads Synchronization in Python</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Zulko">@Zulko</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'Zulko',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Zulko -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/';
+        var disqus_url = 'http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
