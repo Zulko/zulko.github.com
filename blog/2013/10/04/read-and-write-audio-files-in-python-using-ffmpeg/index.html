@@ -35,7 +35,23 @@
 </head>
 
 <body   >
-  <header role="banner"><hgroup>
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
   <h1><a href="/">__del__( self )</a></h1>
   
     <h2>A blog on <strike>my life</strike> Python.</h2>
@@ -97,128 +113,124 @@
 
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
-</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</span><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h2 id="reading">Reading</h2>
 
-<h2>Reading</h2>
+<p>To read the audio file “mySong.mp3” we first ask FFMPEG to open this file and to direct its output to Python:</p>
 
-<p>To read the audio file &ldquo;mySong.mp3&rdquo; we first ask FFMPEG to open this file and to direct its output to Python:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
-</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
-</span><span class='line'>        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
-</span><span class='line'>        <span class="s">&#39;-&#39;</span><span class="p">]],</span>
-</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
+</span><span class="line">        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
+</span><span class="line">        <span class="s">&#39;-&#39;</span><span class="p">],</span>
+</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In the code above <code>-i mySong.mp3</code> indicates the input file, while <code>s16le/pcm_s16le</code> asks for a raw 16-bit sound output. The <code>-</code> at the end tells FFMPEG that it is being used with a pipe by another program.</p>
 
 <p>Now you just have to read the output of FFMPEG. In our case we have two channels (stereo sound) so one <em>frame</em> of out output will be represented by a pair of integers, each coded on 16 bits (2 bytes). Therefore one frame will be 4-bytes long. To read 88200 audio frames (2 seconds of sound in our case) we will write:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">raw_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
-</span><span class='line'><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">raw_audio</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">audio_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">audio_array</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>You can now play this sound using for instance Pygame’s sound mixer:</p>
 
-<p>You can now play this sound using for instance Pygame&rsquo;s sound mixer:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pygame</span>
-</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">44100</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># 44100 Hz, 16bit, 2 channels</span>
-</span><span class='line'><span class="n">sound</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">(</span> <span class="n">audio_array</span> <span class="p">)</span>
-</span><span class='line'><span class="n">sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">pygame</span>
+</span><span class="line"><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span><span class="line"><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">44100</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># 44100 Hz, 16bit, 2 channels</span>
+</span><span class="line"><span class="n">sound</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">(</span> <span class="n">audio_array</span> <span class="p">)</span>
+</span><span class="line"><span class="n">sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Finally, you can get informations on a file (audio format, frequency, etc.) by calling</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
-</span><span class='line'>                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
+</span><span class="line">                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class="line"><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See section <em>Going Further</em> below for a link to an implementation.</p>
 
-<h2>Writing</h2>
+<h2 id="writing">Writing</h2>
 
 <p>To write an audio file we open FFMPEG and specify that the input will be piped and that it will consist in raw audio data:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
-</span><span class='line'>       <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) means overwrite the output file if it already exists.</span>
-</span><span class='line'>       <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span> <span class="c"># means 16bit input</span>
-</span><span class='line'>       <span class="s">&quot;-acodec&quot;</span><span class="p">,</span> <span class="s">&quot;pcm_s16le&quot;</span><span class="p">,</span> <span class="c"># means raw 16bit input</span>
-</span><span class='line'>       <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&quot;44100&quot;</span><span class="p">,</span> <span class="c"># the input will have 44100 Hz</span>
-</span><span class='line'>       <span class="s">&#39;-ac&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># the input will have 2 channels (stereo)</span>
-</span><span class='line'>       <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># means that the input will arrive from the pipe</span>
-</span><span class='line'>       <span class="s">&#39;-vn&#39;</span><span class="p">,</span> <span class="c"># means &quot;don&#39;t expect any video input&quot;</span>
-</span><span class='line'>       <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&quot;libfdk_aac&quot;</span> <span class="c"># output audio codec</span>
-</span><span class='line'>       <span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&quot;3000k&quot;</span><span class="p">,</span> <span class="c"># output bitrate (=quality). Here, 3000kb/second</span>
-</span><span class='line'>       <span class="s">&#39;my_awesome_output_audio_file.mp3&#39;</span><span class="p">],</span>
-</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">       <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) means overwrite the output file if it already exists.</span>
+</span><span class="line">       <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span> <span class="c"># means 16bit input</span>
+</span><span class="line">       <span class="s">&quot;-acodec&quot;</span><span class="p">,</span> <span class="s">&quot;pcm_s16le&quot;</span><span class="p">,</span> <span class="c"># means raw 16bit input</span>
+</span><span class="line">       <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&quot;44100&quot;</span><span class="p">,</span> <span class="c"># the input will have 44100 Hz</span>
+</span><span class="line">       <span class="s">&#39;-ac&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># the input will have 2 channels (stereo)</span>
+</span><span class="line">       <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># means that the input will arrive from the pipe</span>
+</span><span class="line">       <span class="s">&#39;-vn&#39;</span><span class="p">,</span> <span class="c"># means &quot;don&#39;t expect any video input&quot;</span>
+</span><span class="line">       <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&quot;libfdk_aac&quot;</span> <span class="c"># output audio codec</span>
+</span><span class="line">       <span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&quot;3000k&quot;</span><span class="p">,</span> <span class="c"># output bitrate (=quality). Here, 3000kb/second</span>
+</span><span class="line">       <span class="s">&#39;my_awesome_output_audio_file.mp3&#39;</span><span class="p">],</span>
+</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>The codec can be any valid FFMPEG audio codec. For some codecs providing the output bitrate is optional. Now you just have to write raw audio data into the file. For instance, if your sound is represented have a Nx2 Numpy array of integers, you will just write</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">audio_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">audio_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<h2>Going further</h2>
+<h2 id="going-further">Going further</h2>
 
 <p>I tried to keep the code as simple as possible here. With a few more lines you can make useful classes to manipulate video files, like <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/readers.py">FFMPEG_AudioReader</a> and <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/ffmpeg_audiowriter.py">FFMPEG_AudioWriter</a> that I wrote for my video editing software. In these files in particular how to parse the information on the video, how to save/load pictures using FFMPEG, etc.</p>
+
 </div>
 
 
@@ -261,6 +273,8 @@
         <a class="basic-alignment left" href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/" title="Previous Post: Read and write video frames in Python using FFMPEG">&laquo; Read and write video frames in Python using FFMPEG</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/10/22/delay-differential-equations-in-python/" title="Next Post: Delay differential equations in Python">Delay differential equations in Python &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -278,6 +292,14 @@
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing Your Employees So That Everyone Meets</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/22/delay-differential-equations-in-python/">Delay Differential Equations in Python</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a>

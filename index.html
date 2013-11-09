@@ -9,7 +9,7 @@
   <meta name="author" content="Zulko">
 
   
-  <meta name="description" content="This article shows how easy it is to read or write audio files in Python, by calling the external software FFMPEG through pipes. Check also that &hellip;">
+  <meta name="description" content="In this post I solve a stupid management problem using old mathematics and Google. Imagine that you have N employees who work side by side in a row. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -35,7 +35,23 @@
 </head>
 
 <body   >
-  <header role="banner"><hgroup>
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
   <h1><a href="/">__del__( self )</a></h1>
   
     <h2>A blog on <strike>my life</strike> Python.</h2>
@@ -71,6 +87,443 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing Your Employees So That Everyone Meets</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-08T20:36:00+01:00" pubdate data-updated="true">Nov 8<span>th</span>, 2013</time>
+        
+         | <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>In this post I solve a stupid management problem using old mathematics and Google.</em></p>
+
+<p>Imagine that you have N employees who work side by side in a row. For more conviviality you decide to arrange them in a different order every day, so that after some time each employee has worked besides each of the others at least once. How to do so in a minimal number of days ?</p>
+
+<p><img class="center" src="/images/placing-your-employees/mathematician_employees.jpeg" title="'Case were the employees are mathematicians'" /></p>
+
+<h2 id="a-little-bit-of-context">A little bit of context</h2>
+
+<p>This problem appeared a few weeks ago in the <a href="http://www.reddit.com/r/Python/comments/1o7z4q/python_algo_to_shuffle_your_team_ensuring_that/">Reddit/Python forum</a>, when someone posted <a href="http://jtushman.github.io/blog/2013/10/10/shuffling-team-seating/">this</a>:</p>
+
+<p><em>“I think it is good to shuffle the team around. (…) Here is the function that we use to randomize our team making sure that you do not sit next to someone you are already sitting next to [supposing that all are sitting in a row].”</em>.</p>
+
+<p>Stated like this, it is a very simple problem and you don’t need a complicated algorithm. The following shuffle would do the trick:</p>
+
+<p><img class="center" src="/images/placing-your-employees/easy_shuffle.jpeg" title="'A simple shuffling'" /></p>
+
+<p>And it can be written in one line of Python:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># This shuffling creates new neighbours</span>
+</span><span class="line"><span class="n">shuffle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">myList</span> <span class="p">:</span> <span class="n">myList</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">myList</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The problem with shufflings, as someone on Reddit pointed out, is that they do not ensure that everyone will eventually work besides everyone. For instance in this shuffling employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which your shuffle will fail to create all possible pairs of neighbours ! That would be an interesting problem to develop.</p>
+
+<p>This leads us to our problem: how to ensure that all possible pairs of neighbours will be created, and in a minimum amount of time ? We will see that there is an optimal strategy. It does NOT use a shuffling, but rather a 120 years old mathematical construction.</p>
+
+<h2 id="first-elements-of-solution">First elements of solution</h2>
+
+<p>If you have N employees, then they can form N(N-1)/2 pairs. Each day you create at most (N-1) new pairs of neighbours by placing the employees on a line. Therefore you will need at least N/2 days to create all possible pairs. This means that you cannot solve the problem in less than N/2 days if N is even, and (N+1)/2 days if n is odd. What we will show is that <strong>it is actually possible to solve the problem in N/2 days (for even N) or (N+1)/2 days (for odd N)</strong>.</p>
+
+<p>Actually, <strong>we only need to solve the problem for even N</strong>, and the solutions for odd N will follow very simply. Indeed, suppose that you have an odd number N of employees. If you add one <em>imaginary</em> employee, you come to an even number (N+1) of employees. Suppose that you have found a solution for these (N+1) employees, which means that you have found a series of (N+1)/2 arrangements which form all pairs of neighbours. Then remove the <em>imaginary</em> employee from each of these arrangements. What you obtain is a series of (N+1)/2 arrangements, in which all pairs of the employees 1 to N are formed. In other words, you have solved the problem for N.</p>
+
+<h2 id="representing-the-problem-with-a-graph">Representing the problem with a graph</h2>
+
+<p>This problem can be very well represented using a graph whose nodes are the employees. Each day we add an edge in the graph between each pair of employees which have been neighbours, our goal being to cover all the possible edges of the graph:</p>
+
+<p><img class="center" src="/images/placing-your-employees/placements_are_paths.jpeg" title="'graph representation of the problem'" /></p>
+
+<p>Notice how each day you actually trace a <em>path</em> in the graph.</p>
+
+<p>Now our problem has become: given a graph of size N (even), find N/2 paths, each going through each node exactly once, such that they cover all the possible edges of the graph.</p>
+
+<p>And here is a sketch of a solution that will always work:</p>
+
+<p><img class="center" src="/images/placing-your-employees/solution_for_8.jpeg" title="'Solution for 8 employees'" /></p>
+
+<p>The first path is a simple pattern 1, N, 2, N-1, etc. and the others are just <em>rotations</em> of the first path. The nice thing with the graph representation is that I can use a simple geometric argument to prove that these paths will cover all the edges: if we place the N nodes of the graph cyclically like in the figures above, the path number K will have edges that make an angle $2K\pi/N$ or $(2K+1)\pi/N$ with the horizontal line. So the different paths have edges of completely different angles. For this reason an edge cannot belong to more than one path. Since there are N/2 paths and each path covers N-1 different edges, the paths cover N(N-1)/2 edges in total, which is the totality of the path.</p>
+
+<p>This construction of paths may seem simple to some of you, but I couldn’t figure it out on my own, and it is an application of a 120 years old mathematical trick called the Walecki construction, which I found after some googling, as I explain in <a href="#thanksGoogle">the last section</a>.</p>
+
+<h2 id="a-idsolutiona-solution-of-the-problem"><a id="Solution"></a> Solution of the problem</h2>
+
+<p>If N is even, arrange the employees in this order the first day: 1, N, 2, (N-1), 3, (N-2), etc. From day 2 to day N/2, place the employees by taking their arrangement of the day before and replacing employee 1 by 2, 2 by 3, 3 by 4… and N by 1.</p>
+
+<p>If N is odd, add an imaginary (N+1)th employee, solve the problem for the N+1 employees using the mehod above, then remove the imaginary employee from each of the arrangements obtained.</p>
+
+<p>Here is the Python implementation of this solution:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class="line"><span class="sd">    Returns a minimal series of permutations of 1..N such</span>
+</span><span class="line"><span class="sd">    that each number is neighbour at least once with each of</span>
+</span><span class="line"><span class="sd">    the others.</span>
+</span><span class="line"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">N</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
+</span><span class="line">        <span class="sd">&quot;&quot;&quot;</span>
+</span><span class="line"><span class="sd">        N is odd. Solve the problem for (N+1), then remove</span>
+</span><span class="line"><span class="sd">        element (N+1) in the result</span>
+</span><span class="line"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="line">        <span class="n">arrangements</span> <span class="o">=</span> <span class="n">place</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrangements</span><span class="p">:</span>
+</span><span class="line">            <span class="n">arr</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">arrangements</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">        <span class="sd">&quot;&quot;&quot;</span>
+</span><span class="line"><span class="sd">        n is even. Place the elements in that order:</span>
+</span><span class="line"><span class="sd">        1, N, 2, N-1, 3, N-2, etc. then roll !</span>
+</span><span class="line"><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class="line">        <span class="n">arr1</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># construct the first arrangement</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
+</span><span class="line">            <span class="n">arr1</span> <span class="o">=</span> <span class="n">arr1</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="n">i</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># construct the subsequent arrangements using p1</span>
+</span><span class="line">        <span class="k">return</span> <span class="p">[</span> <span class="p">[((</span><span class="n">e</span><span class="o">+</span><span class="n">K</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">arr1</span><span class="p">]</span>
+</span><span class="line">                                 <span class="k">for</span> <span class="n">K</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<pre><code>&gt;&gt;&gt; place(12)
+[[1, 12, 2, 11, 3, 10, 4, 9, 5, 8, 6, 7],
+ [2, 1, 3, 12, 4, 11, 5, 10, 6, 9, 7, 8],
+ [3, 2, 4, 1, 5, 12, 6, 11, 7, 10, 8, 9],
+ [4, 3, 5, 2, 6, 1, 7, 12, 8, 11, 9, 10],
+ [5, 4, 6, 3, 7, 2, 8, 1, 9, 12, 10, 11],
+ [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11, 12]]
+</code></pre>
+
+<h2 id="a-idthanksgooglea-bonus-how-to-be-a-graph-theorist-with-google"><a id="thanksGoogle"></a> [Bonus] How to be a graph theorist with Google</h2>
+
+<p>For the anecdote, I was not really happy when I figured out that the problem could be represented with graphs, as I really know nothing about graphs theory.</p>
+
+<p>However, I thought that, as we are dealing with graphs in which everyone is connected with everyone, they must have some interesting properties. So I googled <em>fully connected graphs</em>, which led me to Wolfram Mathworld’s article on <em>Complete graphs</em> (apparently that’s their real name), where we can read on the 6th line:</p>
+
+<p><em>“In the 1890s, Walecki showed that complete graphs Kn admit a Hamilton decomposition for odd n, and decompositions into Hamiltonian cycles plus a perfect matching for even n (Lucas 1892, Bryant 2007, Alspach 2008). Alspach et al. (1990) give a construction for Hamilton decompositions of all Kn.”</em></p>
+
+<p>That’s not what you’d call crystal clear, but it says <em>decomposition</em> several times, and that sounds like what I want to do. So I looked for the last reference, Alspach 1990. Springer, the publisher, gracefully gives you access to the first two pages for free. The good news is, they contain all the properties and proofs that we need, in a compacted yet very understandable form. Let us see in details what they say.</p>
+
+<p>It starts with Hamiltonian cycles. An Hamiltonian cycle is a path that starts from one node, visits every other node exactly once, and come back to initial node. Here are two Hamiltonian cycles for a graph with five nodes:</p>
+
+<p><img class="center" src="/images/placing-your-employees/hamilton_decomposition.jpeg" title="'Solution for 8 employees'" /></p>
+
+<p>As you can see, these paths have no edge in common, but put together they cover all the edges of the complete graph. This is called a <em>Hamilton decomposition</em> of the complete graph.</p>
+
+<p>Now what happens if you remove one person from the graph, say, the person at the top ? You get this:</p>
+
+<p><img class="center" src="/images/placing-your-employees/solution_for_4.jpeg" title="'Solution for 4 employees'" /></p>
+
+<p>This is a solution of our problem for N=4 employees ! And it will always work: if you can find an Hamilton decomposition of the complete graph of N+1 nodes (N being even), just remove one node, and it will give you a decomposition into paths of the complete graph of N nodes, which will be a solution to our problem with N employees.</p>
+
+<p>So now the big question is: how do we find an Hamiltonian decomposition of the complete graph of (N+1) nodes (N+1 being odd) ?</p>
+
+<p>This has been answered in 1890 by Walecki with the following construction. I use the same notations as in Alspach 1990. Note that node 0 stays in place while all the other numbers rotate clockwise from one cycle to another.</p>
+
+<p><img class="center" src="/images/placing-your-employees/Walecki.jpeg" title="'The Walecki Hamilton decomposition'" /></p>
+
+<p>There is no extensive proof in Alspach 1990 of why this covers all edges, but I guess that a geometrical proof, like the one I give in a previous section, could do the trick. Now all we have to do is to remove one node of the graph: we choose the node 0:</p>
+
+<p><img class="center" src="/images/placing-your-employees/Walecki2.jpeg" title="'Tada !'" /></p>
+
+<p>With just a few tweaks in the order of the nodes, we come to the solution presented in the previous section.</p>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/22/delay-differential-equations-in-python/">Delay Differential Equations in Python</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-22T07:50:00+02:00" pubdate data-updated="true">Oct 22<span>nd</span>, 2013</time>
+        
+         | <a href="/blog/2013/10/22/delay-differential-equations-in-python/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p><em>I wrote a simple method to solve delay differential equations (DDEs) in Python, using the Python package Scipy.</em></p>
+
+<p>As usual the code is available at the end of the post :).</p>
+<h2>Example 1 : Sine</h2>
+<p>I start with an example whose exact solution is known so that I can check that the algorithm works as expected. We consider the following equation:</p>
+
+<p>$latex y(t) = sin(t) \ \ \ for\ \ \ t &lt; 0$</p>
+
+<p>$latex y’(t) = y(t-3\pi/2) \ \ \ for\ \ \ t \geq 0$</p>
+
+<p>The trick here is that $latex sin(t-3\pi/2) = cos(t)=sin’(t)$ so the exact solution of this equation is actually the sine function.</p>
+
+<div style="font-size: 13px;">[sourcecode language=&#8221;python&#8221;]
+from pylab import *
+
+model = lambda Y,t : Y(t - 3*pi/2) # Model
+tt = linspace(0,50,10000) # Time start, end, and number of points/steps
+g=sin # Expression of Y(t) before the integration interval
+yy = ddeint(model,g,tt) # Solving
+
+# PLOTTING
+fig,ax=subplots(1)
+ax.plot(tt,yy,c=&#8217;r&#8217;,label=&#8221;$y(t)$&#8221;)
+ax.plot(tt,sin(tt),c=&#8217;b&#8217;,label=&#8221;$sin(t)$&#8221;)
+ax.set_ylim(ymax=2) # make room for the legend
+ax.legend()
+show()
+[/sourcecode]
+
+</div>
+<p style="text-align: center;"><a href="http://zulko.files.wordpress.com/2013/02/dde_sin1.png"><img class="aligncenter  wp-image-792" alt="dde_sin" src="http://zulko.files.wordpress.com/2013/02/dde_sin1.png" width="425" height="320" /></a></p>
+<p>The resulting plot compares our solution (red) with the exact solution (blue). See how our result eventually detaches itself from the actual solution as a consequence of many successive approximations ? As DDEs tend to create chaotic behaviors, you can expect the error to explode very fast. As I am no DDE expert, I would recommend checking for convergence in all cases, i.e. increasing the time resolution and see how it affects the result. Keep in mind that the past values of Y(t) are computed by interpolating the values of Y found at the previous integration points, so the more points you ask for, the more precise your result.</p>
+<h2>Example 2 : Delayed negative feedback</h2>
+<p>You can select the parameters of your model at integration time, like in Scipy’s ODE and odeint. As an example, imagine a product with degradation rate r, and whose production rate is negatively linked to the quantity of this same product at the time (t-d):</p>
+
+<p>$latex y(t) = 0 \ \ \ for\ \ \ t &lt; 0 $</p>
+
+<p>$latex y’(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t) \ \ \ for\ \ \ t \geq 0$</p>
+
+<p>We have three parameters that we can choose freely. For K = 0.1, d = 5, r = 1, we obtain oscillations !
+&lt;div style=&#8221;font-size: 13px;&#8221;&gt;[sourcecode language=”python”]
+from pylab import *</p>
+
+<h1 id="model-with-unknown-parameters">MODEL, WITH UNKNOWN PARAMETERS</h1>
+<p>model = lambda Y,t,k,d,r :  1/(1+(Y(t-d)/k)<em>*2) - r</em>Y(t)</p>
+
+<h1 id="history">HISTORY</h1>
+<p>g = lambda t:0</p>
+
+<h1 id="solving">SOLVING</h1>
+<p>tt = linspace(0,50,10000)
+yy = ddeint(model,g,tt,fargs=( 0.1 , 5 , 1 )) # K = 0.1, d = 5, r = 1</p>
+
+<h1 id="plotting">PLOTTING</h1>
+<p>fig,ax=subplots(1)
+ax.plot(tt,yy,lw=2)
+show()
+[/sourcecode]</p>
+
+<p>&lt;/div&gt;
+&lt;p style=&#8221;text-align: center;&#8221;&gt;<a href="http://zulko.files.wordpress.com/2013/03/dde_negativefeedback.png"><img class="aligncenter  wp-image-815" alt="dde_negativefeedback" src="http://zulko.files.wordpress.com/2013/03/dde_negativefeedback.png" width="431" height="322" /></a>&lt;/p&gt;</p>
+
+<h2>Example 3 : Lotka-Volterra system with delay</h2>
+<p>The variable Y can be a vector, which means that you can solve DDE systems of several variables. Here is a version of the famous Lotka-Volterra two-variables system, where we introduce some delay d. For d=0 we find the solution of a classical Lotka-Volterra system, and for d non-nul, the system undergoes an important amplification:</p>
+
+<p>$latex \big(x(t), y(t)\big) = (1,2) \ \ \ for\ \ t &lt; 0, \ \ else$</p>
+
+<p>$latex x’(t) = 0.5x(t)\big(1-y(t-d)\big)<br />
+y’(t) = -0.5y(t)\big(1-x(t-d)\big)$
+&lt;div style=&#8221;font-size: 13px;&#8221;&gt;[sourcecode language=”python”]
+from pylab import *</p>
+
+<p>def model(Y,t,d):
+    x,y = Y(t)
+    xd,yd = Y(t-d)
+    return array([0.5<em>x</em>(1-yd), -0.5<em>y</em>(1-xd)])</p>
+
+<p>g = lambda t : array([1,2])
+tt = linspace(2,30,20000)
+fig,ax=subplots(1)</p>
+
+<p>for d in [0, 0.2]:
+    yy = ddeint(model,g,tt,fargs=(d,))
+    # WE PLOT X AGAINST Y
+    ax.plot(yy[:,0],yy[:,1],lw=2,label=’delay = %.01f’%d)</p>
+
+<p>ax.legend()
+show()
+[/sourcecode]</p>
+
+<p>&lt;/div&gt;
+&lt;p style=&#8221;text-align: center;&#8221;&gt;<a href="http://zulko.files.wordpress.com/2013/03/dde_lotka.png"><img class="aligncenter  wp-image-848" alt="dde_lotka" src="http://zulko.files.wordpress.com/2013/03/dde_lotka.png" width="456" height="342" /></a>&lt;/p&gt;</p>
+
+<h2>Example 4 : A DDE with varying delay</h2>
+<p>This time the delay depends on the value of Y(t) !</p>
+
+<p>$latex y(t) = 1,\ \ \ t \leq 0$</p>
+
+<p>$latex y’(t) = - y\big(t-3\cos(y(t))^2 \big),\ \ \ t &gt; 0 $
+&lt;div style=&#8221;font-size: 13px;&#8221;&gt;[sourcecode language=”python”]
+from pylab import *
+model = lambda Y,t:  -Y(t-3*cos(Y(t))**2)
+tt = linspace(0,30,2000)
+yy = ddeint(model, lambda t:1, tt)
+fig,ax=subplots(1)
+ax.plot(tt,yy,lw=2)
+show()
+[/sourcecode]</p>
+
+<p>&lt;/div&gt;
+&lt;p style=&#8221;text-align: center;&#8221;&gt;<a href="http://zulko.files.wordpress.com/2013/03/dde_ydependent.png"><img class="aligncenter  wp-image-807" alt="dde_Ydependent" src="http://zulko.files.wordpress.com/2013/03/dde_ydependent.png" width="424" height="317" /></a>&lt;/p&gt;</p>
+
+<h2>Code</h2>
+<h3>Explanations</h3>
+<p>The code is written on top of Scipy’s ‘ode’ (ordinary differential equation) class, which accepts differential equations under the form</p>
+
+<p>model(Y,t) = “ expression of Y’(t) “</p>
+
+<p>where $latex Y$, and the output $latex Y’$, must be Numpy arrays (i.e. vectors).</p>
+
+<p>For our needs, we need the input $latex Y$ to be a function of time, more precisely a function that can compute $latex Y(t)$ at any past or present $latex t$ using the values of $latex Y$ already computed. We also need $latex Y(t)$ to return the value of some function $latex g(t)$ if t is inferior to some time $latex tc$ that marks the start of the integration.</p>
+
+<p>To this end, I first implemented a class (ddeVar) of variables/functions which can be called at any time $latex t$: for $t&lt;latex t_c$, it will return the value of $latex g(t)$, and for $latex t&gt;tc$, it will look for two already computed values $latex Y_a$ and $latex Y_b$ at times $latex t_a&lt;t&lt;t_b$, from which it will deduce $latex Y(t)$ using a linear interpolation. Scipy offers many other kinds of interpolation, but these will be slower and won’t support vectors for $latex Y$.</p>
+
+<p>Such variables need to be updated every time a new value of $latex Y(t)$ is computed, so I created a class ‘dde’ that inherits from Scipy’s ‘ode’ class but overwrites its integration method so that our special function $latex Y$ is updated after each integration step. Since ‘ode’ would feed the model with a vector Y (a Numpy array to be precise), which we don’t want, we give to the integrator an interface function that takes a Numpy array Y as an argument, but immediately dumps it and calls the model with our special ddeVar variable Y (I hope that was clear :) ).</p>
+<h3>Ok, here you are for the code</h3>
+<p>You will find the code and all the examples as an IPython notebook <a href="http://zulko.files.wordpress.com/2013/03/ddes-ipynb.doc">HERE</a> (if you are a scientific pythonist and you don’t know about the IPython notebook, you are really missing something !). Just change the extension to .ipynb to be able to open it. In case you just asked for the code:
+&lt;div style=&#8221;font-size: 13px;&#8221;&gt;[sourcecode language=”python”]
+# REQUIRES PACKAGES Numpy AND Scipy INSTALLED
+import numpy as np
+import scipy.integrate
+import scipy.interpolate</p>
+
+<p>class ddeVar:
+    “”” special function-like variables for the integration of DDEs “””</p>
+
+<pre><code>def __init__(self,g,tc=0):
+    """ g(t) = expression of Y(t) for t&lt;tc """
+
+    self.g = g
+    self.tc= tc
+    # We must fill the interpolator with 2 points minimum
+    self.itpr = scipy.interpolate.interp1d(
+        np.array([tc-1,tc]), # X
+        np.array([self.g(tc),self.g(tc)]).T, # Y
+        kind='linear', bounds_error=False,
+        fill_value = self.g(tc))
+
+def update(self,t,Y):
+    """ Add one new (ti,yi) to the interpolator """
+
+    self.itpr.x = np.hstack([self.itpr.x, [t]])
+    Y2 = Y if (Y.size==1) else np.array([Y]).T
+    self.itpr.y = np.hstack([self.itpr.y, Y2])
+    self.itpr.fill_value = Y
+
+def __call__(self,t=0):
+    """ Y(t) will return the instance's value at time t """
+
+    return (self.g(t) if (t&lt;=self.tc) else self.itpr(t))
+</code></pre>
+
+<p>class dde(scipy.integrate.ode):
+    “”” Overwrites a few functions of scipy.integrate.ode”””</p>
+
+<pre><code>def __init__(self,f,jac=None):
+
+    def f2(t,y,args):
+        return f(self.Y,t,*args)
+    scipy.integrate.ode.__init__(self,f2,jac)
+    self.set_f_params(None)
+
+def integrate(self, t, step=0, relax=0):
+
+    scipy.integrate.ode.integrate(self,t,step,relax)
+    self.Y.update(self.t,self.y)
+    return self.y
+
+def set_initial_value(self,Y):
+
+    self.Y = Y #!!! Y will be modified during integration
+    scipy.integrate.ode.set_initial_value(self, Y(Y.tc), Y.tc)
+</code></pre>
+
+<p>def ddeint(func,g,tt,fargs=None):
+    “”” similar to scipy.integrate.odeint. Solves the DDE system
+        defined by func at the times tt with ‘history function’ g
+        and potential additional arguments for the model, fargs
+    “””</p>
+
+<pre><code>dde_ = dde(func)
+dde_.set_initial_value(ddeVar(g,tt[0]))
+dde_.set_f_params(fargs if fargs else [])
+return np.array([g(tt[0])]+[dde_.integrate(dde_.t + dt)
+                             for dt in np.diff(tt)]) [/sourcecode]
+</code></pre>
+
+<p>&lt;/div&gt;</p>
+<h2>Other implementations</h2>
+<p>If you need a faster or more reliable implementation, have a look at the packages <strong>pyDDE</strong> and <strong>pydelay</strong>, which seem both very serious but are less friendly in their syntax.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a></h1>
     
     
@@ -100,128 +553,124 @@
 
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
-</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</span><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h2 id="reading">Reading</h2>
 
-<h2>Reading</h2>
+<p>To read the audio file “mySong.mp3” we first ask FFMPEG to open this file and to direct its output to Python:</p>
 
-<p>To read the audio file &ldquo;mySong.mp3&rdquo; we first ask FFMPEG to open this file and to direct its output to Python:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
-</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
-</span><span class='line'>        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
-</span><span class='line'>        <span class="s">&#39;-&#39;</span><span class="p">]],</span>
-</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
+</span><span class="line">        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
+</span><span class="line">        <span class="s">&#39;-&#39;</span><span class="p">],</span>
+</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In the code above <code>-i mySong.mp3</code> indicates the input file, while <code>s16le/pcm_s16le</code> asks for a raw 16-bit sound output. The <code>-</code> at the end tells FFMPEG that it is being used with a pipe by another program.</p>
 
 <p>Now you just have to read the output of FFMPEG. In our case we have two channels (stereo sound) so one <em>frame</em> of out output will be represented by a pair of integers, each coded on 16 bits (2 bytes). Therefore one frame will be 4-bytes long. To read 88200 audio frames (2 seconds of sound in our case) we will write:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">raw_audio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
-</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
-</span><span class='line'><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">raw_audio</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">audio_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">audio_array</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>You can now play this sound using for instance Pygame’s sound mixer:</p>
 
-<p>You can now play this sound using for instance Pygame&rsquo;s sound mixer:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">pygame</span>
-</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
-</span><span class='line'><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">44100</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># 44100 Hz, 16bit, 2 channels</span>
-</span><span class='line'><span class="n">sound</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">(</span> <span class="n">audio_array</span> <span class="p">)</span>
-</span><span class='line'><span class="n">sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">pygame</span>
+</span><span class="line"><span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+</span><span class="line"><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">44100</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="c"># 44100 Hz, 16bit, 2 channels</span>
+</span><span class="line"><span class="n">sound</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">(</span> <span class="n">audio_array</span> <span class="p">)</span>
+</span><span class="line"><span class="n">sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Finally, you can get informations on a file (audio format, frequency, etc.) by calling</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
-</span><span class='line'>                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
+</span><span class="line">                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class="line"><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See section <em>Going Further</em> below for a link to an implementation.</p>
 
-<h2>Writing</h2>
+<h2 id="writing">Writing</h2>
 
 <p>To write an audio file we open FFMPEG and specify that the input will be piped and that it will consist in raw audio data:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
-</span><span class='line'>       <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) means overwrite the output file if it already exists.</span>
-</span><span class='line'>       <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span> <span class="c"># means 16bit input</span>
-</span><span class='line'>       <span class="s">&quot;-acodec&quot;</span><span class="p">,</span> <span class="s">&quot;pcm_s16le&quot;</span><span class="p">,</span> <span class="c"># means raw 16bit input</span>
-</span><span class='line'>       <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&quot;44100&quot;</span><span class="p">,</span> <span class="c"># the input will have 44100 Hz</span>
-</span><span class='line'>       <span class="s">&#39;-ac&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># the input will have 2 channels (stereo)</span>
-</span><span class='line'>       <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># means that the input will arrive from the pipe</span>
-</span><span class='line'>       <span class="s">&#39;-vn&#39;</span><span class="p">,</span> <span class="c"># means &quot;don&#39;t expect any video input&quot;</span>
-</span><span class='line'>       <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&quot;libfdk_aac&quot;</span> <span class="c"># output audio codec</span>
-</span><span class='line'>       <span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&quot;3000k&quot;</span><span class="p">,</span> <span class="c"># output bitrate (=quality). Here, 3000kb/second</span>
-</span><span class='line'>       <span class="s">&#39;my_awesome_output_audio_file.mp3&#39;</span><span class="p">],</span>
-</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">       <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) means overwrite the output file if it already exists.</span>
+</span><span class="line">       <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span> <span class="c"># means 16bit input</span>
+</span><span class="line">       <span class="s">&quot;-acodec&quot;</span><span class="p">,</span> <span class="s">&quot;pcm_s16le&quot;</span><span class="p">,</span> <span class="c"># means raw 16bit input</span>
+</span><span class="line">       <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&quot;44100&quot;</span><span class="p">,</span> <span class="c"># the input will have 44100 Hz</span>
+</span><span class="line">       <span class="s">&#39;-ac&#39;</span><span class="p">,</span><span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># the input will have 2 channels (stereo)</span>
+</span><span class="line">       <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># means that the input will arrive from the pipe</span>
+</span><span class="line">       <span class="s">&#39;-vn&#39;</span><span class="p">,</span> <span class="c"># means &quot;don&#39;t expect any video input&quot;</span>
+</span><span class="line">       <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&quot;libfdk_aac&quot;</span> <span class="c"># output audio codec</span>
+</span><span class="line">       <span class="s">&#39;-b&#39;</span><span class="p">,</span> <span class="s">&quot;3000k&quot;</span><span class="p">,</span> <span class="c"># output bitrate (=quality). Here, 3000kb/second</span>
+</span><span class="line">       <span class="s">&#39;my_awesome_output_audio_file.mp3&#39;</span><span class="p">],</span>
+</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>The codec can be any valid FFMPEG audio codec. For some codecs providing the output bitrate is optional. Now you just have to write raw audio data into the file. For instance, if your sound is represented have a Nx2 Numpy array of integers, you will just write</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">audio_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">audio_array</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&quot;int16&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-
-<h2>Going further</h2>
+<h2 id="going-further">Going further</h2>
 
 <p>I tried to keep the code as simple as possible here. With a few more lines you can make useful classes to manipulate video files, like <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/readers.py">FFMPEG_AudioReader</a> and <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/audio/io/ffmpeg_audiowriter.py">FFMPEG_AudioWriter</a> that I wrote for my video editing software. In these files in particular how to parse the information on the video, how to save/load pictures using FFMPEG, etc.</p>
+
 </div>
   
   
@@ -263,126 +712,119 @@
 
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
-</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</span><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<h2 id="reading">Reading</h2>
 
-<h2>Reading</h2>
+<p>To read the frames of the video “myHolidays.mp4” we first ask FFMPEG to open this file and to direct its output to Python:</p>
 
-<p>To read the frames of the video &ldquo;myHolidays.mp4&rdquo; we first ask FFMPEG to open this file and to direct its output to Python:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
-</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
-</span><span class='line'>                   <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
-</span><span class='line'>                   <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
-</span><span class='line'>                   <span class="s">&quot;-vcodec&#39;, &quot;</span><span class="n">rawvideo</span><span class="s">&quot;, &quot;</span><span class="o">-</span><span class="s">&quot;],</span>
-</span><span class='line'>                   <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class="line">                   <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class="line">                   <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class="line">                   <span class="s">&quot;-vcodec&#39;, &quot;</span><span class="n">rawvideo</span><span class="s">&quot;, &quot;</span><span class="o">-</span><span class="s">&quot;],</span>
+</span><span class="line">                   <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program.</p>
 
-<p>Now you just have to read the output of FFMPEG. If the video has a size of 420x320 pixels, then the first 420x360x3 bytes outputed by
+<p>Now you just have to read the output of FFMPEG. If the video has a size of 420x320 pixels, then the first 420x360x3 bytes outputed by 
 FFMPEG will give the RGB values of the pixels of the first frame, line by line, top to bottom. The next 420x360x3 bytes will represent the second frame, etc.
 In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
-</span><span class='line'><span class="n">raw_image</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">420</span><span class="o">*</span><span class="mi">360</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span> <span class="c"># read 420*360*3 bytes (= 1 frame)</span>
-</span><span class='line'><span class="n">image</span> <span class="o">=</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">360</span><span class="p">,</span><span class="mi">420</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class="line"><span class="n">raw_image</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">420</span><span class="o">*</span><span class="mi">360</span><span class="o">*</span><span class="mi">3</span><span class="p">)</span> <span class="c"># read 420*360*3 bytes (= 1 frame)</span>
+</span><span class="line"><span class="n">image</span> <span class="o">=</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&#39;uint8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">360</span><span class="p">,</span><span class="mi">420</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>You can now view the image with for instance Pylab’s <code>imshow( image )</code>. By repeating the two lines above you can read all the frames of the video one after the other. Reading one frame with this method takes 2 milliseconds on my computer.</p>
 
-<p>You can now view the image with for instance Pylab&rsquo;s <code>imshow( image )</code>. By repeating the two lines above you can read all the frames of the video one after the other. Reading one frame with this method takes 2 milliseconds on my computer.</p>
+<p>What if you want to read the frame that is at time 01h00 in the video ? You could do as above: open the pipe, and read all the frames of the video one by one until you reach that corresponding to t=01h00. But this may be VERY long. A better solution is to call FFMPEG with arguments telling it to start reading “myHolidays.mp4” at time 01h00:</p>
 
-<p>What if you want to read the frame that is at time 01h00 in the video ? You could do as above: open the pipe, and read all the frames of the video one by one until you reach that corresponding to t=01h00. But this may be VERY long. A better solution is to call FFMPEG with arguments telling it to start reading &ldquo;myHolidays.mp4&rdquo; at time 01h00:</p>
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-ss&quot;</span><span class="p">,</span> <span class="s">&quot;00:59;59&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
-</span><span class='line'>            <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">],</span>
-</span><span class='line'>            <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BIN</span><span class="p">,</span> <span class="s">&quot;-ss&quot;</span><span class="p">,</span> <span class="s">&quot;00:59;59&quot;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&quot;myHolidays.mp4&quot;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;-ss&#39;</span><span class="p">,</span> <span class="s">&quot;1&quot;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
+</span><span class="line">            <span class="s">&quot;-vcodec&quot;</span><span class="p">,</span><span class="s">&quot;rawvideo&quot;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">],</span>
+</span><span class="line">            <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In the code above we ask FFMPEG to quickly (and imprecisely) reach 00:59:59, then to skip 1 second of movie with precision (<code>-ss 1</code>), so that it will effectively start at 01:00:00 sharp (see <a href="https://trac.ffmpeg.org/wiki/Seeking%20with%20FFmpeg">this page</a> for more infos).Then you can start reading frames as previously shown. Seeking a frame with this method takes at most 0.1 second on my computer.</p>
 
 <p>You can also get informations on a file (frames size, number of frames per second, etc.) by calling</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;my_video.mp4&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
-</span><span class='line'>                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
-</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
-</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="s">&quot;-i&quot;</span><span class="p">,</span> <span class="s">&quot;my_video.mp4&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">],</span>
+</span><span class="line">                <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span>  <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class="line"><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class="line"><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See the last section for a link to an implementation.</p>
 
-<h2>Writing</h2>
+<h2 id="writing">Writing</h2>
 
 <p>To write a series of frames of size 460x360 into the file <code>'my_output_videofile.mp4'</code>, we open FFMPEG and indicate that raw RGB data is going to be piped in:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) overwrite the output file if it already exists</span>
-</span><span class='line'>        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span><span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;420x360&#39;</span><span class="p">,</span> <span class="c"># size of one frame</span>
-</span><span class='line'>        <span class="s">&#39;-pix_fmt&#39;</span><span class="p">,</span> <span class="s">&#39;rgb24&#39;</span><span class="p">,</span>
-</span><span class='line'>        <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&#39;24&#39;</span><span class="p">,</span> <span class="c"># frames per second</span>
-</span><span class='line'>        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># The imput comes from a pipe</span>
-</span><span class='line'>        <span class="s">&#39;-an&#39;</span><span class="p">,</span> <span class="c"># Tells FFMPEG not to expect any audio</span>
-</span><span class='line'>        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s">&#39;mpeg&#39;&quot;,</span>
-</span><span class='line'>        <span class="s">&#39;my_output_videofile.mp4&#39;</span> <span class="p">],</span>
-</span><span class='line'>        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-y&#39;</span><span class="p">,</span> <span class="c"># (optional) overwrite the output file if it already exists</span>
+</span><span class="line">        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span><span class="s">&#39;rawvideo&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-s&#39;</span><span class="p">,</span> <span class="s">&#39;420x360&#39;</span><span class="p">,</span> <span class="c"># size of one frame</span>
+</span><span class="line">        <span class="s">&#39;-pix_fmt&#39;</span><span class="p">,</span> <span class="s">&#39;rgb24&#39;</span><span class="p">,</span>
+</span><span class="line">        <span class="s">&#39;-r&#39;</span><span class="p">,</span> <span class="s">&#39;24&#39;</span><span class="p">,</span> <span class="c"># frames per second</span>
+</span><span class="line">        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="c"># The imput comes from a pipe</span>
+</span><span class="line">        <span class="s">&#39;-an&#39;</span><span class="p">,</span> <span class="c"># Tells FFMPEG not to expect any audio</span>
+</span><span class="line">        <span class="s">&#39;-vcodec&#39;</span><span class="p">,</span> <span class="s">&#39;mpeg&#39;&quot;,</span>
+</span><span class="line">        <span class="s">&#39;my_output_videofile.mp4&#39;</span> <span class="p">],</span>
+</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span><span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
+<p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. These will be raw frames, like the ones outputed by FFMPEG in the previous section: they should be strings of the form “RGBRGBRGB…” where R,G,B are <em>caracters</em> that represent a number between 0 and 255. If our frame is represented as a Numpy array, we simply write:</p>
 
-<p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. These will be raw frames, like the ones outputed by FFMPEG in the previous section: they should be strings of the form &ldquo;RGBRGBRGB&hellip;&rdquo; where R,G,B are <em>caracters</em> that represent a number between 0 and 255. If our frame is represented as a Numpy array, we simply write:</p>
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">image_array</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">image_array</span><span class="o">.</span><span class="n">tofile</span><span class="p">(</span><span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Going further</h2>
+<h2 id="going-further">Going further</h2>
 
 <p>I tried to keep the code as simple as possible here. With a few more lines you can make useful classes to manipulate video files, like <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/video/io/ffmpeg_reader.py">FFMPEG_VideoReader</a> and <a href="https://github.com/Zulko/moviepy/blob/master/moviepy/video/io/ffmpeg_writer.py">FFMPEG_VideoWriter</a> that I wrote for my video editing software. In these files in particular how to parse the information on the video, how to save/load pictures using FFMPEG, etc.</p>
 </div>
@@ -426,140 +868,133 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
 
 <p>I recently coded a method to view movies in Python : it plays the video, and in the same time, in a parralel thread, it renders the audio. The difficult part is that the audio and video should be exactly synchronized. The pseudo-code looks like this:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">new_thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">new_thread</span><span class="p">(</span> <span class="n">play_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">play_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In this code, <code>play_audio()</code> and <code>play_video()</code> will start at approximately the same time and will run parallely, but these functions need some preparation before actually starting playing stuff. Their code looks like that:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>To have a well-synchronized movie we need the internal functions <code>audio.start_playing()</code> and <code>video.start_playing()</code>, which are run in two separate threads, to start at exactly the same time. How do we do that ?</p>
 
 <p>The solution seems to be using <code>threading.Event</code> objects. An <code>Event</code> is an object that can be accessed from all the threads and allows very basic communication between them : each thread can <em>set</em> or <em>unset</em> an Event, or check whether this event has already been been <em>set</em> (by another thread).</p>
 
-<p>For our problem we will use two events <code>video_ready</code> and <code>audio_ready</code> which will enable our two threads to scream at each other <em>&ldquo;I am ready ! Are you ?&rdquo;</em>. Here is the Python fot that:</p>
+<p>For our problem we will use two events <code>video_ready</code> and <code>audio_ready</code> which will enable our two threads to scream at each other <em>“I am ready ! Are you ?”</em>. Here is the Python fot that:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">threading</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_video()</span>
-</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
-</span><span class='line'>    <span class="n">audio_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>  <span class="c"># Wait for play_audio() to say &quot;I&#39;m ready&quot;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">threading</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">play_audio</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">audio</span> <span class="o">=</span> <span class="n">prepare_audio</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">audio_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_video()</span>
+</span><span class="line">    <span class="n">video_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span> <span class="c"># Wait for play_video() to say &quot;I&#39;m ready&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">audio</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">video</span> <span class="o">=</span> <span class="n">prepare_video</span><span class="p">(</span> <span class="n">movie</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">video_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span> <span class="c"># Say &quot;I&#39;m ready&quot; to play_audio()</span>
+</span><span class="line">    <span class="n">audio_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>  <span class="c"># Wait for play_audio() to say &quot;I&#39;m ready&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">video</span><span class="o">.</span><span class="n">start_playing</span><span class="p">()</span>
+</span><span class="line">
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>and finally the code for <code>view(movie)</code>:</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># launch the parrallel audio thread</span>
-</span><span class='line'>    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
-</span><span class='line'>                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
-</span><span class='line'>    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">view</span><span class="p">(</span><span class="n">movie</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">audio_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class="line">    <span class="n">video_ready</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line">    <span class="c"># launch the parrallel audio thread</span>
+</span><span class="line">    <span class="n">audiothread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">play_audio</span><span class="p">,</span>
+</span><span class="line">                              <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">))</span>
+</span><span class="line">    <span class="n">audiothread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">play_video</span><span class="p">(</span><span class="n">movie</span><span class="p">,</span> <span class="n">audio_ready</span><span class="p">,</span> <span class="n">video_ready</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>A few tips tips to go further:</p>
 
 <ul>
-<li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can also use the <code>multiprocessing</code> module to have your threads played on two different processors (which can be MUCH faster). Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
-<li>In <a href="http://zulko.github.io/moviepy/">my original program</a>, I also use an Event to terminate <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits too.</li>
-<li>Instead of using <code>wait</code> to wait for an Event to be set, you can use a loop to you decide at which frequency you want to check the Event. Only do that if don&rsquo;t mind a lag of a few milliseconds between your processes :</li>
+  <li>Here I am using the module <code>threading</code>, and the two threads will be played in parrallel on the same processor. If you have a computer with several processors you can also use the <code>multiprocessing</code> module to have your threads played on two different processors (which can be MUCH faster). Nicely enough the two modules have the same syntax: simply replace <code>threading</code> by <code>multiprocessing</code> and <code>Thread</code> by <code>Process</code> in the example above and it should work.</li>
+  <li>In <a href="http://zulko.github.io/moviepy/">my original program</a>, I also use an Event to terminate <code>play_video</code> and <code>play_audio</code> at the same time: when the video playing is exited, <code>play_video</code> <em>unsets</em> that Event. In <code>play_audio</code>, this event is regularly checked, and when it is seen to be unset, <code>play_audio</code> exits too.</li>
+  <li>Instead of using <code>wait</code> to wait for an Event to be set, you can use a loop to you decide at which frequency you want to check the Event. Only do that if don’t mind a lag of a few milliseconds between your processes :</li>
 </ul>
 
-
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">time</span>
-</span><span class='line'><span class="k">while</span> <span class="ow">not</span> <span class="n">audio_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-</span><span class='line'>    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.002</span><span class="p">)</span> <span class="c"># sleep 2 milliseconds</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">time</span>
+</span><span class="line"><span class="k">while</span> <span class="ow">not</span> <span class="n">audio_ready</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+</span><span class="line">    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.002</span><span class="p">)</span> <span class="c"># sleep 2 milliseconds</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 </div>
   
@@ -579,6 +1014,14 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing Your Employees So That Everyone Meets</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/22/delay-differential-equations-in-python/">Delay Differential Equations in Python</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a>
