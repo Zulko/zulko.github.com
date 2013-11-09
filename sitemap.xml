@@ -2,6 +2,12 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>
+            http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/
+        </loc>
+        <lastmod>2013-10-22T07:28:23+02:00</lastmod>
+    </url>
+    <url>
+        <loc>
             http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
         </loc>
         <lastmod>2013-10-22T07:28:23+02:00</lastmod>
