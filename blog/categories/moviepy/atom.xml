@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MoviePy, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/moviepy/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2013-11-09T15:31:28+01:00</updated>
+  <updated>2014-01-24T21:42:32+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -42,7 +42,7 @@
 </span><span class='line'>                   <span class="err">“</span><span class="o">-</span><span class="n">f</span><span class="err">”</span><span class="p">,</span> <span class="err">“</span><span class="n">image2pipe</span><span class="err">”</span><span class="p">,</span>
 </span><span class='line'>                   <span class="err">“</span><span class="o">-</span><span class="n">pix_fmt</span><span class="err">”</span><span class="p">,</span> <span class="err">“</span><span class="n">rgb24</span><span class="err">”</span><span class="p">,</span>
 </span><span class='line'>                   <span class="err">“</span><span class="o">-</span><span class="n">vcodec</span><span class="err">’</span><span class="p">,</span> <span class="err">“</span><span class="n">rawvideo</span><span class="err">”</span><span class="p">,</span> <span class="err">“</span><span class="o">-</span><span class="err">“</span><span class="p">],</span>
-</span><span class='line'>                   <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'>                   <span class="n">stdin</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program.</p>

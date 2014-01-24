@@ -10,7 +10,7 @@
         <loc>
             http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
         </loc>
-        <lastmod>2013-10-22T07:28:23+02:00</lastmod>
+        <lastmod>2014-01-23T22:42:24+01:00</lastmod>
     </url>
     <url>
         <loc>
@@ -22,7 +22,19 @@
         <loc>
             http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/
         </loc>
-        <lastmod>2013-11-09T15:26:22+01:00</lastmod>
+        <lastmod>2014-01-24T21:40:57+01:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/
+        </loc>
+        <lastmod>2014-01-24T21:28:12+01:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/
+        </loc>
+        <lastmod>2014-01-24T20:28:48+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
@@ -30,10 +42,10 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2013-11-09T15:26:22+01:00</lastmod>
+        <lastmod>2014-01-24T21:40:57+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2013-11-09T15:26:22+01:00</lastmod>
+        <lastmod>2014-01-24T21:40:57+01:00</lastmod>
     </url>
 </urlset>

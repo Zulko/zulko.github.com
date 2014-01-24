@@ -1,0 +1,494 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Interception of a linear trajectory with constant speed - __del__( self )</title>
+  <meta name="author" content="Zulko">
+
+  
+  <meta name="description" content="In this post I show how helpful trigonometry can be when it comes to catching rabbits. Problem Alice just spotted a white rabbit urging to its rabbit &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="__del__( self )" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
+  <h1><a href="/">__del__( self )</a></h1>
+  
+    <h2>Eaten by the Python.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:Zulko.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Interception of a Linear Trajectory With Constant Speed</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T23:59:00+01:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>In this post I show how helpful trigonometry can be when it comes to catching rabbits.</em></p>
+
+<h2 id="problem">Problem</h2>
+
+<p>Alice just spotted a white rabbit urging to its rabbit hole ! Given the coordinates of the positions A, B, H, of Alice, the rabbit and the hole, as well as the respective speeds $S_A$ and $S_B$ of Alice and the Rabbit, say whether Alice can catch the Rabbit before it disappears, and give the time and place of the fastest possible interception.</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>I guess that I am not the first one to solve this but I couldn’t find any simple solution on the internet. The one I am giving here relies on trigonometry, but interestingly it doesn’t require to compute any trigonometrical function !</p>
+
+<p>If sines give you fever, don’t wait for the first <em>sines of fever</em> (uh uh uh), just skip this part, I summarize everything in the next section.</p>
+
+<p>We call  C and $t_C$ the location and the time of the catch. It is straightforward that, since we are looking for the fastest catch, Alice’s trajectory towards C must be a straight line. Here is a sketch of the problem:</p>
+
+<p><img class="center" src="/images/alice/alice_schema.jpeg" />
+Note that the lengths AC and BC denote the distance run by Alice and the Rabbit until the catch, therefore they verify</p>
+
+<script type="math/tex; mode=display"> AC = S_A t_C </script>
+
+<script type="math/tex; mode=display"> BC = S_B t_C </script>
+
+<p>Therefore, <strong>Finding the length BC would answer the problem</strong>, as it would tell us whether Alice can catch the rabbit before is reaches the rabbit hole (case $BC&gt;BH$), and would immediately lead to both the location and time of the catch :</p>
+
+<script type="math/tex; mode=display"> C = B + \dfrac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>To express BC using the coordinates of the points, let us apply the famous <em>Law of Sines</em> to the triangle ABC:</p>
+
+<script type="math/tex; mode=display"> \dfrac{\sin \alpha}{BC} = \dfrac{\sin \beta}{AC} = \dfrac{\sin \gamma}{AB} </script>
+
+<p>Wich leads to</p>
+
+<script type="math/tex; mode=display"> BC = \dfrac {\sin \alpha}{\sin \gamma} AB = \dfrac {\sin \alpha}{\sin \gamma} \sqrt{(x_B-x_A)^2+(y_B-y_A)^2} </script>
+
+<p>Now all we have to do is to express $\sin \alpha$ and $\sin \gamma$ in function of the given data. To do so we first compute $\sin(\beta)$, then we express $\sin \alpha$ with $\sin \beta$, and we express $\sin \gamma$ as a function of $\sin \alpha$ and $\sin \beta$.</p>
+
+<p>The value of $\sin \beta$ can be computed from the points coordinates as follows:</p>
+
+<script type="math/tex; mode=display"> \sin \beta = \dfrac{det(\overrightarrow{BA},\overrightarrow{BH})}{ BA * BH } = \dfrac{(x_A - x_B)(y_H-y_B) - (y_A - y_B)(x_H-x_B)}{\sqrt{(x_B-x_A)^2+(y_B-y_A)^2} \sqrt{(x_B-x_H)^2+(y_B-y_H)^2}} </script>
+
+<p>Then we use the Law of Sines again, to compute $\sin \alpha$:</p>
+
+<script type="math/tex; mode=display"> \sin \alpha = \frac{BC}{AC} \sin \beta = \frac{S_b t_C}{S_a t_C} \sin \beta = \frac{S_b}{S_a} \sin \beta </script>
+
+<p>This only makes sense, of course, if</p>
+
+<script type="math/tex; mode=display"> \frac{S_A}{S_R} \mid \sin \beta \mid \leq 1 </script>
+
+<p><strong>If this is not the case we conclude that Alice will never catch the rabbit, which solves the problem.</strong></p>
+
+<p>Finally we use the fact that the angles of a triangle sum to $\pi$ to compute $\sin \gamma$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = \sin (\pi - \alpha - \beta) = \sin (\alpha + \beta) = \sin \alpha \cos \beta + \cos \alpha \sin \beta </script>
+
+<p>We reformulate using the already-copmputed $\sin \alpha$ and $\sin \beta$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = (\sin \alpha) \sqrt{1 - \sin^2 \beta} + (\sin \beta) \sqrt{1 - \sin^2 \alpha} </script>
+
+<p>And… we are done, we have everything we need to compute BC and answer the problem.</p>
+
+<h2 id="summary-and-code">Summary and code</h2>
+
+<p>So here is the short answer to the problem:</p>
+
+<ul>
+  <li>Compute $\sin \beta$ using the formula given above.</li>
+  <li>Compute $\sin \alpha = (S_b * \sin \beta)/S_a$. If $\mid \sin \alpha \mid&gt;1$, Alice cannot catch the rabbit. Otherwise, advance to step 3.</li>
+  <li>Compute $\sin \gamma$ with the formula above and the values of $\sin \alpha$ and $\sin \beta$ found in steps <em>1</em> and <em>2</em>.</li>
+  <li>Compute BC using the formula given above and the values found for $\sin \alpha$ and $\sin \gamma$.  If $BC&gt;BH$, the rabbit will reach its hole before Alice can catch it. Otherwise, congratulation young girl, you will eat rabbit for dinner, here are the location and time of the fastest possible interception:</li>
+</ul>
+
+<script type="math/tex; mode=display"> C = B + \frac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>Below is a script implementing this technique using Python’s pylab module:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># imports srqt, norm, array, plot...</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns ``(t_C, C)`` if A can catch B, before B </span>
+</span><span class="line"><span class="sd">    reaches H. Otherwise, returns ``None``. &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">sin_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sb</span> <span class="o">/</span> <span class="n">Sa</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_b</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">print</span> <span class="s">&quot;B moves too fast to be ever caught !&quot;</span>
+</span><span class="line">        <span class="k">return</span> <span class="bp">None</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">sin_c</span> <span class="o">=</span> <span class="p">(</span> <span class="n">sin_a</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">                  <span class="o">+</span> <span class="n">sin_b</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">A</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">            <span class="k">print</span> <span class="s">&quot;B reaches H before interception by A !&quot;</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">None</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">else</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">            <span class="k">print</span> <span class="s">&quot;A intercepted B !&quot;</span>
+</span><span class="line">            <span class="n">t_C</span> <span class="o">=</span> <span class="n">BC</span> <span class="o">/</span> <span class="n">Sb</span>
+</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span><span class="n">C</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And here it is in action:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># PARAMETERS OF THE PROBLEM</span>
+</span><span class="line"><span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">1.0</span> <span class="p">,</span> <span class="mf">5.0</span> <span class="p">))</span> <span class="c"># Alice&#39;s initial position</span>
+</span><span class="line"><span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">4.0</span> <span class="p">,</span> <span class="mf">1.0</span> <span class="p">))</span> <span class="c"># Rabbit&#39;s initial position</span>
+</span><span class="line"><span class="n">H</span> <span class="o">=</span>  <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># Hole&#39;s coordinates</span>
+</span><span class="line"><span class="n">Sa</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="c"># Alice&#39;s speed</span>
+</span><span class="line"><span class="n">Sb</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># Rabbit&#39;s speed</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Find the intersection</span>
+</span><span class="line"><span class="n">t</span><span class="p">,</span><span class="n">C</span> <span class="o">=</span> <span class="n">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Plot the results</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span><span class="s">&#39;B&#39;</span><span class="p">,</span><span class="s">&#39;H&#39;</span><span class="p">,</span><span class="s">&#39;C&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">]):</span>
+</span><span class="line">    <span class="n">annotate</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">xytext</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+</span><span class="line">        <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
+</span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class="line">         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s">&quot;simple&quot;</span><span class="p">,</span>
+</span><span class="line">                         <span class="n">connectionstyle</span><span class="o">=</span><span class="s">&quot;arc3&quot;</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
+</span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class="line">         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s">&quot;simple&quot;</span><span class="p">,</span>
+</span><span class="line">                         <span class="n">connectionstyle</span><span class="o">=</span><span class="s">&quot;arc3&quot;</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">title</span><span class="p">(</span><span class="s">&quot;A intercepts B in C&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="/images/alice/alice_matplotlib.jpeg" /></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zulko</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-11-11T23:59:00+01:00" pubdate data-updated="true">Nov 11<span>th</span>, 2013</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/" data-via="" data-counturl="http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/" title="Previous Post: Placing people so that everyone meets">&laquo; Placing people so that everyone meets</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/" title="Next Post: Making GIFs from Video Files with Python">Making GIFs from Video Files with Python &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">Making GIFs From Video Files With Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/">Interception of a Linear Trajectory With Constant Speed</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing People So That Everyone Meets</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Zulko">@Zulko</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'Zulko',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Zulko -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/';
+        var disqus_url = 'http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

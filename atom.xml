@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2013-11-09T15:31:28+01:00</updated>
+  <updated>2014-01-24T21:42:32+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -14,7 +14,647 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Placing your employees so that everyone meets]]></title>
+    <title type="html"><![CDATA[Making GIFs from Video Files with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/"/>
+    <updated>2014-01-23T22:08:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python</id>
+    <content type="html"><![CDATA[<p><em>Sometimes producing a good animated GIF requires a few advanced tweaks, for which scripting can help. So I added a GIF export feature to MoviePy, a Python package originally written for video editing.</em></p>
+
+<p>For this demo we will make a few GIFs out of this trailer:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div>
+
+<h2 id="converting-a-video-excerpt-into-a-gif">Converting a video excerpt into a GIF</h2>
+
+<p>In what follows we open the video file, select the part between 1’22.65 (1 minute 22.65 seconds) and 1’23.2, reduce its size (to 30% of the original) and save it as a GIF:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.65</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">23.2</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">to_gif</span><span class="p">(</span><span class="s">&quot;use_your_head.gif&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/F1oOtnP.gif" title="'Use Your Head - Hosted by imgur'" /></p>
+
+<h2 id="cropping-the-image">Cropping the image</h2>
+
+<p>For my next GIF I will only keep the center of the screen. If you intend to use MoviePy, note that you can preview a clip with <code>clip.preview()</code>. During the preview clicking on a pixel will print its position, which is convenient for cropping with precision.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">kris_sven</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                   <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.4</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.9</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">                   <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                   <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove left/right borders</span>
+</span><span class="line">                   <span class="n">to_gif</span><span class="p">(</span><span class="s">&quot;kris_sven.gif&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/CFFYEpd.gif" title="'Kris and Sven - Hosted by imgur'" /></p>
+
+<h2 id="freezing-a-region">Freezing a region</h2>
+
+<p>Many GIF makers like to <em>freeze</em> some parts of the GIF to reduce the file size and/or focus the attention on one part of the animation.</p>
+
+<p>In the next GIF we freeze the left part of the clip. To do so we  take a snapshot of
+the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, then we make a composite clip which superimposes the cropped snapshot on the original clip:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anna_olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">(</span><span class="mf">87.9</span><span class="p">,</span><span class="mf">88.1</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># Play at half speed</span>
+</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">crop</span><span class="p">(</span><span class="n">x2</span><span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove right half</span>
+</span><span class="line">              <span class="n">to_ImageClip</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># snapshot of the clip at t=0.2s</span>
+</span><span class="line">              <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_olaf</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;anna_olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/Fc9Qc5f.gif" title="'Anna and Olaf - Hosted by imgur'" /></p>
+
+<h2 id="freezing-a-more-complicated-region">Freezing a more complicated region</h2>
+
+<p>This time we will apply a custom mask to the snapshot to specify where it will be transparent (and let the animated part appear)
+.
+<img class="center" src="http://Zulko.github.io/images/gifs/mask.jpeg" title="'That's what a mask is for.'" /></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">moviepy.video.tools.drawing</span> <span class="kn">as</span> <span class="nn">dw</span>
+</span><span class="line">
+</span><span class="line"><span class="n">anna_kris</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.5</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># coordinates p1,p2 define the edges of the mask</span>
+</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="n">dw</span><span class="o">.</span><span class="n">color_split</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+</span><span class="line">                      <span class="n">p1</span><span class="o">=</span><span class="p">(</span><span class="mi">445</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="mi">275</span><span class="p">),</span>
+</span><span class="line">                      <span class="n">grad_width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="c"># blur the mask&#39;s edges</span>
+</span><span class="line">
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_kris</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
+</span><span class="line">                 <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                 <span class="n">set_mask</span><span class="p">(</span><span class="n">ImageClip</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_kris</span><span class="p">,</span><span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class="line">    <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;anna_kris.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c"># fuzz= GIF compression</span>
+</span><span class="line">
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/SBHkNqt.gif" title="'Anna and Olaf - Hosted by imgur'" /></p>
+
+<h2 id="time-symetrization">Time-symetrization</h2>
+
+<p>Surely you have noticed that in the previous GIFs, the end did not always look like the beginning. As a consequence, you could see a disruption every time the animation was restarted. A way to avoid this is to time-symetrize the clip, i.e. to make the clip play once forwards, then once backwards. This way the <em>end</em> of the clip really <em>is</em> the beginning of the clip. This creates a GIF that can loop fluidly, without a real beginning or end.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">time_symetrize</span><span class="p">(</span><span class="n">clip</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns the clip played forwards then backwards. In case</span>
+</span><span class="line"><span class="sd">    you are wondering, vfx (short for Video FX) is loaded by</span>
+</span><span class="line"><span class="sd">    &gt;&gt;&gt; from moviepy.editor import * &quot;&quot;&quot;</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">clip</span><span class="p">,</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">vfx</span><span class="o">.</span><span class="n">time_mirror</span> <span class="p">)])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">subclip</span><span class="p">(</span><span class="mf">36.5</span><span class="p">,</span><span class="mf">36.9</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">189</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">433</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;sven.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/fuqLsRG.gif" title="'Sven - hosted on Imgur'" /></p>
+
+<p>Ok, this might be a bad example of time symetrization,it makes the snow flakes go upwards in the second half of the animation.</p>
+
+<h2 id="adding-some-text">Adding some text</h2>
+
+<p>In the next GIF there will be a text clip superimposed on the video clip.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">21.6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.1</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Many options are available for the text (requires ImageMagick)</span>
+</span><span class="line"><span class="n">text</span> <span class="o">=</span> <span class="n">TextClip</span><span class="p">(</span><span class="s">&quot;In my nightmares</span><span class="se">\n</span><span class="s">I see rabbits.&quot;</span><span class="p">,</span>
+</span><span class="line">                <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+</span><span class="line">                <span class="n">font</span><span class="o">=</span><span class="s">&#39;Amiri-Bold&#39;</span><span class="p">,</span> <span class="n">interline</span><span class="o">=-</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">            <span class="n">set_pos</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">190</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">            <span class="n">set_duration</span><span class="p">(</span><span class="n">olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">(</span> <span class="p">[</span><span class="n">olaf</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span>\
+</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/ZQzgNo6.gif" title="'Olaf - Hosted by imgur'" /></p>
+
+<h2 id="making-the-gif-loopable">Making the gif loopable</h2>
+
+<p>The following GIF features a lot of snow falling. Therefore it cannot be made loopable using time-symetrization (or you will snow floating upwards !). So we will make this animation loopable by having the beginning of the animation appear progressively (<em>fade in</em>) just before the end of the clip. The montage here is a little complicated, I cannot explain it better than with this picture:</p>
+
+<p><img class="center" src="http://Zulko.github.io/images/gifs/castle_loopable.jpeg" title="'I hope it's clear !' 400" /></p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">castle</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">(</span><span class="mf">22.8</span><span class="p">,</span><span class="mf">23.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">d</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">duration</span>
+</span><span class="line"><span class="n">castle</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">castle</span><span class="p">,</span>
+</span><span class="line">                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+</span><span class="line">                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span><span class="o">.</span>\
+</span><span class="line">   <span class="n">subclip</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">   <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;castle.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">fuzz</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/VnoRpdq.gif" title="'Disney Castle - Hosted by Imgur'" /></p>
+
+<h2 id="another-example-of-a-gif-made-loopable">Another example of a GIF made loopable</h2>
+
+<p>The next clip (from the movie <em>Charade</em>) was almost loopable: you can see Carry Grant smiling, then making a funny face, then coming back to normal. The problem is that at the end of the excerpt Cary is not exactly in the same position, and he is not smiling as he was at the beginning. To correct this, we take a snapshot of the first frame and we make it appear progressively at the end. This seems to do the trick.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">carry</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;../videos/charade.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">18.3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">20.6</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">              <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">297</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">202</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">d</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">duration</span>
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
+</span><span class="line">                  <span class="n">set_duration</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                  <span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                  <span class="n">set_start</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">carry</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;carry.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">carry</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/k1sz49h.gif" title="'Carry Grant in Charade - Hosted by Imgur'" /></p>
+
+<h2 id="removing-the-background">Removing the background</h2>
+
+<p>For the big finish, let us dive further into the scripting madness. We consider this video around 2’16:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/_wZjCDXDNLI "></iframe></div>
+
+<p>And we will remove the background to make this gif (with transparent background):</p>
+
+<p><img class="center" src="http://i.imgur.com/Fo2BxBK.gif" title="'PigsPolka - Hosted by imgur'" /></p>
+
+<p>The main difficulty was to find what the background of the scene is. To do so, the script gathers a few images in which the little pigs are are different positions (so that every part part of the background is visible on at least several (actually most) of the slides, then it takes the pixel-per-pixel median of these pictures, which gives the background.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># Requires Scikit Images installed</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">skimage.morphology</span> <span class="kn">as</span> <span class="nn">skm</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">skimage.filter</span> <span class="kn">as</span> <span class="nn">skf</span>
+</span><span class="line">
+</span><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="c">### LOAD THE CLIP</span>
+</span><span class="line">
+</span><span class="line"><span class="n">pigsPolka</span> <span class="o">=</span>  <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;pigs_in_a_polka.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                 <span class="n">subclip</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mf">16.85</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">35</span><span class="p">))</span><span class="o">.</span>\
+</span><span class="line">                 <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">                 <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">140</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">454</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">314</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c">### COMPUTE THE BACKGROUND</span>
+</span><span class="line"><span class="c"># There is no single frame showing the background only (there</span>
+</span><span class="line"><span class="c"># is always a little pig in the screen) so we use the median of</span>
+</span><span class="line"><span class="c"># several carefully chosen frames to reconstitute the background.</span>
+</span><span class="line"><span class="c"># I must have spent half an hour to find the right set of frames.</span>
+</span><span class="line">
+</span><span class="line"><span class="n">times</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.3</span><span class="p">,</span><span class="mf">4.2</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span><span class="o">+</span>
+</span><span class="line">         <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span><span class="mf">7.1</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span><span class="o">+</span>
+</span><span class="line">         <span class="mi">8</span><span class="o">*</span><span class="p">[</span><span class="mf">6.2</span><span class="p">])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">frames_bg</span> <span class="o">=</span> <span class="p">[</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">]</span>
+</span><span class="line"><span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frames_bg</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="c">### MASK GENERATION</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">get_mask_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Computes the mask for the frame at time t &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="c"># THRESHOLD THE PIXEL-TO-PIXEL DIFFERENCE</span>
+</span><span class="line">    <span class="c"># BETWEEN THE FRAME AND THE BACKGROUND</span>
+</span><span class="line">    <span class="n">im</span> <span class="o">=</span> <span class="n">pigsPolka</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span class="line">    <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">im</span><span class="o">-</span><span class="n">background</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1500</span>
+</span><span class="line">
+</span><span class="line">    <span class="c"># REMOVE SMALL OBJECTS</span>
+</span><span class="line">    <span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">remove_small_objects</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="c"># REMOVE SMALL HOLES (BY DILATIATION/EROSION)</span>
+</span><span class="line">    <span class="n">selem</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+</span><span class="line">        <span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">selem</span><span class="p">)</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+</span><span class="line">        <span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">binary_erosion</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">selem</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="c"># BLUR THE MASK A LITTLE</span>
+</span><span class="line">    <span class="n">mask</span> <span class="o">=</span> <span class="n">skf</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span><span class="mf">1.5</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">mask</span>
+</span><span class="line">
+</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">set_get_frame</span><span class="p">(</span><span class="n">get_mask_frame</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">set_duration</span><span class="p">(</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c">### LAST EFFECTS AND GIF GENERATION</span>
+</span><span class="line">
+</span><span class="line"><span class="n">pigsPolka</span><span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">subclip</span><span class="p">(</span><span class="mf">12.95</span><span class="p">,</span><span class="mf">15.9</span><span class="p">)</span><span class="o">.</span>\
+</span><span class="line">          <span class="n">fx</span><span class="p">(</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># black &amp; white effect !</span>
+</span><span class="line">          <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;pigs_polka.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span class="line">          <span class="n">dispose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Interception of a linear trajectory with constant speed]]></title>
+    <link href="http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/"/>
+    <updated>2013-11-11T23:59:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed</id>
+    <content type="html"><![CDATA[<p><em>In this post I show how helpful trigonometry can be when it comes to catching rabbits.</em></p>
+
+<h2 id="problem">Problem</h2>
+
+<p>Alice just spotted a white rabbit urging to its rabbit hole ! Given the coordinates of the positions A, B, H, of Alice, the rabbit and the hole, as well as the respective speeds $S_A$ and $S_B$ of Alice and the Rabbit, say whether Alice can catch the Rabbit before it disappears, and give the time and place of the fastest possible interception.</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>I guess that I am not the first one to solve this but I couldn’t find any simple solution on the internet. The one I am giving here relies on trigonometry, but interestingly it doesn’t require to compute any trigonometrical function !</p>
+
+<p>If sines give you fever, don’t wait for the first <em>sines of fever</em> (uh uh uh), just skip this part, I summarize everything in the next section.</p>
+
+<p>We call  C and $t_C$ the location and the time of the catch. It is straightforward that, since we are looking for the fastest catch, Alice’s trajectory towards C must be a straight line. Here is a sketch of the problem:</p>
+
+<p><img class="center" src="http://Zulko.github.io/images/alice/alice_schema.jpeg" />
+Note that the lengths AC and BC denote the distance run by Alice and the Rabbit until the catch, therefore they verify</p>
+
+<script type="math/tex; mode=display"> AC = S_A t_C </script>
+
+<script type="math/tex; mode=display"> BC = S_B t_C </script>
+
+<p>Therefore, <strong>Finding the length BC would answer the problem</strong>, as it would tell us whether Alice can catch the rabbit before is reaches the rabbit hole (case $BC&gt;BH$), and would immediately lead to both the location and time of the catch :</p>
+
+<script type="math/tex; mode=display"> C = B + \dfrac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>To express BC using the coordinates of the points, let us apply the famous <em>Law of Sines</em> to the triangle ABC:</p>
+
+<script type="math/tex; mode=display"> \dfrac{\sin \alpha}{BC} = \dfrac{\sin \beta}{AC} = \dfrac{\sin \gamma}{AB} </script>
+
+<p>Wich leads to</p>
+
+<script type="math/tex; mode=display"> BC = \dfrac {\sin \alpha}{\sin \gamma} AB = \dfrac {\sin \alpha}{\sin \gamma} \sqrt{(x_B-x_A)^2+(y_B-y_A)^2} </script>
+
+<p>Now all we have to do is to express $\sin \alpha$ and $\sin \gamma$ in function of the given data. To do so we first compute $\sin(\beta)$, then we express $\sin \alpha$ with $\sin \beta$, and we express $\sin \gamma$ as a function of $\sin \alpha$ and $\sin \beta$.</p>
+
+<p>The value of $\sin \beta$ can be computed from the points coordinates as follows:</p>
+
+<script type="math/tex; mode=display"> \sin \beta = \dfrac{det(\overrightarrow{BA},\overrightarrow{BH})}{ BA * BH } = \dfrac{(x_A - x_B)(y_H-y_B) - (y_A - y_B)(x_H-x_B)}{\sqrt{(x_B-x_A)^2+(y_B-y_A)^2} \sqrt{(x_B-x_H)^2+(y_B-y_H)^2}} </script>
+
+<p>Then we use the Law of Sines again, to compute $\sin \alpha$:</p>
+
+<script type="math/tex; mode=display"> \sin \alpha = \frac{BC}{AC} \sin \beta = \frac{S_b t_C}{S_a t_C} \sin \beta = \frac{S_b}{S_a} \sin \beta </script>
+
+<p>This only makes sense, of course, if</p>
+
+<script type="math/tex; mode=display"> \frac{S_A}{S_R} \mid \sin \beta \mid \leq 1 </script>
+
+<p><strong>If this is not the case we conclude that Alice will never catch the rabbit, which solves the problem.</strong></p>
+
+<p>Finally we use the fact that the angles of a triangle sum to $\pi$ to compute $\sin \gamma$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = \sin (\pi - \alpha - \beta) = \sin (\alpha + \beta) = \sin \alpha \cos \beta + \cos \alpha \sin \beta </script>
+
+<p>We reformulate using the already-copmputed $\sin \alpha$ and $\sin \beta$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = (\sin \alpha) \sqrt{1 - \sin^2 \beta} + (\sin \beta) \sqrt{1 - \sin^2 \alpha} </script>
+
+<p>And… we are done, we have everything we need to compute BC and answer the problem.</p>
+
+<h2 id="summary-and-code">Summary and code</h2>
+
+<p>So here is the short answer to the problem:</p>
+
+<ul>
+  <li>Compute $\sin \beta$ using the formula given above.</li>
+  <li>Compute $\sin \alpha = (S_b * \sin \beta)/S_a$. If $\mid \sin \alpha \mid&gt;1$, Alice cannot catch the rabbit. Otherwise, advance to step 3.</li>
+  <li>Compute $\sin \gamma$ with the formula above and the values of $\sin \alpha$ and $\sin \beta$ found in steps <em>1</em> and <em>2</em>.</li>
+  <li>Compute BC using the formula given above and the values found for $\sin \alpha$ and $\sin \gamma$.  If $BC&gt;BH$, the rabbit will reach its hole before Alice can catch it. Otherwise, congratulation young girl, you will eat rabbit for dinner, here are the location and time of the fastest possible interception:</li>
+</ul>
+
+<script type="math/tex; mode=display"> C = B + \frac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>Below is a script implementing this technique using Python’s pylab module:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># imports srqt, norm, array, plot...</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns ``(t_C, C)`` if A can catch B, before B </span>
+</span><span class="line"><span class="sd">    reaches H. Otherwise, returns ``None``. &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">sin_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sb</span> <span class="o">/</span> <span class="n">Sa</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_b</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">print</span> <span class="s">&quot;B moves too fast to be ever caught !&quot;</span>
+</span><span class="line">        <span class="k">return</span> <span class="bp">None</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">sin_c</span> <span class="o">=</span> <span class="p">(</span> <span class="n">sin_a</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">                  <span class="o">+</span> <span class="n">sin_b</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">A</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">            <span class="k">print</span> <span class="s">&quot;B reaches H before interception by A !&quot;</span>
+</span><span class="line">            <span class="k">return</span> <span class="bp">None</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">else</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">            <span class="k">print</span> <span class="s">&quot;A intercepted B !&quot;</span>
+</span><span class="line">            <span class="n">t_C</span> <span class="o">=</span> <span class="n">BC</span> <span class="o">/</span> <span class="n">Sb</span>
+</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span><span class="n">C</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And here it is in action:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># PARAMETERS OF THE PROBLEM</span>
+</span><span class="line"><span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">1.0</span> <span class="p">,</span> <span class="mf">5.0</span> <span class="p">))</span> <span class="c"># Alice&#39;s initial position</span>
+</span><span class="line"><span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">4.0</span> <span class="p">,</span> <span class="mf">1.0</span> <span class="p">))</span> <span class="c"># Rabbit&#39;s initial position</span>
+</span><span class="line"><span class="n">H</span> <span class="o">=</span>  <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># Hole&#39;s coordinates</span>
+</span><span class="line"><span class="n">Sa</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="c"># Alice&#39;s speed</span>
+</span><span class="line"><span class="n">Sb</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># Rabbit&#39;s speed</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Find the intersection</span>
+</span><span class="line"><span class="n">t</span><span class="p">,</span><span class="n">C</span> <span class="o">=</span> <span class="n">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Plot the results</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;r&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span><span class="s">&#39;B&#39;</span><span class="p">,</span><span class="s">&#39;H&#39;</span><span class="p">,</span><span class="s">&#39;C&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">]):</span>
+</span><span class="line">    <span class="n">annotate</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">xytext</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+</span><span class="line">        <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
+</span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class="line">         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s">&quot;simple&quot;</span><span class="p">,</span>
+</span><span class="line">                         <span class="n">connectionstyle</span><span class="o">=</span><span class="s">&quot;arc3&quot;</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
+</span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class="line">         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s">&quot;simple&quot;</span><span class="p">,</span>
+</span><span class="line">                         <span class="n">connectionstyle</span><span class="o">=</span><span class="s">&quot;arc3&quot;</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">title</span><span class="p">(</span><span class="s">&quot;A intercepts B in C&quot;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://Zulko.github.io/images/alice/alice_matplotlib.jpeg" /></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Placing people so that everyone meets]]></title>
     <link href="http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/"/>
     <updated>2013-11-08T20:36:00+01:00</updated>
     <id>http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets</id>
@@ -22,7 +662,7 @@
 
 <p>Imagine that you have N employees who work side by side in a row. For more conviviality you decide to arrange them in a different order every day, so that after some time each employee has worked besides each of the others at least once. How to do so in a minimal number of days ?</p>
 
-<p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/mathematician_employees.jpeg" title="'Case were the employees are mathematicians'" /></p>
+<p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/mathematician_employees.jpeg" title="'Case where the employees are mathematicians'" /></p>
 
 <h2 id="a-little-bit-of-context">A little bit of context</h2>
 
@@ -30,11 +670,11 @@
 
 <p><em>“I think it is good to shuffle the team around. (…) Here is the function that we use to randomize our team making sure that you do not sit next to someone you are already sitting next to [supposing that all are sitting in a row].”</em>.</p>
 
-<p>Stated like this, it is a very simple problem and you don’t need a complicated algorithm. The following shuffle would do the trick:</p>
+<p>Stated like this, it is a very simple problem which doesn’t require a complicated algorithm, you just shuffle the order of the previous day as follows, and it will do the trick:</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/easy_shuffle.jpeg" title="'A simple shuffling'" /></p>
 
-<p>And it can be written in one line of Python:</p>
+<p>This shuffle can be written in one line of Python:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -42,7 +682,7 @@
 </span><span class="line"><span class="n">shuffle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">myList</span> <span class="p">:</span> <span class="n">myList</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">myList</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>The problem with shufflings, as someone on Reddit pointed out, is that they do not ensure that everyone will eventually work besides everyone. For instance in this shuffling employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which your shuffle will fail to create all possible pairs of neighbours ! That would be an interesting problem to develop.</p>
+<p>The problem with thid shuffling, as someone on Reddit pointed out, is that even if you shuffle a great number of times there is no warranty that everyone will have worked besides everyone in the end. For instance in the shuffling shown above employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which it will fail to create all possible pairs of neighbours !</p>
 
 <p>This leads us to our problem: how to ensure that all possible pairs of neighbours will be created, and in a minimum amount of time ? We will see that there is an optimal strategy. It does NOT use a shuffling, but rather a 120 years old mathematical construction.</p>
 
@@ -66,11 +706,11 @@
 
 <p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/solution_for_8.jpeg" title="'Solution for 8 employees'" /></p>
 
-<p>The first path is a simple pattern 1, N, 2, N-1, etc. and the others are just <em>rotations</em> of the first path. The nice thing with the graph representation is that I can use a simple geometric argument to prove that these paths will cover all the edges: if we place the N nodes of the graph cyclically like in the figures above, the path number K will have edges that make an angle $2K\pi/N$ or $(2K+1)\pi/N$ with the horizontal line. So the different paths have edges of completely different angles. For this reason an edge cannot belong to more than one path. Since there are N/2 paths and each path covers N-1 different edges, the paths cover N(N-1)/2 edges in total, which is the totality of the path.</p>
+<p>The first path is a simple pattern 1, N, 2, N-1, etc. and the others are just <em>rotations</em> of the first path. The nice thing with the graph representation is that I can use a simple geometric argument to prove that these paths will cover all the edges: if we place the N nodes of the graph cyclically like in the figures above, the path number K will have edges that make an angle $2K\pi/N$ or $(2K+1)\pi/N$ with the horizontal line. So the different paths have edges of completely different angles. For this reason an edge cannot belong to more than one path. Since there are N/2 paths and each path covers N-1 different edges, the paths cover N(N-1)/2 edges in total, which is all the edges.</p>
 
-<p>This construction of paths may seem simple to some of you, but I couldn’t figure it out on my own, and it is an application of a 120 years old mathematical trick called the Walecki construction, which I found after some googling, as I explain in <a href="#thanksGoogle">the last section</a>.</p>
+<p>This construction of paths may seem simple to some of you, but I couldn’t figure it out on my own, and it is an application of a 19th century mathematical trick called the Walecki construction, which I found after some googling, as I explain in <a href="#thanksGoogle">the last section</a>.</p>
 
-<h2 id="a-idsolutiona-solution-of-the-problem"><a id="Solution"></a> Solution of the problem</h2>
+<h2 id="a-idsolutiona-solution"><a id="Solution"></a> Solution</h2>
 
 <p>If N is even, arrange the employees in this order the first day: 1, N, 2, (N-1), 3, (N-2), etc. From day 2 to day N/2, place the employees by taking their arrangement of the day before and replacing employee 1 by 2, 2 by 3, 3 by 4… and N by 1.</p>
 
@@ -126,7 +766,7 @@
 </span><span class="line">
 </span><span class="line">    <span class="k">else</span><span class="p">:</span>
 </span><span class="line">        <span class="sd">&quot;&quot;&quot;</span>
-</span><span class="line"><span class="sd">        n is even. Place the elements in that order:</span>
+</span><span class="line"><span class="sd">        N is even. Place the elements in that order:</span>
 </span><span class="line"><span class="sd">        1, N, 2, N-1, 3, N-2, etc. then roll !</span>
 </span><span class="line"><span class="sd">        &quot;&quot;&quot;</span>
 </span><span class="line">        <span class="n">arr1</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># construct the first arrangement</span>
@@ -157,19 +797,19 @@
 
 <p>That’s not what you’d call crystal clear, but it says <em>decomposition</em> several times, and that sounds like what I want to do. So I looked for the last reference, Alspach 1990. Springer, the publisher, gracefully gives you access to the first two pages for free. The good news is, they contain all the properties and proofs that we need, in a compacted yet very understandable form. Let us see in details what they say.</p>
 
-<p>It starts with Hamiltonian cycles. An Hamiltonian cycle is a path that starts from one node, visits every other node exactly once, and come back to initial node. Here are two Hamiltonian cycles for a graph with five nodes:</p>
+<p>It starts with Hamiltonian cycles. An Hamiltonian cycle is a path that starts from one node, visits every other node exactly once, and come back to initial node. The two first figures below are two Hamiltonian cycles for a graph with five nodes:</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/hamilton_decomposition.jpeg" title="'Solution for 8 employees'" /></p>
 
-<p>As you can see, these paths have no edge in common, but put together they cover all the edges of the complete graph. This is called a <em>Hamilton decomposition</em> of the complete graph.</p>
+<p>As you can see, these paths have no edge in common, but put together they cover all the edges of the complete graph. They form what is called a <em>Hamilton decomposition</em> of the complete graph.</p>
 
 <p>Now what happens if you remove one person from the graph, say, the person at the top ? You get this:</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/placing-your-employees/solution_for_4.jpeg" title="'Solution for 4 employees'" /></p>
 
-<p>This is a solution of our problem for N=4 employees ! And it will always work: if you can find an Hamilton decomposition of the complete graph of N+1 nodes (N being even), just remove one node, and it will give you a decomposition into paths of the complete graph of N nodes, which will be a solution to our problem with N employees.</p>
+<p>You obtain two paths that describe a solution of our problem for N=4 employees ! And it will always work: if you can find an Hamilton decomposition of the complete graph of N+1 nodes (N being even), just removing one node will give you a decomposition into paths of the complete graph of N nodes, from which you can deduce a solution to our problem with N employees.</p>
 
-<p>So now the big question is: how do we find an Hamiltonian decomposition of the complete graph of (N+1) nodes (N+1 being odd) ?</p>
+<p>So now the important question is: how do we find an Hamiltonian decomposition of the complete graph of (N+1) nodes (N+1 being odd) ?</p>
 
 <p>This has been answered in 1890 by Walecki with the following construction. I use the same notations as in Alspach 1990. Note that node 0 stays in place while all the other numbers rotate clockwise from one cycle to another.</p>
 
@@ -344,7 +984,7 @@
 </span><span class="line">                   <span class="s">&quot;-f&quot;</span><span class="p">,</span> <span class="s">&quot;image2pipe&quot;</span><span class="p">,</span>
 </span><span class="line">                   <span class="s">&quot;-pix_fmt&quot;</span><span class="p">,</span> <span class="s">&quot;rgb24&quot;</span><span class="p">,</span>
 </span><span class="line">                   <span class="s">&quot;-vcodec&#39;, &quot;</span><span class="n">rawvideo</span><span class="s">&quot;, &quot;</span><span class="o">-</span><span class="s">&quot;],</span>
-</span><span class="line">                   <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class="line">                   <span class="n">stdin</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program.</p>
