@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIFs | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gifs/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-01-24T21:52:45+01:00</updated>
+  <updated>2014-01-25T11:00:48+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -56,7 +56,7 @@
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">kris_sven</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span>\
 </span><span class='line'>                   <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.4</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.9</span><span class="p">))</span><span class="o">.</span>\
 </span><span class='line'>                   <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class='line'>                   <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove left/right borders</span>
+</span><span class='line'>                   <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove left-right borders</span>
 </span><span class='line'>                   <span class="n">to_gif</span><span class="p">(</span><span class="err">“</span><span class="n">kris_sven</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
@@ -291,9 +291,9 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p><img class="center" src="http://i.imgur.com/k1sz49h.gif" title="‘Carry Grant in Charade - Hosted by Imgur’" ></p>
 
-<h2 id="removing-the-background">Removing the background</h2>
+<h2 id="big-finish-removing-the-background">Big finish: removing the background</h2>
 
-<p>For the big finish, let us dive further into the scripting madness. We consider this video around 2’16:</p>
+<p>Let us dive further into the scripting madness: we consider this video around 2’16:</p>
 
 <p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/_wZjCDXDNLI "></iframe></div></p>
 

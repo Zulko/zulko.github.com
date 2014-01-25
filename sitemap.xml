@@ -2,12 +2,6 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>
-            http://Zulko.github.io/blog/2013/09/19/a-basic-example-of-threads-synchronization-in-python/
-        </loc>
-        <lastmod>2013-10-22T07:28:23+02:00</lastmod>
-    </url>
-    <url>
-        <loc>
             http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/
         </loc>
         <lastmod>2014-01-23T22:42:24+01:00</lastmod>
@@ -28,13 +22,13 @@
         <loc>
             http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/
         </loc>
-        <lastmod>2014-01-24T21:28:12+01:00</lastmod>
+        <lastmod>2014-01-25T10:36:09+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/
         </loc>
-        <lastmod>2014-01-24T21:52:23+01:00</lastmod>
+        <lastmod>2014-01-25T10:34:10+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
@@ -42,10 +36,10 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-01-24T21:52:23+01:00</lastmod>
+        <lastmod>2014-01-25T10:36:09+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-01-24T21:52:23+01:00</lastmod>
+        <lastmod>2014-01-25T10:36:09+01:00</lastmod>
     </url>
 </urlset>
