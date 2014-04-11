@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Maths | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/maths/atom.xml" rel="self"/>
+  <link href="http://Zulko.github.io/"/>
+  <updated>2014-04-11T20:57:41+02:00</updated>
+  <id>http://Zulko.github.io/</id>
+  <author>
+    <name><![CDATA[Zulko]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Interception of a linear trajectory with constant speed]]></title>
+    <link href="http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/"/>
+    <updated>2013-11-11T23:59:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed</id>
+    <content type="html"><![CDATA[<p><em>In this post I show how helpful trigonometry can be when it comes to catching rabbits.</em></p>
+
+<!-- more -->
+
+<h2 id="problem">Problem</h2>
+
+<p>Alice just spotted a white rabbit urging to its rabbit hole ! Given the coordinates of the positions A, B, H, of Alice, the rabbit and the hole, as well as the respective speeds $S_A$ and $S_B$ of Alice and the rabbit, say whether Alice can catch the rabbit before it disappears, and give the time and place of the fastest possible interception.</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>I guess that I am not the first one to solve this but I couldn’t find any simple solution on the internet. The one I am giving here relies on trigonometry, but interestingly it doesn’t require to compute any trigonometrical function !</p>
+
+<p>If sines give you fever, don’t wait for the first <em>sines of fever</em> (uh uh uh), just skip this part, I summarize everything in the next section.</p>
+
+<p>We call  C and $t_C$ the location and the time of the catch. It is straightforward that, since we are looking for the fastest catch, Alice’s trajectory towards C must be a straight line. Here is a sketch of the problem:</p>
+
+<p><img class="center" src="/images/alice/alice_schema.jpeg">
+Note that the lengths AC and BC denote the distance run by Alice and the Rabbit until the catch, therefore they verify</p>
+
+<script type="math/tex; mode=display"> AC = S_A t_C </script>
+
+<script type="math/tex; mode=display"> BC = S_B t_C </script>
+
+<p><strong>So finding the length BC would answer the problem</strong>, as it would tell us whether Alice can catch the rabbit before it reaches the rabbit hole (case $BC&lt;BH$), and would immediately lead to both the location and time of the catch :</p>
+
+<script type="math/tex; mode=display"> C = B + \dfrac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>To express BC using the coordinates of the points, let us apply the famous <em>Law of Sines</em> to the triangle ABC:</p>
+
+<script type="math/tex; mode=display"> \dfrac{\sin \alpha}{BC} = \dfrac{\sin \beta}{AC} = \dfrac{\sin \gamma}{AB} </script>
+
+<p>Wich leads to</p>
+
+<script type="math/tex; mode=display"> BC = \dfrac {\sin \alpha}{\sin \gamma} AB = \dfrac {\sin \alpha}{\sin \gamma} \sqrt{(x_B-x_A)^2+(y_B-y_A)^2} </script>
+
+<p>Now all we have to do is to express $\sin \alpha$ and $\sin \gamma$ in function of the given data. To do so we first compute $\sin(\beta)$, then we express $\sin \alpha$ with $\sin \beta$, and we express $\sin \gamma$ as a function of $\sin \alpha$ and $\sin \beta$.</p>
+
+<p>The value of $\sin \beta$ can be computed from the points coordinates as follows:</p>
+
+<script type="math/tex; mode=display"> \sin \beta = \dfrac{det(\overrightarrow{BA},\overrightarrow{BH})}{ BA * BH } = \dfrac{(x_A - x_B)(y_H-y_B) - (y_A - y_B)(x_H-x_B)}{\sqrt{(x_B-x_A)^2+(y_B-y_A)^2} \sqrt{(x_B-x_H)^2+(y_B-y_H)^2}} </script>
+
+<p>Then we use the Law of Sines again, to compute $\sin \alpha$:</p>
+
+<script type="math/tex; mode=display"> \sin \alpha = \frac{BC}{AC} \sin \beta = \frac{S_b t_C}{S_a t_C} \sin \beta = \frac{S_b}{S_a} \sin \beta </script>
+
+<p>This only makes sense, of course, if</p>
+
+<script type="math/tex; mode=display"> \frac{S_A}{S_R} \mid \sin \beta \mid \leq 1 </script>
+
+<p><strong>If this is not the case we conclude that Alice will never catch the rabbit, which solves the problem.</strong></p>
+
+<p>Finally we use the fact that the angles of a triangle sum to $\pi$ to compute $\sin \gamma$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = \sin (\pi - \alpha - \beta) = \sin (\alpha + \beta) = \sin \alpha \cos \beta + \cos \alpha \sin \beta </script>
+
+<p>We reformulate using the already-copmputed $\sin \alpha$ and $\sin \beta$:</p>
+
+<script type="math/tex; mode=display"> \sin \gamma = (\sin \alpha) \sqrt{1 - \sin^2 \beta} + (\sin \beta) \sqrt{1 - \sin^2 \alpha} </script>
+
+<p>And… we are done, we have everything we need to compute BC and answer the problem.</p>
+
+<h2 id="summary-and-code">Summary and code</h2>
+
+<p>So here is the short answer to the problem:</p>
+
+<ul>
+  <li>Compute $\sin \beta$ using the formula given above.</li>
+  <li>Compute $\sin \alpha = (S_b * \sin \beta)/S_a$. If $\mid \sin \alpha \mid&gt;1$, Alice cannot catch the rabbit. Otherwise, advance to step 3.</li>
+  <li>Compute $\sin \gamma$ with the formula above and the values of $\sin \alpha$ and $\sin \beta$ found in steps <em>1</em> and <em>2</em>.</li>
+  <li>Compute BC using the formula given above and the values found for $\sin \alpha$ and $\sin \gamma$.  If $BC&gt;BH$, the rabbit will reach its hole before Alice can catch it. Otherwise, congratulation young girl, you will eat rabbit for dinner, here are the location and time of the fastest possible interception:</li>
+</ul>
+
+<script type="math/tex; mode=display"> C = B + \frac{BC}{BH}\overrightarrow{BH} </script>
+
+<script type="math/tex; mode=display"> t_C = BC/S_B </script>
+
+<p>Below is a script implementing this technique using Python’s pylab module:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># imports srqt, norm, array, plot…&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Returns</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="p">(</span><span class="n">t_C</span><span class="p">,</span> <span class="n">C</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;</span> <span class="k">if</span> <span class="n">A</span> <span class="n">can</span> <span class="n">catch</span> <span class="n">B</span><span class="p">,</span> <span class="n">before</span> <span class="n">B</span>
+</span><span class='line'>    <span class="n">reaches</span> <span class="n">H</span><span class="o">.</span> <span class="n">Otherwise</span><span class="p">,</span> <span class="n">returns</span> <span class="o">&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="bp">None</span><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;.</span> <span class="err">“””</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">sin_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sb</span> <span class="o">/</span> <span class="n">Sa</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_b</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_a</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="mi">1</span> <span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">print</span> <span class="s">&quot;B moves too fast to be ever caught !&quot;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">else</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">sin_c</span> <span class="o">=</span> <span class="p">(</span> <span class="n">sin_a</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>              <span class="o">+</span> <span class="n">sin_b</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">BC</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="n">BC</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">A</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&quot;B reaches H before interception by A !&quot;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">print</span> <span class="s">&quot;A intercepted B !&quot;</span>
+</span><span class='line'>        <span class="n">t_C</span> <span class="o">=</span> <span class="n">BC</span> <span class="o">/</span> <span class="n">Sb</span>
+</span><span class='line'>        <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span><span class="n">C</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>And here it is in action:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;parameters-of-the-problem&quot;</span><span class="o">&gt;</span><span class="n">PARAMETERS</span> <span class="n">OF</span> <span class="n">THE</span> <span class="n">PROBLEM</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">1.0</span> <span class="p">,</span> <span class="mf">5.0</span> <span class="p">))</span> <span class="c"># Alice’s initial position</span>
+</span><span class='line'><span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">4.0</span> <span class="p">,</span> <span class="mf">1.0</span> <span class="p">))</span> <span class="c"># Rabbit’s initial position</span>
+</span><span class='line'><span class="n">H</span> <span class="o">=</span>  <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># Hole’s coordinates</span>
+</span><span class='line'><span class="n">Sa</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="c"># Alice’s speed</span>
+</span><span class='line'><span class="n">Sb</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># Rabbit’s speed&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;find-the-intersection&quot;</span><span class="o">&gt;</span><span class="n">Find</span> <span class="n">the</span> <span class="n">intersection</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">t</span><span class="p">,</span><span class="n">C</span> <span class="o">=</span> <span class="n">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;plot-the-results&quot;</span><span class="o">&gt;</span><span class="n">Plot</span> <span class="n">the</span> <span class="n">results</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scatter</span><span class="p">(</span><span class="o">*</span><span class="nb">zip</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">),</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="err">’</span><span class="n">r</span><span class="err">’</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="err">‘</span><span class="n">A</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="n">B</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="n">H</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="n">C</span><span class="err">’</span><span class="p">],</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">]):</span>
+</span><span class='line'>    <span class="n">annotate</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">xytext</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+</span><span class='line'>        <span class="n">textcoords</span> <span class="o">=</span> <span class="err">‘</span><span class="n">offset</span> <span class="n">points</span><span class="err">’</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">annotate</span><span class="p">(</span><span class="err">“”</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="err">’</span><span class="n">data</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">textcoords</span><span class="o">=</span><span class="err">’</span><span class="n">data</span><span class="err">’</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="err">”</span><span class="n">simple</span><span class="err">”</span><span class="p">,</span>
+</span><span class='line'>                         <span class="n">connectionstyle</span><span class="o">=</span><span class="err">”</span><span class="n">arc3</span><span class="err">”</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">annotate</span><span class="p">(</span><span class="err">“”</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">C</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">A</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="err">’</span><span class="n">data</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">textcoords</span><span class="o">=</span><span class="err">’</span><span class="n">data</span><span class="err">’</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+</span><span class='line'>         <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="err">”</span><span class="n">simple</span><span class="err">”</span><span class="p">,</span>
+</span><span class='line'>                         <span class="n">connectionstyle</span><span class="o">=</span><span class="err">”</span><span class="n">arc3</span><span class="err">”</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">title</span><span class="p">(</span><span class="err">“</span><span class="n">A</span> <span class="n">intercepts</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">C</span><span class="err">”</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">show</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/alice/alice_matplotlib.jpeg"></p>
+]]></content>
+  </entry>
+  
+</feed>

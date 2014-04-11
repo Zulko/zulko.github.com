@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Theory | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/theory/atom.xml" rel="self"/>
+  <link href="http://Zulko.github.io/"/>
+  <updated>2014-04-11T20:57:41+02:00</updated>
+  <id>http://Zulko.github.io/</id>
+  <author>
+    <name><![CDATA[Zulko]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Placing people so that everyone meets]]></title>
+    <link href="http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/"/>
+    <updated>2013-11-08T20:36:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets</id>
+    <content type="html"><![CDATA[<p><em>I will solve a stupid management problem using old mathematics and Google.</em></p>
+
+<!-- more -->
+
+<p>Imagine that you have N employees who work side by side in a row. For more conviviality you decide to arrange them in a different order every day, so that after some time each employee has worked besides each of the others at least once. How to do so in a minimal number of days ?</p>
+
+<p><img class="center" src="/images/placing-your-employees/mathematician_employees.jpeg" title="‘Case where the employees are mathematicians’" ></p>
+
+<h2 id="a-little-bit-of-context">A little bit of context</h2>
+
+<p>This problem appeared a few weeks ago in the <a href="http://www.reddit.com/r/Python/comments/1o7z4q/python_algo_to_shuffle_your_team_ensuring_that/">Reddit/Python forum</a>, when someone posted <a href="http://jtushman.github.io/blog/2013/10/10/shuffling-team-seating/">this</a>:</p>
+
+<p><em>“I think it is good to shuffle the team around. (…) Here is the function that we use to randomize our team making sure that you do not sit next to someone you are already sitting next to [supposing that all are sitting in a row].”</em>.</p>
+
+<p>Stated like this, it is a very simple problem which doesn’t require a complicated algorithm, you just shuffle the order of the previous day as follows, and it will do the trick:</p>
+
+<p><img class="center" src="/images/placing-your-employees/easy_shuffle.jpeg" title="‘A simple shuffling’" ></p>
+
+<p>This shuffle can be written in one line of Python:
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># This shuffling creates new neighbours</span>
+</span><span class='line'><span class="n">shuffle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">myList</span> <span class="p">:</span> <span class="n">myList</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">myList</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The problem with thid shuffling, as someone on Reddit pointed out, is that even if you shuffle a great number of times there is no warranty that everyone will have worked besides everyone in the end. For instance in the shuffling shown above employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which it will fail to create all possible pairs of neighbours !</p>
+
+<p>This leads us to our problem: how to ensure that all possible pairs of neighbours will be created, and in a minimum amount of time ? We will see that there is an optimal strategy. It does NOT use a shuffling, but rather a 120 years old mathematical construction.</p>
+
+<h2 id="first-elements-of-solution">First elements of solution</h2>
+
+<p>If you have N employees, then they can form N(N-1)/2 pairs. Each day you create at most (N-1) new pairs of neighbours by placing the employees on a line. Therefore you will need at least N/2 days to create all possible pairs. This means that you cannot solve the problem in less than N/2 days if N is even, and (N+1)/2 days if n is odd. What we will show is that <strong>it is actually possible to solve the problem in N/2 days (for even N) or (N+1)/2 days (for odd N)</strong>.</p>
+
+<p>Actually, <strong>we only need to solve the problem for even N</strong>, and the solutions for odd N will follow very simply. Indeed, suppose that you have an odd number N of employees. If you add one <em>imaginary</em> employee, you come to an even number (N+1) of employees. Suppose that you have found a solution for these (N+1) employees, which means that you have found a series of (N+1)/2 arrangements which form all pairs of neighbours. Then remove the <em>imaginary</em> employee from each of these arrangements. What you obtain is a series of (N+1)/2 arrangements, in which all pairs of the employees 1 to N are formed. In other words, you have solved the problem for N.</p>
+
+<h2 id="representing-the-problem-with-a-graph">Representing the problem with a graph</h2>
+
+<p>This problem can be very well represented using a graph whose nodes are the employees. Each day we add an edge in the graph between each pair of employees which have been neighbours, our goal being to cover all the possible edges of the graph:</p>
+
+<p><img class="center" src="/images/placing-your-employees/placements_are_paths.jpeg" title="‘graph representation of the problem’" ></p>
+
+<p>Notice how each day you actually trace a <em>path</em> in the graph.</p>
+
+<p>Now our problem has become: given a graph of size N (even), find N/2 paths, each going through each node exactly once, such that they cover all the possible edges of the graph.</p>
+
+<p>And here is a sketch of a solution that will always work:</p>
+
+<p><img class="center" src="/images/placing-your-employees/solution_for_8.jpeg" title="‘Solution for 8 employees’" ></p>
+
+<p>The first path is a simple pattern 1, N, 2, N-1, etc. and the others are just <em>rotations</em> of the first path. The nice thing with the graph representation is that I can use a simple geometric argument to prove that these paths will cover all the edges: if we place the N nodes of the graph cyclically like in the figures above, the path number K will have edges that make an angle $2K\pi/N$ or $(2K+1)\pi/N$ with the horizontal line. So the different paths have edges of completely different angles. For this reason an edge cannot belong to more than one path. Since there are N/2 paths and each path covers N-1 different edges, the paths cover N(N-1)/2 edges in total, which is all the edges.</p>
+
+<p>This construction of paths may seem simple to some of you, but I couldn’t figure it out on my own, and it is an application of a 19th century mathematical trick called the Walecki construction, which I found after some googling, as I explain in <a href="#thanksGoogle">the last section</a>.</p>
+
+<h2 id="a-idsolutiona-solution"><a id="Solution"></a> Solution</h2>
+
+<p>If N is even, arrange the employees in this order the first day: 1, N, 2, (N-1), 3, (N-2), etc. From day 2 to day N/2, place the employees by taking their arrangement of the day before and replacing employee 1 by 2, 2 by 3, 3 by 4… and N by 1.</p>
+
+<p>If N is odd, add an imaginary (N+1)th employee, solve the problem for the N+1 employees using the mehod above, then remove the imaginary employee from each of the arrangements obtained.</p>
+
+<p>Here is the Python implementation of this solution:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">place</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span>
+</span><span class='line'>    <span class="n">Returns</span> <span class="n">a</span> <span class="n">minimal</span> <span class="n">series</span> <span class="n">of</span> <span class="n">permutations</span> <span class="n">of</span> <span class="mf">1.</span><span class="o">.</span><span class="n">N</span> <span class="n">such</span>
+</span><span class='line'>    <span class="n">that</span> <span class="n">each</span> <span class="n">number</span> <span class="ow">is</span> <span class="n">neighbour</span> <span class="n">at</span> <span class="n">least</span> <span class="n">once</span> <span class="k">with</span> <span class="n">each</span> <span class="n">of</span>
+</span><span class='line'>    <span class="n">the</span> <span class="n">others</span><span class="o">.</span>
+</span><span class='line'>    <span class="err">“””</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="k">if</span> <span class="p">(</span><span class="n">N</span> <span class="o">%</span> <span class="mi">2</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    N is odd. Solve the problem for (N+1), then remove</span>
+</span><span class='line'><span class="sd">    element (N+1) in the result</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">arrangements</span> <span class="o">=</span> <span class="n">place</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">arrangements</span><span class="p">:</span>
+</span><span class='line'>        <span class="n">arr</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">N</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">arrangements</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">else</span><span class="p">:</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    N is even. Place the elements in that order:</span>
+</span><span class='line'><span class="sd">    1, N, 2, N-1, 3, N-2, etc. then roll !</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>    <span class="n">arr1</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># construct the first arrangement</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">arr1</span> <span class="o">=</span> <span class="n">arr1</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="o">-</span><span class="n">i</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># construct the subsequent arrangements using p1</span>
+</span><span class='line'>    <span class="k">return</span> <span class="p">[</span> <span class="p">[((</span><span class="n">e</span><span class="o">+</span><span class="n">K</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="n">N</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">arr1</span><span class="p">]</span>
+</span><span class='line'>                             <span class="k">for</span> <span class="n">K</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="o">/</span><span class="mi">2</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+&gt;&gt;&gt; place(12)
+[[1, 12, 2, 11, 3, 10, 4, 9, 5, 8, 6, 7],
+ [2, 1, 3, 12, 4, 11, 5, 10, 6, 9, 7, 8],
+ [3, 2, 4, 1, 5, 12, 6, 11, 7, 10, 8, 9],
+ [4, 3, 5, 2, 6, 1, 7, 12, 8, 11, 9, 10],
+ [5, 4, 6, 3, 7, 2, 8, 1, 9, 12, 10, 11],
+ [6, 5, 7, 4, 8, 3, 9, 2, 10, 1, 11, 12]]
+</code></pre>
+
+<h2 id="a-idthanksgooglea-bonus-how-to-be-a-graph-theorist-with-google"><a id="thanksGoogle"></a> [Bonus] How to be a graph theorist with Google</h2>
+
+<p>For the anecdote, I was not really happy when I figured out that the problem could be represented with graphs, as I really know nothing about graphs theory.</p>
+
+<p>However, I thought that, as we are dealing with graphs in which everyone is connected with everyone, they must have some interesting properties. So I googled <em>fully connected graphs</em>, which led me to Wolfram Mathworld’s article on <em>Complete graphs</em> (apparently that’s their real name), where we can read on the 6th line:</p>
+
+<p><em>“In the 1890s, Walecki showed that complete graphs Kn admit a Hamilton decomposition for odd n, and decompositions into Hamiltonian cycles plus a perfect matching for even n (Lucas 1892, Bryant 2007, Alspach 2008). Alspach et al. (1990) give a construction for Hamilton decompositions of all Kn.”</em></p>
+
+<p>That’s not what you’d call crystal clear, but it says <em>decomposition</em> several times, and that sounds like what I want to do. So I looked for the last reference, Alspach 1990. Springer, the publisher, gracefully gives you access to the first two pages for free. The good news is, they contain all the properties and proofs that we need, in a compacted yet very understandable form. Let us see in details what they say.</p>
+
+<p>It starts with Hamiltonian cycles. An Hamiltonian cycle is a path that starts from one node, visits every other node exactly once, and come back to initial node. The two first figures below are two Hamiltonian cycles for a graph with five nodes:</p>
+
+<p><img class="center" src="/images/placing-your-employees/hamilton_decomposition.jpeg" title="‘Solution for 8 employees’" ></p>
+
+<p>As you can see, these paths have no edge in common, but put together they cover all the edges of the complete graph. They form what is called a <em>Hamilton decomposition</em> of the complete graph.</p>
+
+<p>Now what happens if you remove one person from the graph, say, the person at the top ? You get this:</p>
+
+<p><img class="center" src="/images/placing-your-employees/solution_for_4.jpeg" title="‘Solution for 4 employees’" ></p>
+
+<p>You obtain two paths that describe a solution of our problem for N=4 employees ! And it will always work: if you can find an Hamilton decomposition of the complete graph of N+1 nodes (N being even), just removing one node will give you a decomposition into paths of the complete graph of N nodes, from which you can deduce a solution to our problem with N employees.</p>
+
+<p>So now the important question is: how do we find an Hamiltonian decomposition of the complete graph of (N+1) nodes (N+1 being odd) ?</p>
+
+<p>This has been answered in 1890 by Walecki with the following construction. I use the same notations as in Alspach 1990. Note that node 0 stays in place while all the other numbers rotate clockwise from one cycle to another.</p>
+
+<p><img class="center" src="/images/placing-your-employees/Walecki.jpeg" title="‘The Walecki Hamilton decomposition’" ></p>
+
+<p>There is no extensive proof in Alspach 1990 of why this covers all edges, but I guess that a geometrical proof, like the one I give in a previous section, could do the trick. Now all we have to do is to remove one node of the graph: we choose the node 0:</p>
+
+<p><img class="center" src="/images/placing-your-employees/Walecki2.jpeg" title="‘Tada !’" ></p>
+
+<p>With just a few tweaks in the order of the nodes, we come to the solution presented in the previous section.</p>
+
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Graph Theory | __del__( self )]]></title>
-  <link href="http://Zulko.github.io/blog/categories/graph-theory/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Graph | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/graph/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-01-25T11:00:48+01:00</updated>
+  <updated>2014-04-11T20:57:41+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -18,7 +18,9 @@
     <link href="http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/"/>
     <updated>2013-11-08T20:36:00+01:00</updated>
     <id>http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets</id>
-    <content type="html"><![CDATA[<p><em>In this post I solve a stupid management problem using old mathematics and Google.</em></p>
+    <content type="html"><![CDATA[<p><em>I will solve a stupid management problem using old mathematics and Google.</em></p>
+
+<!-- more -->
 
 <p>Imagine that you have N employees who work side by side in a row. For more conviviality you decide to arrange them in a different order every day, so that after some time each employee has worked besides each of the others at least once. How to do so in a minimal number of days ?</p>
 

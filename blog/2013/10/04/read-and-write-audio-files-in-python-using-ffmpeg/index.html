@@ -111,6 +111,8 @@
 
 <div class="entry-content"><p><em>This article shows how easy it is to read or write audio files in Python, by calling the external software FFMPEG through pipes. Check also <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">that other article</a> for the same with video files.</em></p>
 
+<!-- more -->
+
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
@@ -132,18 +134,20 @@
 <span class="line-number">7</span>
 <span class="line-number">8</span>
 <span class="line-number">9</span>
+<span class="line-number">10</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
-</span><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class="line">
+</span><span class="line"><span class="n">command</span> <span class="o">=</span> <span class="p">[</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
 </span><span class="line">        <span class="s">&#39;-i&#39;</span><span class="p">,</span> <span class="s">&#39;mySong.mp3&#39;</span><span class="p">,</span>
 </span><span class="line">        <span class="s">&#39;-f&#39;</span><span class="p">,</span> <span class="s">&#39;s16le&#39;</span><span class="p">,</span>
 </span><span class="line">        <span class="s">&#39;-acodec&#39;</span><span class="p">,</span> <span class="s">&#39;pcm_s16le&#39;</span><span class="p">,</span>
 </span><span class="line">        <span class="s">&#39;-ar&#39;</span><span class="p">,</span> <span class="s">&#39;44100&#39;</span><span class="p">,</span> <span class="c"># ouput will have 44100 Hz</span>
-</span><span class="line">        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># two channels: output will be stereo (set to 1 for mono)</span>
-</span><span class="line">        <span class="s">&#39;-&#39;</span><span class="p">],</span>
-</span><span class="line">        <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class="line">        <span class="s">&#39;-ac&#39;</span><span class="p">,</span> <span class="s">&#39;2&#39;</span><span class="p">,</span> <span class="c"># stereo (set to &#39;1&#39; for mono)</span>
+</span><span class="line">        <span class="s">&#39;-&#39;</span><span class="p">]</span>
+</span><span class="line"><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>In the code above <code>-i mySong.mp3</code> indicates the input file, while <code>s16le/pcm_s16le</code> asks for a raw 16-bit sound output. The <code>-</code> at the end tells FFMPEG that it is being used with a pipe by another program.</p>
+<p>In the code above <code>-i mySong.mp3</code> indicates the input file, while <code>s16le/pcm_s16le</code> asks for a raw 16-bit sound output. The <code>-</code> at the end tells FFMPEG that it is being used with a pipe by another program. In <code>sp.Popen</code>, the <code>bufsize</code> parameter must be bigger than the biggest chunk of data that you will want to read (see below). It can be omitted most of the time in Python 2 but not in Python 3 where its default value is pretty small.</p>
 
 <p>Now you just have to read the output of FFMPEG. In our case we have two channels (stereo sound) so one <em>frame</em> of out output will be represented by a pair of integers, each coded on 16 bits (2 bytes). Therefore one frame will be 4-bytes long. To read 88200 audio frames (2 seconds of sound in our case) we will write:</p>
 
@@ -153,10 +157,12 @@
 <span class="line-number">4</span>
 <span class="line-number">5</span>
 <span class="line-number">6</span>
+<span class="line-number">7</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">raw_audio</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">88200</span><span class="o">*</span><span class="mi">4</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># Reorganize raw_audio as a Numpy array with two-columns (1 per channel)</span>
 </span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class="line">
 </span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_audio</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s">&quot;int16&quot;</span><span class="p">)</span>
 </span><span class="line"><span class="n">audio_array</span> <span class="o">=</span> <span class="n">audio_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">audio_array</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
@@ -294,6 +300,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/12/transcribing-piano-rolls/">Transcribing Piano Rolls, the Pythonic Way</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">Making GIFs From Video Files With Python</a>
       </li>
     
@@ -307,10 +317,6 @@
     
       <li class="post">
         <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/">Read and Write Audio Files in Python Using FFMPEG</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">Read and Write Video Frames in Python Using FFMPEG</a>
       </li>
     
   </ul>

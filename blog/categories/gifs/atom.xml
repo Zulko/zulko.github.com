@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIFs | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gifs/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-01-25T11:00:48+01:00</updated>
+  <updated>2014-04-11T20:57:41+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -19,6 +19,8 @@
     <updated>2014-01-23T22:08:00+01:00</updated>
     <id>http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python</id>
     <content type="html"><![CDATA[<p><em>Sometimes producing a good animated GIF requires a few advanced tweaks, for which scripting can help. So I added a GIF export feature to MoviePy, a Python package originally written for video editing.</em></p>
+
+<!-- more -->
 
 <p>For this demo we will make a few GIFs out of this trailer:</p>
 
@@ -291,11 +293,11 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p><img class="center" src="http://i.imgur.com/k1sz49h.gif" title="‘Carry Grant in Charade - Hosted by Imgur’" ></p>
 
-<h2 id="big-finish-removing-the-background">Big finish: removing the background</h2>
+<h2 id="big-finish-background-removal">Big finish: background removal</h2>
 
-<p>Let us dive further into the scripting madness: we consider this video around 2’16:</p>
+<p>Let us dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/_wZjCDXDNLI "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 

@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Piano, | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/piano/atom.xml" rel="self"/>
+  <link href="http://Zulko.github.io/"/>
+  <updated>2014-04-11T20:57:41+02:00</updated>
+  <id>http://Zulko.github.io/</id>
+  <author>
+    <name><![CDATA[Zulko]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Transcribing Piano Rolls, the Pythonic Way]]></title>
+    <link href="http://Zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/"/>
+    <updated>2014-02-12T00:25:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2014/02/12/transcribing-piano-rolls</id>
+    <content type="html"><![CDATA[<p><em>In this post I use Fourier transforms to revive a forgotten Gershwin piano piece.</em></p>
+
+<!-- more -->
+
+<p>Piano rolls are these rolls of perforated paper that you put in the saloon’s mechanical piano. They have been very popular until the 1950s, and the piano roll repertory counts thousands of arrangements (some by greatest names of jazz) which have never been published in any other form.</p>
+
+<p>Here is <em>Limehouse Nights</em> (~1918), by a 20-years-old George Gershwin:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
+
+<p>It is cool, it is public domain music, and I want to play it. But like for so many other rolls, there is no published sheet music.</p>
+
+<p>Fortunately, someone took a video of the same performance with a focus on the roll:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/wMsEbYCh7yY "></iframe></div></p>
+
+<p>In this post I show how to turn that video into playable sheet music with the help of a few lines of Python. <a href="#final_result">At the end</a> I provide the sheet music, a human rendition, and a Python package that implements the method (and can also be used to transcribe from MIDI files).</p>
+
+<h2 id="downloading-the-video">Downloading the video</h2>
+
+<p>You can download the video from Youtube using <a href="">youtube-dl</a> in a terminal:
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>youtube-dl wMsEbYCh7yY -o limehouse_nights.mp4</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2 id="step-1-segmentation-of-the-roll">Step 1: Segmentation of the roll</h2>
+
+<p>In each frame of the video we will focus on a well-located line of pixels:
+<img class="center" src="/images/rolls_transcription/watched_line.jpeg"></p>
+
+<p>By extracting this line from each video frame and stacking the obtained 
+lines on one another we can reconstitute an approximate <em>scan</em> of the piano roll:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;required-python-modules&quot;</span><span class="o">&gt;</span><span class="n">Required</span> <span class="n">Python</span> <span class="n">modules</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span> <span class="c"># for video processing</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># for mathematics/plotting&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;load-the-video-keep-the-clip-between-t2s-and-t-30s&quot;</span><span class="o">&gt;</span><span class="n">load</span> <span class="n">the</span> <span class="n">video</span><span class="p">,</span> <span class="n">keep</span> <span class="n">the</span> <span class="n">clip</span> <span class="n">between</span> <span class="n">t</span><span class="o">=</span><span class="mi">2</span><span class="n">s</span> <span class="ow">and</span> <span class="n">t</span><span class="o">=</span> <span class="mi">30</span><span class="n">s</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">video</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">‘</span><span class="o">./</span><span class="n">limehouse_nights</span><span class="o">.</span><span class="n">mp4</span><span class="err">’</span><span class="p">)</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;extract-the-focus-lines-in-the-different-frames-stack-them&quot;</span><span class="o">&gt;</span><span class="n">extract</span> <span class="n">the</span> <span class="n">focus</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">different</span> <span class="n">frames</span><span class="p">,</span> <span class="n">stack</span> <span class="n">them</span><span class="o">.&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">roll_picture</span> <span class="o">=</span> <span class="n">vstack</span><span class="p">([</span><span class="n">frame</span><span class="p">[[</span><span class="mi">156</span><span class="p">],</span><span class="mi">58</span><span class="p">:</span><span class="mi">478</span><span class="p">]</span>
+</span><span class='line'>                       <span class="k">for</span> <span class="n">frame</span> <span class="ow">in</span> <span class="n">video</span><span class="o">.</span><span class="n">iter_frames</span><span class="p">()])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">imshow</span><span class="p">(</span> <span class="n">roll_picture</span> <span class="p">)</span> <span class="c"># display the obtained picture</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/roll_RGB.jpeg"></p>
+
+<p>We can see that the holes are placed along columns. Each of these 
+columns corresponds to one key of the piano. A possible way to find the 
+x-coordinates of these columns in the picture is to look at the minimal 
+luminosity of each column of pixels:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">roll_greyscale</span> <span class="o">=</span> <span class="n">roll_picture</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c"># RGB to grey</span>
+</span><span class='line'><span class="n">luminosity_per_column</span> <span class="o">=</span> <span class="n">roll_greyscale</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span> <span class="n">luminosity_per_column</span><span class="p">)</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">‘</span><span class="n">column</span> <span class="n">of</span> <span class="n">pixels</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="n">index</span><span class="p">)</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">ylabel</span><span class="p">(</span><span class="err">‘</span><span class="n">minimal</span> <span class="n">luminosity</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/min_lum.jpeg"></p>
+
+<p>Holes are low-luminosity zones in the picture, therefore the x-coordinates with lower luminosity in the curve above indicate hole-columns. They are not equally spaced because some piano keys are not used in this piece, but there is clearly a dominant period, which we will find by looking at the
+frequency spectrum of the curve.</p>
+
+<p>We compute that spectrum using a continuous Fourier transform. The peaks in the spectrum below
+mean that a periodic pattern is present in the curve:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">n_lines</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">=</span> <span class="n">roll_greyscale</span><span class="o">.</span><span class="n">shape</span>
+</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">n_columns</span><span class="p">)</span> <span class="c"># 0,1,2,3,4… n_columns</span>
+</span><span class='line'><span class="n">lum0</span> <span class="o">=</span> <span class="n">luminosity_per_column</span> <span class="o">-</span> <span class="n">luminosity_per_column</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">fourier_transform</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">tt</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">See</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">en</span><span class="o">.</span><span class="n">wikipedia</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">wiki</span><span class="o">/</span><span class="n">Fourier_transform</span>
+</span><span class='line'>    <span class="n">How</span> <span class="n">come</span> <span class="n">Numpy</span> <span class="ow">and</span> <span class="n">Scipy</span> <span class="n">don</span><span class="err">’</span><span class="n">t</span> <span class="n">implement</span> <span class="n">this</span> <span class="err">???</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">func</span> <span class="p">:</span> <span class="p">(</span><span class="n">signal</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">func</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">pi</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">tt</span><span class="o">/</span><span class="n">period</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span><span class="o">+</span> <span class="mi">1j</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">f</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">widths</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="o">.</span><span class="mo">01</span><span class="p">)</span>
+</span><span class='line'><span class="n">transform</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span> <span class="n">fourier_transform</span><span class="p">(</span><span class="n">lum0</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">tt</span><span class="p">)</span>
+</span><span class='line'>                    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">widths</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">widths</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">transform</span><span class="p">))</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">“</span><span class="n">Period</span> <span class="p">(</span><span class="ow">in</span> <span class="n">number</span> <span class="n">of</span> <span class="n">pixels</span><span class="p">)</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">ylabel</span><span class="p">(</span><span class="err">“</span><span class="n">Spectrum</span> <span class="n">value</span><span class="err">”</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/lum_spectrum.jpeg"></p>
+
+<p>The higher peak of the spectrum indicates a period of x=5.46 pixels, and this is indeed the distance in pixels between two hole-columns. This, plus the <em>phase</em> of the spectrum in this point, gives us the coordinates of the centers of the hole-columns (vertical lines below).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># The maximum the transform indicates the holes’ width</span>
+</span><span class='line'><span class="n">optimal_i</span> <span class="o">=</span> <span class="n">argmax</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">transform</span><span class="p">))</span>
+</span><span class='line'><span class="n">hole_width</span> <span class="o">=</span> <span class="n">widths</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">]</span>
+</span><span class='line'><span class="n">offset</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">transform</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">])</span> <span class="o">+</span><span class="n">hole_width</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">keys_positions</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">n_columns</span><span class="p">,</span> <span class="n">hole_width</span><span class="p">)</span>
+</span><span class='line'><span class="n">keys_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">keys_positions</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">luminosity_per_column</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">keys_positions</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">axvline</span><span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="err">’</span><span class="n">k</span><span class="err">’</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">‘</span><span class="n">column</span> <span class="n">of</span> <span class="n">pixels</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">ylabel</span><span class="p">(</span><span class="err">‘</span><span class="n">minimal</span> <span class="n">luminosity</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/lum_plus_keycolumns.jpeg"></p>
+
+<p>We can now reduce our image the piano roll to keep only one pixel per hole column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">keys_greyscale</span> <span class="o">=</span> <span class="n">roll_greyscale</span><span class="p">[:,</span> <span class="n">keys_positions</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">imshow</span><span class="p">(</span><span class="n">keys_greyscale</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">150</span><span class="p">])</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">‘</span><span class="n">piano</span><span class="o">-</span><span class="n">key</span> <span class="n">column</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">ylabel</span><span class="p">(</span><span class="err">‘</span><span class="n">video</span> <span class="n">frame</span> <span class="n">number</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/roll_keycolumns.jpeg"></p>
+
+<p>To reconstitute the sheet music the most important is to know when a key
+is pressed, not really when it is released. So we will look for the beginning of the holes, i.e. pixels that present a
+hole, while the pixel just above them doesn’t.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># we threshold the picture to separate the pixels</span>
+</span><span class='line'><span class="c"># into ‘hole’ and ‘no-hole’</span>
+</span><span class='line'><span class="n">key_pressed</span> <span class="o">=</span> <span class="n">keys_greyscale</span> <span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="mf">0.8</span><span class="o">*</span><span class="n">keys_greyscale</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</span><span class='line'><span class="c"># We look at the differences between consecutive lines</span>
+</span><span class='line'><span class="n">key_changes</span> <span class="o">=</span>  <span class="n">diff</span><span class="p">(</span><span class="n">key_pressed</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">imshow</span><span class="p">(</span><span class="n">key_changes</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div> </p>
+
+<p><img class="center" src="/images/rolls_transcription/roll_strikes.jpeg"></p>
+
+<p>This worked quite well: in that picture above red dots indicate key strikes and blue dots indicate key releases. Let us gather all the key strikes in a list.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">Ly</span><span class="p">,</span> <span class="n">Lx</span> <span class="o">=</span> <span class="n">key_changes</span><span class="o">.</span><span class="n">shape</span>
+</span><span class='line'><span class="n">keys_strikes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="c"># (column number, strike time)</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Ly</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Lx</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">key_changes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div> </p>
+
+<h2 id="step-2-finding-the-pitch">Step 2: Finding the pitch</h2>
+
+<p>We know that the columns correspond to piano keys. They are sorted left to right from the lowest to the highest note. But which column corresponds to the C4 (the <em>middle C</em>)?</p>
+
+<p>I cheated a little and I looked at the first video (the one where you 
+can see the piano keyboard) to see which notes were pressed in the 
+first chords. I concluded that C4 is represented by column 34.</p>
+
+<p>From now on I would like the musical notes C4, C#4, D4… to be coded by their respective numbers in the MIDI norm: 60, 61, 62… So I will <em>transpose</em> my list of key strikes by adding 26 to each note.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">transpose</span> <span class="o">=</span> <span class="mi">26</span>
+</span><span class='line'><span class="n">keys_strikes</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">key</span><span class="o">+</span><span class="n">transpose</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_strikes</span> <span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2 id="step-3-quantization-of-the-notes">Step 3: Quantization of the notes</h2>
+
+<p>We have a list of notes with the time (or frame) at which they are 
+played. We will now determine which notes are quarters, which are 
+eights, etc. This operation is equivalent to finding the tempo of the 
+piece. Let us first have a look at the times at which the the piano keys are striken:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">strike_times</span> <span class="o">=</span> <span class="p">(</span><span class="n">key_changes</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">plot</span><span class="p">(</span><span class="n">strike_times</span><span class="p">)</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">‘</span><span class="n">frame</span> <span class="n">number</span><span class="err">’</span><span class="p">);</span> <span class="n">ylabel</span><span class="p">(</span><span class="err">‘</span><span class="n">number</span> <span class="n">of</span> <span class="n">keys</span> <span class="n">hit</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/number_keys_hit.jpeg"></p>
+
+<p>We observe regularly-spaced peaks corresponding to chords (several notes 
+striken together). In this kind of music, chords are mainly played on 
+the beat. Therefore, computing the main period in the graph above will give us the duration of a beat (or quarter). Let us have a look at the spectrum.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">tt</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">strike_times</span><span class="p">))</span>
+</span><span class='line'><span class="n">durations</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mf">1.1</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="o">.</span><span class="mo">02</span><span class="p">)</span> <span class="c"># avoid 1.0</span>
+</span><span class='line'><span class="n">transform</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">fourier_transform</span><span class="p">(</span><span class="n">strike_times</span><span class="p">,</span><span class="n">d</span><span class="p">,</span> <span class="n">tt</span><span class="p">)</span>
+</span><span class='line'>                    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">durations</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'><span class="n">optimal_i</span> <span class="o">=</span> <span class="n">argmax</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">transform</span><span class="p">))</span>
+</span><span class='line'><span class="n">quarter_duration</span> <span class="o">=</span> <span class="n">durations</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">durations</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">transform</span><span class="p">))</span>
+</span><span class='line'><span class="n">xlabel</span><span class="p">(</span><span class="err">‘</span><span class="n">period</span> <span class="p">(</span><span class="ow">in</span> <span class="n">frames</span><span class="p">)</span><span class="err">’</span><span class="p">);</span> <span class="n">ylabel</span><span class="p">(</span><span class="err">‘</span><span class="n">Spectrum</span> <span class="n">value</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/rolls_transcription/notes_spectrum.jpeg"></p>
+
+<p>The higher peak indicates that a quarter has a duration corresponding to 7.1 frames of the video. Just for info, we can estimate the tempo of the piece with</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tempo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">fps</span> <span class="o">*</span> <span class="mf">60.0</span><span class="o">/</span><span class="n">quarter_duration</span><span class="p">)</span> <span class="c"># we find 252.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>We will now separate the hands. Let’s keep things simple and say that the left hand takes all the notes below the middle C.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">C4</span> <span class="o">=</span> <span class="mi">60</span>
+</span><span class='line'><span class="n">left_hand</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="n">keys_strikes</span> <span class="k">if</span> <span class="n">key</span><span class="o">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">C4</span><span class="p">]</span>
+</span><span class='line'><span class="n">right_hand</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span><span class="n">key</span><span class="p">)</span> <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">key</span><span class="p">)</span> <span class="ow">in</span> <span class="n">keys_strikes</span> <span class="k">if</span> <span class="n">key</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">=</span><span class="n">C4</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then we quantize the notes of each hand with the following algorithm: compute the time duration $d$ between a note and the previous note, and compare $d$ to the duration $Q$ of the quarter:</p>
+
+<ul>
+  <li>If $d &lt; Q/4$, consider that the two notes belong to the same
+chord.</li>
+  <li>Else, if $Q/4 \leq d &lt; 3Q/4$ , consider that the previous note was an
+eighth.</li>
+  <li>Else, if $ 3Q/4 \leq d &lt; 5Q/4 $, consider that the previous note
+was a quarter</li>
+  <li>etc.</li>
+</ul>
+
+<p>And we treat the notes one after another:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">quantize</span><span class="p">(</span><span class="n">keys_strikes</span><span class="p">,</span> <span class="n">quarter_duration</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c"># the result is initialized with one &#39;empty&#39; note.</span>
+</span><span class='line'><span class="n">result</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span><span class="s">&#39;notes&#39;</span><span class="p">:[],</span> <span class="s">&#39;duration&#39;</span><span class="p">:</span><span class="bp">None</span><span class="p">,</span> <span class="s">&#39;t_strike&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span> <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="n">time</span><span class="p">,</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys_strikes</span><span class="p">:</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># time elapsed since last strike </span>
+</span><span class='line'>    <span class="n">delay</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;t_strike&#39;</span><span class="p">]</span>
+</span><span class='line'>    <span class="c"># the next line quantizes that time in eights.</span>
+</span><span class='line'>    <span class="n">delay_q</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="nb">int</span><span class="p">((</span><span class="mf">4.0</span><span class="o">*</span><span class="n">delay</span><span class="o">/</span><span class="n">quarter_duration</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">delay_q</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span><span class="c"># put note in previous chord</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;notes&#39;</span><span class="p">]:</span>
+</span><span class='line'>            <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;notes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">else</span><span class="p">:</span> <span class="c"># this is a &#39;new&#39; note/chord</span>
+</span><span class='line'>        <span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">delay_q</span>
+</span><span class='line'>        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">{</span><span class="s">&#39;notes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">key</span><span class="p">],</span>
+</span><span class='line'>                        <span class="s">&#39;duration&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>
+</span><span class='line'>                        <span class="s">&#39;t_strike&#39;</span><span class="p">:</span><span class="n">time</span><span class="p">}</span> <span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">result</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span> <span class="c"># give duration to last note</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">if</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s">&#39;notes&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]:</span>
+</span><span class='line'>    <span class="n">result</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c"># first note will surely be empty</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">result</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">left_hand_quantized</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">left_hand</span><span class="p">,</span> <span class="n">quarter_duration</span><span class="p">)</span>
+</span><span class='line'><span class="n">right_hand__quantized</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">right_hand</span><span class="p">,</span> <span class="n">quarter_duration</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Here is what the final data looks like:</p>
+
+<pre><code>&gt;&gt;&gt; right_hand_q[:4]
+#&gt; [{'duration': 1.0, 'notes': [70, 72, 76, 80], 't_strike': 20},
+#&gt;  {'duration': 1.0, 'notes': [68, 74, 78, 82], 't_strike': 28},
+#&gt;  {'duration': 1.0, 'notes': [66, 76, 80, 84], 't_strike': 35},
+#&gt;  {'duration': 1.0, 'notes': [68, 74, 78, 82], 't_strike': 43}]
+</code></pre>
+
+<h2 id="step-4-export-to-sheet-music-with-lilypond">Step 4: Export to sheet music with Lilypond</h2>
+
+<p>Our script’s last task is to convert these lists of quantized notes to a music notation language called
+<a href="http://www.lilypond.org/index.fr.html">Lilypond</a>, which wan be compiled into high-quality sheet music.
+Some packages like music21 can do that, but it is also fairly easy to program your own converter:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># non-exhaustive lists (but will do for our example)</span>
+</span><span class='line'><span class="n">lilynotes</span> <span class="o">=</span> <span class="p">[</span><span class="err">‘</span><span class="n">c</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">cis</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">d</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">ees</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">e</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">f</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>             <span class="err">‘</span><span class="n">fis</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">g</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">gis</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">a</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">bes</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">b</span><span class="err">’</span><span class="p">]</span>
+</span><span class='line'><span class="n">lilyoctaves</span> <span class="o">=</span> <span class="p">[</span><span class="err">’</span><span class="p">,,,</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="p">,,</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="p">,</span><span class="err">’’</span><span class="p">,</span><span class="err">”’”</span><span class="p">,</span> <span class="err">“’’”</span><span class="p">,</span> <span class="err">“’’’”</span><span class="p">]</span>
+</span><span class='line'><span class="n">lilydurations</span> <span class="o">=</span> <span class="p">{</span><span class="mf">0.5</span><span class="p">:</span><span class="err">’</span><span class="mi">8</span><span class="err">’</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="err">’</span><span class="mi">4</span><span class="err">’</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">:</span><span class="err">’</span><span class="mf">4.</span><span class="err">’</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span><span class="err">’</span><span class="mi">2</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>                 <span class="mi">3</span><span class="p">:</span> <span class="err">‘</span><span class="mf">2.</span><span class="err">’</span><span class="p">,</span> <span class="mi">4</span><span class="p">:</span><span class="err">’</span><span class="mi">1</span><span class="err">’</span><span class="p">}</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">midi2lily</span><span class="p">(</span><span class="n">note</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">converts</span>  <span class="mi">60</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">c</span><span class="p">,</span> <span class="ow">and</span> <span class="mi">61</span><span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span><span class="n">cis</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="n">octave</span><span class="p">,</span> <span class="n">rank</span> <span class="o">=</span> <span class="p">(</span><span class="n">note</span> <span class="o">/</span> <span class="mi">12</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">,</span> <span class="n">note</span> <span class="o">%</span> <span class="mi">12</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">lilynotes</span><span class="p">[</span><span class="n">rank</span><span class="p">]</span><span class="o">+</span><span class="n">lilyoctaves</span><span class="p">[</span><span class="n">octave</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">strike2lily</span><span class="p">(</span><span class="n">strike</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">converts</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">64</span><span class="p">],</span><span class="mi">1</span> <span class="o">-&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="o">&lt;</span><span class="n">c</span> <span class="n">e</span><span class="o">=</span><span class="s">&quot;&quot;</span><span class="o">&gt;</span><span class="mi">4</span> <span class="s">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="s">    notes, duration =strike[&#39;notes&#39;], strike[&#39;duration&#39;]&lt;/c&gt;&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;pre&gt;&lt;code&gt;if len(notes) &amp;gt; 1: # chord</span>
+</span><span class='line'><span class="s">    chord = &#39; &#39;.join(map(midi2lily, sorted(notes)))</span>
+</span><span class='line'><span class="s">    return&quot;&amp;lt; </span><span class="si">%s</span><span class="s"> &amp;gt;&quot;</span><span class="si">%c</span><span class="s">hord +lilydurations[duration]</span>
+</span><span class='line'><span class="s">else:</span>
+</span><span class='line'><span class="s">    return midi2lily(notes[0]) +lilydurations[duration]</span>
+</span><span class='line'><span class="s">&lt;/code&gt;&lt;/pre&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;p&gt;def lilyscore(strikes):</span>
+</span><span class='line'><span class="s">    “”” converts a python list of srikes into Lilypond “”” </span>
+</span><span class='line'><span class="s">    return “</span><span class="se">\n</span><span class="s">”.join(map(strike2lily,strikes))&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="s">&lt;p&gt;left_hand_lily = lilyscore(left_hand_quantized)</span>
+</span><span class='line'><span class="s">right_hand_lily = lilyscore(right_hand_quantized)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then we just write this lilyfied sheet music in a file and render the sheet music by calling lilypond.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">filename</span> <span class="o">=</span> <span class="err">“</span><span class="n">limehouse</span><span class="o">.</span><span class="n">ly</span><span class="err">”</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="err">‘</span><span class="n">w</span><span class="o">+</span><span class="err">’</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="err">“</span>\<span class="n">score</span><span class="p">{</span>\<span class="n">new</span> <span class="n">Voice</span><span class="p">{</span> \<span class="n">tempo</span> <span class="mi">4</span><span class="o">=%</span><span class="n">d</span><span class="err">”</span><span class="o">%</span><span class="n">tempo</span>
+</span><span class='line'>            <span class="o">+</span> <span class="err">“</span>\<span class="n">n</span> <span class="o">%</span><span class="n">s</span><span class="p">}</span><span class="err">”</span><span class="o">%</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;render-the-sheet-music-by-running-lilypond&quot;</span><span class="o">&gt;</span><span class="n">render</span> <span class="n">the</span> <span class="n">sheet</span> <span class="n">music</span> <span class="n">by</span> <span class="n">running</span> <span class="n">Lilypond</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span>  <span class="o">&lt;</span><span class="n">br</span> <span class="o">/&gt;</span>
+</span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="err">‘</span><span class="n">lilypond</span> <span class="o">%</span><span class="n">s</span><span class="err">’</span><span class="o">%</span><span class="n">filename</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Here are the first lines of the resulting PDF file, showing the right 
+hand’s part.</p>
+
+<p><img class="center" src="/images/rolls_transcription/right_hand_ly.jpg"></p>
+
+<p>The script has made a pretty good work here, all the notes are there 
+with the right pitch and the right duration. If we now transcribe the 
+whole piece we will see some mistakes (mostly notes attributed to the 
+wrong hand, and more rarely notes with a wrong duration, wrong pitch, etc.), 
+which have to be corrected, but still it is pretty cool to have these 
+1500 notes crunched in just a few seconds.
+The Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a> is perfect 
+to finish the editing.</p>
+
+<p><a name="final_result"></a></p>
+
+<h2 id="final-result">Final result</h2>
+
+<p>After 3 hours of editing we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div></p>
+
+<p>Ok, it’s just the first bars - I am still unhappy with my rendition of the rest, it’s a pretty demanding piece.</p>
+
+<p>Since the piece is in the public domain I also put my transcription in 
+the public domain, and placed its lilypond source <a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights">here on Github</a> (feel 
+free to share/correct/modify it !).</p>
+
+<p>I also wrapped this code into a python package called <a href="http://zulko.github.io/unroll/">Unroll</a> which can 
+transcribe from a video of from a midi file (it uses the package 
+<em>music21</em> for lilypond conversion, and also provides a convenient LilyPond piano template).</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">unroll</span> <span class="kn">import</span> <span class="n">video2scan</span><span class="p">,</span> <span class="n">rollscan2keystrikes</span><span class="p">,</span> <span class="n">KeyStrikes</span>
+</span><span class='line'><span class="c"># just transcribe until t=74s, after this it is a repeat.</span>
+</span><span class='line'><span class="n">scan</span> <span class="o">=</span> <span class="n">video2scan</span><span class="p">(</span><span class="n">videofile</span> <span class="o">=</span> <span class="err">“</span><span class="n">limehouse_nights</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">start</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="mi">74</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">focus</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">im</span> <span class="p">:</span> <span class="n">im</span><span class="p">[[</span><span class="mi">156</span><span class="p">],</span><span class="mi">58</span><span class="p">:</span><span class="mi">478</span><span class="p">])</span>
+</span><span class='line'><span class="n">keystrikes</span> <span class="o">=</span> <span class="n">rollscan2keystrikes</span><span class="p">(</span><span class="n">scan</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">transposed</span><span class="p">(</span><span class="mi">26</span><span class="p">)</span>
+</span><span class='line'><span class="n">keystrikes</span><span class="o">.</span><span class="n">transcribe</span><span class="p">(</span><span class="err">‘</span><span class="n">test2</span><span class="o">.</span><span class="n">ly</span><span class="err">’</span><span class="p">,</span> <span class="n">quarter_durations</span> <span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.01</span><span class="p">])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Oh, and that video of me playing was is also made with Python (and my library <a href="http://zulko.github.io/moviepy/">MoviePy</a>). Here is <a href="https://gist.github.com/Zulko/10489427">the script</a> that generated it. </p>
+
+<h2 id="a-final-word-on-piano-rolls-transcription">A final word on piano rolls transcription</h2>
+
+<p>I have been transcribing rolls as an occasional hobby for years, and I 
+am not the only one: here is 
+<a href="http://piyo.ciao.jp/sm/main.html">another</a> transcriber, and 
+<a href="http://ragtime-france.fr/Ragtime/indexUS.htm">another</a> and yet <a href="http://www.moltoallegro.com">another</a>. Even <em>Limehouse Nights</em> has apparently been <a href="http://www.youtube.com/watch?v=t9o5a7G4l20">recorded</a> in 1992 but the pianist didn’t publish his transcription.</p>
+
+<p>Most of us transcribe from MIDI files which are made from piano rolls 
+scans (starting from MIDI files is equivalent to starting directly to 
+Step 3, quantization and hands separation). Thousands of MIDI files 
+from rolls scans are available on the internet (like 
+<a href="http://www.iammp.org">here</a> or <a href="http://www.pianola.co.nz">here</a>) but 
+not all mechanical piano owners have has the appropriate scanner, so 
+there must be thousands of other rolls in private collections which 
+have never been scanned and pushed on the Internet.</p>
+
+<p>I wrote this post to show that just filming piano rolls in action can 
+be enough to make them  transcribable.</p>
+]]></content>
+  </entry>
+  
+</feed>
