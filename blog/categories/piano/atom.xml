@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Piano, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/piano/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-04-11T20:57:41+02:00</updated>
+  <updated>2014-04-12T11:53:22+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -126,13 +126,15 @@ mean that a periodic pattern is present in the curve:</p>
 <span class='line-number'>15</span>
 <span class='line-number'>16</span>
 <span class='line-number'>17</span>
+<span class='line-number'>18</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">n_lines</span><span class="p">,</span> <span class="n">n_columns</span> <span class="o">=</span> <span class="n">roll_greyscale</span><span class="o">.</span><span class="n">shape</span>
 </span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">n_columns</span><span class="p">)</span> <span class="c"># 0,1,2,3,4… n_columns</span>
 </span><span class='line'><span class="n">lum0</span> <span class="o">=</span> <span class="n">luminosity_per_column</span> <span class="o">-</span> <span class="n">luminosity_per_column</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">fourier_transform</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">tt</span><span class="p">):</span>
 </span><span class='line'>    <span class="err">“””</span> <span class="n">See</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">en</span><span class="o">.</span><span class="n">wikipedia</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">wiki</span><span class="o">/</span><span class="n">Fourier_transform</span>
-</span><span class='line'>    <span class="n">How</span> <span class="n">come</span> <span class="n">Numpy</span> <span class="ow">and</span> <span class="n">Scipy</span> <span class="n">don</span><span class="err">’</span><span class="n">t</span> <span class="n">implement</span> <span class="n">this</span> <span class="err">???</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="n">How</span> <span class="n">come</span> <span class="n">Numpy</span> <span class="ow">and</span> <span class="n">Scipy</span> <span class="n">don</span><span class="err">’</span><span class="n">t</span> <span class="n">implement</span> <span class="n">this</span> <span class="err">???</span>
+</span><span class='line'>    <span class="err">“””</span>
 </span><span class='line'>    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">func</span> <span class="p">:</span> <span class="p">(</span><span class="n">signal</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">func</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">pi</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">tt</span><span class="o">/</span><span class="n">period</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </span><span class='line'>    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span><span class="o">+</span> <span class="mi">1j</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">f</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
@@ -537,7 +539,7 @@ transcribe from a video of from a midi file (it uses the package
 </span><span class='line'><span class="n">keystrikes</span><span class="o">.</span><span class="n">transcribe</span><span class="p">(</span><span class="err">‘</span><span class="n">test2</span><span class="o">.</span><span class="n">ly</span><span class="err">’</span><span class="p">,</span> <span class="n">quarter_durations</span> <span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mf">0.01</span><span class="p">])</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Oh, and that video of me playing was is also made with Python (and my library <a href="http://zulko.github.io/moviepy/">MoviePy</a>). Here is <a href="https://gist.github.com/Zulko/10489427">the script</a> that generated it. </p>
+<p>Oh, and that video of me playing was also made with Python (and my library <a href="http://zulko.github.io/moviepy/">MoviePy</a>). Here is <a href="https://gist.github.com/Zulko/10489427">the script</a> that generated it. </p>
 
 <h2 id="a-final-word-on-piano-rolls-transcription">A final word on piano rolls transcription</h2>
 

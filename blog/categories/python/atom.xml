@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Python | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-04-11T20:57:41+02:00</updated>
+  <updated>2014-04-12T11:53:22+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -297,7 +297,7 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p>Let us dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/BVBRDooRAXU "></iframe></div></p>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 
