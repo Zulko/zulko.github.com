@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Numpy, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/numpy/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-04-12T11:53:22+02:00</updated>
+  <updated>2014-04-16T08:45:08+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -133,7 +133,7 @@ mean that a periodic pattern is present in the curve:</p>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">fourier_transform</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">period</span><span class="p">,</span> <span class="n">tt</span><span class="p">):</span>
 </span><span class='line'>    <span class="err">“””</span> <span class="n">See</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">en</span><span class="o">.</span><span class="n">wikipedia</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">wiki</span><span class="o">/</span><span class="n">Fourier_transform</span>
-</span><span class='line'>    <span class="n">How</span> <span class="n">come</span> <span class="n">Numpy</span> <span class="ow">and</span> <span class="n">Scipy</span> <span class="n">don</span><span class="err">’</span><span class="n">t</span> <span class="n">implement</span> <span class="n">this</span> <span class="err">???</span>
+</span><span class='line'>    <span class="n">I</span> <span class="n">could</span> <span class="n">also</span> <span class="n">have</span> <span class="n">used</span> <span class="n">Numpy</span><span class="err">’</span><span class="n">s</span> <span class="n">fft</span><span class="o">.</span>
 </span><span class='line'>    <span class="err">“””</span>
 </span><span class='line'>    <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">func</span> <span class="p">:</span> <span class="p">(</span><span class="n">signal</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">func</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">pi</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">tt</span><span class="o">/</span><span class="n">period</span><span class="p">))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 </span><span class='line'>    <span class="k">return</span> <span class="n">f</span><span class="p">(</span><span class="n">cos</span><span class="p">)</span><span class="o">+</span> <span class="mi">1j</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">f</span><span class="p">(</span><span class="n">sin</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
@@ -167,7 +167,7 @@ mean that a periodic pattern is present in the curve:</p>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># The maximum the transform indicates the holes’ width</span>
 </span><span class='line'><span class="n">optimal_i</span> <span class="o">=</span> <span class="n">argmax</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">transform</span><span class="p">))</span>
 </span><span class='line'><span class="n">hole_width</span> <span class="o">=</span> <span class="n">widths</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">]</span>
-</span><span class='line'><span class="n">offset</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">transform</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">])</span> <span class="o">+</span><span class="n">hole_width</span><span class="o">/</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'><span class="n">offset</span> <span class="o">=</span> <span class="n">angle</span><span class="p">(</span><span class="n">transform</span><span class="p">[</span><span class="n">optimal_i</span><span class="p">])</span> <span class="o">+</span><span class="n">hole_width</span><span class="o">/</span><span class="mi">2</span> <span class="c"># to be revised.&lt;/p&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">keys_positions</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">offset</span><span class="p">,</span> <span class="n">n_columns</span><span class="p">,</span> <span class="n">hole_width</span><span class="p">)</span>
 </span><span class='line'><span class="n">keys_positions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">keys_positions</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
@@ -484,7 +484,7 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="err">‘</span><span class="n">w</span><span class="o">+</span><span class="err">’</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
 </span><span class='line'>    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="err">“</span>\<span class="n">score</span><span class="p">{</span>\<span class="n">new</span> <span class="n">Voice</span><span class="p">{</span> \<span class="n">tempo</span> <span class="mi">4</span><span class="o">=%</span><span class="n">d</span><span class="err">”</span><span class="o">%</span><span class="n">tempo</span>
-</span><span class='line'>            <span class="o">+</span> <span class="err">“</span>\<span class="n">n</span> <span class="o">%</span><span class="n">s</span><span class="p">}</span><span class="err">”</span><span class="o">%</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>            <span class="o">+</span> <span class="err">“</span>\<span class="n">n</span> <span class="o">%</span><span class="n">s</span><span class="p">}</span><span class="err">”</span><span class="o">%</span><span class="n">right_hand_lily</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;render-the-sheet-music-by-running-lilypond&quot;</span><span class="o">&gt;</span><span class="n">render</span> <span class="n">the</span> <span class="n">sheet</span> <span class="n">music</span> <span class="n">by</span> <span class="n">running</span> <span class="n">Lilypond</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">import</span> <span class="nn">os</span>  <span class="o">&lt;</span><span class="n">br</span> <span class="o">/&gt;</span>
@@ -553,12 +553,11 @@ scans (starting from MIDI files is equivalent to starting directly to
 Step 3, quantization and hands separation). Thousands of MIDI files 
 from rolls scans are available on the internet (like 
 <a href="http://www.iammp.org">here</a> or <a href="http://www.pianola.co.nz">here</a>) but 
-not all mechanical piano owners have has the appropriate scanner, so 
+not all mechanical piano owners have the appropriate scanner, so 
 there must be thousands of other rolls in private collections which 
 have never been scanned and pushed on the Internet.</p>
 
-<p>I wrote this post to show that just filming piano rolls in action can 
-be enough to make them  transcribable.</p>
+<p>I wrote this post to show that just filming piano rolls in action is enough for transcriptions purposes.</p>
 ]]></content>
   </entry>
   

@@ -1,0 +1,491 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Pitch-shifting and Pianoputer in Python - __del__( self )</title>
+  <meta name="author" content="Zulko">
+
+  
+  <meta name="description" content="Give me a bowl and 60 lines of python and I’ll play the Turkish March for you. A sound can be encoded as an array (or list) of values which represent &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="__del__( self )" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
+  <h1><a href="/">__del__( self )</a></h1>
+  
+    <h2>Eaten by the Python.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:Zulko.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Pitch-shifting and Pianoputer in Python</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T15:40:00+01:00" pubdate data-updated="true">Mar 29<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>Give me a bowl and 60 lines of python and I’ll play the Turkish March for you.</em></p>
+
+<!-- more -->
+
+<p>A sound can be encoded as an array (or list) of values which represent a signal, like this:</p>
+
+<p><img class="center" src="/images/soundstretching/210121.png" /></p>
+
+<p>To make this sound play twice faster, we just need to remove every second value in the array:</p>
+
+<p><img class="center" src="/images/soundstretching/202020.png" /></p>
+
+<p>By doing so we didn’t only halved the sound’s duration, we also doubled its frequency, making it higher-pitched than the original.</p>
+
+<p>If on the contrary we repeat each array value twice, we produce a sound that is twice slower, with a longer period, and therefire lower-pitched:</p>
+
+<p><img class="center" src="/images/soundstretching/221100.png" /></p>
+
+<p>then we produce a sound that is twice slower, and lower-pitched:</p>
+
+<p>This can be easily generalized ; here is a Python function to change the speed of a sound by any factor:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">speedx</span><span class="p">(</span><span class="n">sound_array</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Multiplies the sound&#39;s speed by some `factor` &quot;&quot;&quot;</span>
+</span><span class="line">    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound_array</span><span class="p">),</span> <span class="n">factor</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">sound_array</span><span class="p">[</span> <span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now the real black magic happens when you want to</p>
+
+<p>1- Change the duration of a clip while preserving its pitch (sound-stretching)
+2- Change the pitch of a clip while preserving its duration (pitch-shifting)</p>
+
+<h2 id="sound-stretching">Sound-stretching</h2>
+
+<p>http://audioprograming.wordpress.com/2012/03/02/a-phase-vocoder-in-python/</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">stretch</span><span class="p">(</span><span class="n">sound_array</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">window_size</span><span class="p">,</span> <span class="n">h</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Stretches the sound by a factor `f` &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">phase</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+</span><span class="line">    <span class="n">hanning_window</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hanning</span><span class="p">(</span><span class="n">window_size</span><span class="p">)</span>
+</span><span class="line">    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound_array</span><span class="p">)</span> <span class="o">/</span><span class="n">f</span> <span class="o">+</span> <span class="n">window_size</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound_array</span><span class="p">)</span><span class="o">-</span><span class="p">(</span><span class="n">window_size</span><span class="o">+</span><span class="n">h</span><span class="p">),</span> <span class="n">h</span><span class="o">*</span><span class="n">f</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># two potentially overlapping subarrays</span>
+</span><span class="line">        <span class="n">a1</span> <span class="o">=</span> <span class="n">sound_array</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">window_size</span><span class="p">]</span>
+</span><span class="line">        <span class="n">a2</span> <span class="o">=</span> <span class="n">sound_array</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="n">h</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">window_size</span> <span class="o">+</span> <span class="n">h</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># resynchronize the second array</span>
+</span><span class="line">        <span class="n">s1</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">hanning_window</span> <span class="o">*</span> <span class="n">a1</span><span class="p">)</span>
+</span><span class="line">        <span class="n">s2</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft</span><span class="p">(</span><span class="n">hanning_window</span> <span class="o">*</span> <span class="n">a2</span><span class="p">)</span>
+</span><span class="line">        <span class="n">phase</span> <span class="o">=</span> <span class="p">(</span><span class="n">phase</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">angle</span><span class="p">(</span><span class="n">s2</span><span class="o">/</span><span class="n">s1</span><span class="p">))</span> <span class="o">%</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</span><span class="line">        <span class="n">a2_rephased</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1j</span><span class="o">*</span><span class="n">phase</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># add to result</span>
+</span><span class="line">        <span class="n">i2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="o">/</span><span class="n">f</span><span class="p">)</span>
+</span><span class="line">        <span class="n">result</span><span class="p">[</span><span class="n">i2</span> <span class="p">:</span> <span class="n">i2</span> <span class="o">+</span> <span class="n">window_size</span><span class="p">]</span> <span class="o">+=</span> <span class="n">hanning_window</span><span class="o">*</span><span class="n">a2_rephased</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">result</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="mi">16</span><span class="o">-</span><span class="mi">4</span><span class="p">))</span> <span class="o">*</span> <span class="n">result</span><span class="o">/</span><span class="n">result</span><span class="o">.</span><span class="n">max</span><span class="p">())</span> <span class="c"># normalize (16bit)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s">&#39;int16&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="sound-stretching-1">Sound-stretching</h2>
+
+<p>Pitch-shifting is pretty easy once you know how to do sound-stretching. Imagine</p>
+
+<p>Doubling the frequency increases the pitch of one octave, which is 12 musical tones. Therefore to increase the pitch by one tone we must multiply the frequency by a factor $2^{1/12}$. To do so we first</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">pitchshift</span><span class="p">(</span><span class="n">snd_array</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">window_size</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">13</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="mi">11</span><span class="p">):</span>
+</span><span class="line">    <span class="s">&quot;&quot;&quot;</span>
+</span><span class="line"><span class="s">    factor = 2**(1.0 * n / 12.0)</span>
+</span><span class="line"><span class="s">    stretched = stretch(snd_array, 1.0/factor, window_size, h) </span>
+</span><span class="line"><span class="s">    return speedx(stretched[window_size:], factor)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="an-application-the-pianoputer">An application: the Pianoputer</h2>
+
+<p>In what follows I load a sound and make 50 derivative sounds by applying pitch-shifts:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">wavfile</span>
+</span><span class="line">
+</span><span class="line"><span class="n">fps</span><span class="p">,</span> <span class="n">bowl_sound</span> <span class="o">=</span> <span class="n">wavfile</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;bowl.wav&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">tones</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span><span class="mi">25</span><span class="p">)</span>
+</span><span class="line"><span class="n">transposed</span> <span class="o">=</span> <span class="p">[</span><span class="n">pitchshift</span><span class="p">(</span><span class="n">bowl_sound</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Then with Pygame I assign a key of my computer keyboard to each sound: it will be played onkey press and stopped on key release:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">pygame</span>
+</span><span class="line">
+</span><span class="line"><span class="n">pygame</span><span class="o">.</span><span class="n">mixer</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="n">fps</span><span class="p">,</span> <span class="o">-</span><span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span> <span class="c"># so flexible ;)</span>
+</span><span class="line"><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="mi">640</span><span class="p">,</span><span class="mi">480</span><span class="p">))</span> <span class="c"># for the focus</span>
+</span><span class="line">
+</span><span class="line"><span class="n">keys</span> <span class="o">=</span> <span class="s">&quot;QZSEDFTGYHUJK&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># A better list of keys:</span>
+</span><span class="line"><span class="c">#~ keys = open(&#39;typewriter.kb&#39;).read().split(&#39;\n&#39;)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">sounds</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">sndarray</span><span class="o">.</span><span class="n">make_sound</span><span class="p">,</span> <span class="n">transposed</span><span class="p">)</span>
+</span><span class="line"><span class="n">key_sound</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> <span class="nb">zip</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">sounds</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line"><span class="n">is_playing</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">False</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+</span><span class="line">
+</span><span class="line"><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">event</span> <span class="o">=</span>  <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYUP</span><span class="p">):</span>
+</span><span class="line">        <span class="n">key</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="n">key_sound</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_playing</span><span class="p">[</span><span class="n">key</span><span class="p">]):</span>
+</span><span class="line">            <span class="n">key_sound</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">fade_ms</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</span><span class="line">            <span class="n">is_playing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+</span><span class="line">            <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</span><span class="line">            <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYUP</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key_sound</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">key_sound</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fadeout</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="c"># stops with 10ms fadeout</span>
+</span><span class="line">        <span class="n">is_playing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">Falseklm</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>And that’s it, I have turned my computer into a piano. Notice that in the code I wrote a line to load a list of keys this famous traditional Turkish song:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/BVBRDooRAXU "></iframe></div>
+
+<p>I believe it is your turn now ! Here is <a href="">the whole code</a>, and if you are ready to take it to the next level I have started a Python package called <a href="">kbmix</a> around these ideas.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zulko</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-29T15:40:00+01:00" pubdate data-updated="true">Mar 29<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python/" data-via="" data-counturl="http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/12/transcribing-piano-rolls/" title="Previous Post: Transcribing Piano Rolls, the Pythonic Way">&laquo; Transcribing Piano Rolls, the Pythonic Way</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python/">Pitch-shifting and Pianoputer in Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/12/transcribing-piano-rolls/">Transcribing Piano Rolls, the Pythonic Way</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">Making GIFs From Video Files With Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/">Interception of a Linear Trajectory With Constant Speed</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing People So That Everyone Meets</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Zulko">@Zulko</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'Zulko',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Zulko -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python/';
+        var disqus_url = 'http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-and-in-python/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
