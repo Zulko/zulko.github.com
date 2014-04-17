@@ -571,8 +571,8 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">filename</span> <span class="o">=</span> <span class="s">&quot;limehouse.ly&quot;</span>
 </span><span class="line">
 </span><span class="line"><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s">&#39;w+&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-</span><span class="line">    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;\score{</span><span class="se">\n</span><span class="s">ew Voice{ </span><span class="se">\\</span><span class="s">tempo 4=</span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">tempo</span>
-</span><span class="line">            <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">}&quot;</span><span class="o">%</span><span class="n">right_hand_lily</span><span class="p">)</span>
+</span><span class="line">    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;\score{</span><span class="se">\\</span><span class="s">new Voice{ </span><span class="se">\\</span><span class="s">tempo 4=</span><span class="si">%d</span><span class="s">&quot;</span><span class="o">%</span><span class="n">tempo</span>
+</span><span class="line">            <span class="o">+</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s"> </span><span class="si">%s</span><span class="s">}}&quot;</span><span class="o">%</span><span class="n">right_hand_lily</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># render the sheet music by running Lilypond</span>
 </span><span class="line"><span class="kn">import</span> <span class="nn">os</span>
