@@ -163,7 +163,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>where the exponents <script type="math/tex"> c_1, c_2, c_3 </script> reflect the relative importance that we decide to attach to each criterion.</p>
 
-<p>Evaluating this score on the graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the graph with no descendents, and the loops of the maze correspond to the thin edges. The equivalent graph itself can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
+<p>Evaluating this score on the states graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the states graph with no descendents, and the loops of the maze correspond to the thin edges. The states graph itself can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
 
 <h2 id="how-to-evolve-a-maze">How to evolve a maze</h2>
 
