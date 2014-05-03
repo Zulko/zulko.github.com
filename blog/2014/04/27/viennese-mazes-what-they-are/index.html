@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Viennese Mazes: what they are, and how to make one - __del__( self )</title>
+  <meta name="author" content="Zulko">
+
+  
+  <meta name="description" content="In this post I present an original concept of labyrinths and explain how they can be programmatically generated. For some time now I have been &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="__del__( self )" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
+  <h1><a href="/">__del__( self )</a></h1>
+  
+    <h2>Eaten by the Python.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:Zulko.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Viennese Mazes: What They Are, and How to Make One</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-27T23:34:00+02:00" pubdate data-updated="true">Apr 27<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><em>In this post I present an original concept of labyrinths and explain how they can be programmatically generated.</em></p>
+
+<!-- more -->
+
+<p>For some time now I have been designing labyrinths based on traffic lights, like this one:</p>
+
+<p><img class="center" src="/images/vmazes/viennese_maze.jpeg" width="550" /></p>
+
+<p>I call these <em>Viennese mazes</em> (long story) and since I couldn’t find anything similar on the Web, I assume that this is something new. Here are <a href="https://i.imgur.com/j2gWurM.jpg">some more</a> with other shapes, and <a href="https://i.imgur.com/bReTSfN.png">their solutions</a>.</p>
+
+<p>These mazes are very difficult to design by hand, and this post is about how to ask your computer to do the work for you. We will see what a <em>good</em> Viennese maze is made of, and how to generate one using a simple evolutionary algorithm.</p>
+
+<h2 id="viennese-mazes-are-a-special-kind-of-normal-mazes">Viennese mazes are (a special kind of) normal mazes</h2>
+
+<p>My first intention with Viennese mazes was to make dynamic mazes, with <em>moving walls</em>. But under each Viennese maze there is actually a standard, old-school labyrinth.</p>
+
+<p>To see this we must think in terms of <em>states</em>. A state describes where you are in the maze, and determines where you can go from there. In the maze above, state (c,1,a) means “I am in (c), I have passed 1 traffic light until then, and just before that I was in (a)”. From this state you cannot reach (d) as the light in this street has turned red, and you cannot reach (a) because you just came from here. But you can move to (b) or (g), that is, to state (b,2,c) or state (g,2,c). Note that states such as (c,1,a), (c,4,a), and (c,7,a) are actually the same state, because afer three moves all traffic lights come back to their original position. So there will always be a finite number of states in a Viennese maze.</p>
+
+<p>If we draw a map of all (reachable) states and their connexions we obtain the following <em>states graph</em> :</p>
+
+<p><img class="center" src="/images/vmazes/graph.jpeg" /></p>
+
+<p>The green node marks the starting point, while the blue node is a reunion of all states corresponding to the goal (m). The nodes on the $i$-th line from the top can be reached in $i$ moves but no less, thick lines go downwards and thin lines go upwards.</p>
+
+<p>This graph looks like a classical labyrinth, with crossroads, dead ends, loops… at one glance it gives an idea of the complexity and interestingness of the original Viennese maze. Therefore, we will consider that a good Viennese maze is a maze whose states graph makes a good labyrinth.</p>
+
+<h2 id="what-makes-a-good-labyrinth-">What makes a good labyrinth ?</h2>
+
+<p>Here is an illustration of a few criteria which make a labyrinth insteresting :</p>
+
+<p><img class="center" src="/images/vmazes/classical_maze.jpeg" width="450" /></p>
+
+<ol>
+  <li>There must be a unique solution, the longer the better. In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
+  <li>There must be plenty of loops (like <em>b</em>), dead ends (like <em>c</em>), and links between false paths (like <em>d</em>), all of these preferally early on the path.</li>
+  <li>The maze should be be difficult to solve backwards too, by having false ending paths (like <em>e</em>). This criterion also tends to produce nicer-looking Viennese mazes, with a better balance of the different colors.</li>
+</ol>
+
+<p>For the computer to be able to compare mazes and identify the most interesting ones we define scores <script type="math/tex"> S_1, S_2, S_3 </script> which will quantify how well each of the criteria 1,2,3, are fullfilled by a given maze. For instance</p>
+
+<script type="math/tex; mode=display">
+S_1(maze) = \begin{cases}
+0, \,\, \mbox{if there is no solution,} \\
+1, \,\, \mbox{if there are multiple solutions,} \\
+L, \,\, \mbox{if there is a unique solution, of length $L$.}
+\end{cases}
+</script>
+
+<p>The final score of a Viennese maze is given by the product</p>
+
+<script type="math/tex; mode=display"> S = S_1^{c_1} \cdot S_2^{c_2} \cdot S_3^{c_3} </script>
+
+<p>where the exponents <script type="math/tex"> c_1, c_2, c_3 </script> reflect the relative importance that we decide to attach to each criterion.</p>
+
+<p>Evaluating this score on the graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the graph with no descendents, and the loops of the maze correspond to the thin edges. The equivalent graph itself can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
+
+<h2 id="how-to-evolve-a-maze">How to evolve a maze</h2>
+
+<p>Now that we have defined a score for our labyrinths, we will provide the computer with this uncolored canvas, for which we will ask a <em>coloring</em> (initial color of each traffic light) producing the best score possible :</p>
+
+<p><img class="center" src="/images/vmazes/canvas.jpeg" width="250" /></p>
+
+<p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and studying all these possibilities would be too long. But we can hope that a large number of these colorings make interesting mazes, and we will look semi-randomly for some of them.</p>
+
+<p>An effective way to do so is to first colorize the canvas in a completely random way, then improve this coloring by repeating the following steps:</p>
+
+<ol>
+  <li>Create a new maze by randomly changing just a few colors of the current maze.</li>
+  <li>Compute the score of this new maze.</li>
+  <li>If the new maze scores lower than the current maze, dump it, otherwise it replaces the current maze. Go back to step 1.</li>
+</ol>
+
+<p>Here is a maze being being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
+
+<p><img class="center" src="http://i.imgur.com/yc1lwgh.gif" title="'hosted on imgur'" /></p>
+
+<p>This algorithm can be refined using annealing (in which you first evaluate many different mazes before refining the search around the best one), or any fancier search strategy such as genetic algorithms, ant colonies… What works best is still an open question.</p>
+
+<h2 id="give-it-a-try-">Give it a try !</h2>
+
+<p>If you want to try and make your own Viennese mazes (using for instance you district as a canvas), I wrote a Python package called <a href="http://zulko.github.io/vmfactory/">vmfactory</a> which implements all the steps discussed above. It can generate two variants of Viennese mazes: one where passing through the same light twice in a row is forbidden, and one where it isn’t (algorithmically, the only difference is the way the states graph is computed).</p>
+
+<p>In the following example, we generate a squared canvas, we initialize a maze with random colors, optimize it, and generate a report (maze/graph/solution): </p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">vmfactory</span> <span class="kn">import</span> <span class="n">Vmaze_NHT</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">vmfactory.canvas</span> <span class="kn">import</span> <span class="n">squares_grid</span>
+</span><span class="line">
+</span><span class="line"><span class="n">canvas</span> <span class="o">=</span> <span class="n">squares_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c"># nodes will be numbered 0..15</span>
+</span><span class="line"><span class="c"># NHT means no half-turns (can&#39;t pass a light twice in a row) </span>
+</span><span class="line"><span class="n">maze</span> <span class="o">=</span> <span class="n">Vmaze_NHT</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class="line"><span class="n">maze</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span> <span class="n">maze</span><span class="o">.</span><span class="n">random_colors</span><span class="p">()</span> <span class="p">)</span>
+</span><span class="line"><span class="n">maze</span><span class="o">.</span><span class="n">anneal</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span> <span class="c"># optimize the maze</span>
+</span><span class="line"><span class="n">maze</span><span class="o">.</span><span class="n">make_report</span><span class="p">()</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;myreport.png&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="/images/vmazes/report.jpeg" width="550" /></p>
+
+<p>The package is based on Networkx, Numpy and Matplotlib. The code is rather short (most of it serves to draw fancy graphs !), and modular : you can easily change the rules, change the way the score is computed, change the optimization procedure, or the way the reports are drawn.</p>
+
+<p>Thank you for reading until there, and happy mazing !</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zulko</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-27T23:34:00+02:00" pubdate data-updated="true">Apr 27<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/" data-via="" data-counturl="http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/12/transcribing-piano-rolls/" title="Previous Post: Transcribing Piano Rolls, the Pythonic Way">&laquo; Transcribing Piano Rolls, the Pythonic Way</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/04/27/viennese-mazes-what-they-are/">Viennese Mazes: What They Are, and How to Make One</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/12/transcribing-piano-rolls/">Transcribing Piano Rolls, the Pythonic Way</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">Making GIFs From Video Files With Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/">Interception of a Linear Trajectory With Constant Speed</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/">Placing People So That Everyone Meets</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Zulko">@Zulko</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'Zulko',
+            count: 3,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Zulko -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/';
+        var disqus_url = 'http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
