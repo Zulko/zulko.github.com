@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-05-03T21:44:19+02:00</updated>
+  <updated>2014-05-04T10:05:25+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -14,26 +14,145 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Viennese Mazes: what they are, and how to make one]]></title>
+    <link href="http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/"/>
+    <updated>2014-04-27T23:34:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are</id>
+    <content type="html"><![CDATA[<p><em>In this post I present an original concept of labyrinths and explain how they can be programmatically generated.</em></p>
+
+<!-- more -->
+
+<p>For some time now I have been designing labyrinths based on traffic lights, like this one:</p>
+
+<p><img class="center" src="/images/vmazes/viennese_maze.jpeg" width="550"></p>
+
+<p>I call these <em>Viennese mazes</em> (long story) and since I couldn’t find anything similar on the Web, I assume that this is something new. Here are <a href="https://i.imgur.com/j2gWurM.jpg">some more</a> with other shapes, and <a href="https://i.imgur.com/bReTSfN.png">their solutions</a>.</p>
+
+<p>These mazes are very difficult to design by hand, and this post is about how to ask your computer to do the work for you. We will see what a <em>good</em> Viennese maze is made of, and how to generate one using a simple evolutionary algorithm.</p>
+
+<h2 id="viennese-mazes-are-a-special-kind-of-normal-mazes">Viennese mazes are (a special kind of) normal mazes</h2>
+
+<p>My first intention with Viennese mazes was to make dynamic mazes, with <em>moving walls</em>. But under each Viennese maze there is actually a standard, old-school labyrinth.</p>
+
+<p>To see this we must think in terms of <em>states</em>. A state describes where you are in the maze, and determines where you can go from there. In the maze above, state (c,1,a) means “I am in (c), I have passed 1 traffic light until then, and just before that I was in (a)”. From this state you cannot reach (d) as the light in this street has turned red, and you cannot reach (a) because you just came from here. But you can move to (b) or (g), that is, to state (b,2,c) or state (g,2,c). Note that states such as (c,1,a), (c,4,a), and (c,7,a) are actually the same state, because afer three moves all traffic lights come back to their original position. So there will always be a finite number of states in a Viennese maze.</p>
+
+<p>If we draw a map of all (reachable) states and their connexions we obtain the following <em>states graph</em> :</p>
+
+<p><img class="center" src="/images/vmazes/graph.jpeg"></p>
+
+<p>The green node marks the starting point, while the blue node is a reunion of all states corresponding to the goal (m). The nodes on the $i$-th line from the top can be reached in $i$ moves but no less, thick lines go downwards and thin lines go upwards.</p>
+
+<p>This graph looks like a classical labyrinth, with crossroads, dead ends, loops… at one glance it gives an idea of the complexity and interestingness of the original Viennese maze. Therefore, we will consider that a good Viennese maze is a maze whose states graph makes a good labyrinth.</p>
+
+<h2 id="what-makes-a-good-labyrinth-">What makes a good labyrinth ?</h2>
+
+<p>Here is an illustration of a few criteria which make a labyrinth insteresting :</p>
+
+<p><img class="center" src="/images/vmazes/classical_maze.jpeg" width="450"></p>
+
+<ol>
+  <li>There must be a unique solution, the longer the better. In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
+  <li>There must be plenty of loops (like <em>b</em>), dead ends (like <em>c</em>), and links between false paths (like <em>d</em>), all of these preferally early on the path.</li>
+  <li>The maze should be be difficult to solve backwards too, by having false ending paths (like <em>e</em>). This criterion also tends to produce nicer-looking Viennese mazes, with a better balance of the different colors.</li>
+</ol>
+
+<p>For the computer to be able to compare mazes and identify the most interesting ones we define scores <script type="math/tex"> S_1, S_2, S_3 </script> which will quantify how well each of the criteria 1,2,3, are fullfilled by a given maze. For instance</p>
+
+<script type="math/tex; mode=display">
+S_1(maze) =
+\begin{cases}
+0, \,\, \mbox{if there is no solution,} \\
+1, \,\, \mbox{if there are multiple solutions,} \\
+L, \,\, \mbox{if there is a unique solution, of length $L$.}
+\end{cases}
+</script>
+
+<p>The final score of a Viennese maze is given by the product</p>
+
+<script type="math/tex; mode=display"> S = S_1^{c_1} \cdot S_2^{c_2} \cdot S_3^{c_3} </script>
+
+<p>where the exponents <script type="math/tex"> c_1, c_2, c_3 </script> reflect the relative importance that we decide to attach to each criterion.</p>
+
+<p>Evaluating this score on the states graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the states graph with no descendents, and the loops of the maze correspond to the thin edges. The states graph itself can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
+
+<h2 id="how-to-evolve-a-maze">How to evolve a maze</h2>
+
+<p>Now that we have defined a score for our labyrinths, we will provide the computer with this uncolored canvas, for which we will ask a <em>coloring</em> (initial color of each traffic light) producing the best score possible :</p>
+
+<p><img class="center" src="/images/vmazes/canvas.jpeg" width="250"></p>
+
+<p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and studying all these possibilities would be too long. But we can hope that a large number of these colorings make interesting mazes, and we will look semi-randomly for some of them.</p>
+
+<p>An effective way to do so is to first colorize the canvas in a completely random way, then improve this coloring by repeating the following steps:</p>
+
+<ol>
+  <li>Create a new maze by randomly changing just a few colors of the current maze.</li>
+  <li>Compute the score of this new maze.</li>
+  <li>If the new maze scores lower than the current maze, dump it, otherwise it replaces the current maze. Go back to step 1.</li>
+</ol>
+
+<p>Here is a maze being being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
+
+<p><img class="center" src="http://i.imgur.com/yc1lwgh.gif" title="‘hosted on imgur’" ></p>
+
+<p>This algorithm can be refined using annealing (in which you first evaluate many different mazes before refining the search around the best one), or any fancier search strategy such as genetic algorithms, ant colonies… What works best is still an open question.</p>
+
+<h2 id="give-it-a-try-">Give it a try !</h2>
+
+<p>If you want to try and make your own Viennese mazes (using for instance you district as a canvas), I wrote a Python package called <a href="http://zulko.github.io/vmfactory/">vmfactory</a> which implements all the steps discussed above. It can generate two variants of Viennese mazes: one where passing through the same light twice in a row is forbidden, and one where it isn’t (algorithmically, the only difference is the way the states graph is computed).</p>
+
+<p>In the following example, we generate a squared canvas, we initialize a maze with random colors, optimize it, and generate a report (maze/graph/solution): </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vmfactory</span> <span class="kn">import</span> <span class="n">Vmaze_NHT</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">vmfactory.canvas</span> <span class="kn">import</span> <span class="n">squares_grid</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">squares_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c"># nodes will be numbered 0..15</span>
+</span><span class='line'><span class="c"># NHT means no half-turns (can’t pass a light twice in a row) </span>
+</span><span class='line'><span class="n">maze</span> <span class="o">=</span> <span class="n">Vmaze_NHT</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span> <span class="n">maze</span><span class="o">.</span><span class="n">random_colors</span><span class="p">()</span> <span class="p">)</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">anneal</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span> <span class="c"># optimize the maze</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">make_report</span><span class="p">()</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="err">‘</span><span class="n">myreport</span><span class="o">.</span><span class="n">png</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/vmazes/report.jpeg" width="550"></p>
+
+<p>The package is based on Networkx, Numpy and Matplotlib. The code is rather short (most of it serves to draw fancy graphs !), and modular : you can easily change the rules, change the way the score is computed, change the optimization procedure, or the way the reports are drawn.</p>
+
+<p>Thank you for reading until there, and happy mazing !</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Delay differential equations in Python]]></title>
     <link href="http://Zulko.github.io/blog/2013/10/22/delay-differential-equations-in-python/"/>
     <updated>2013-10-22T07:50:00+02:00</updated>
     <id>http://Zulko.github.io/blog/2013/10/22/delay-differential-equations-in-python</id>
-    <content type="html"><![CDATA[<p><em>I wrote</em> <code>ddeint</code>, <em>a function for solving Delay Differential Equations 
-(DDEs)
-in Python. It is not very fast, but very flexible, and simply coded: just <a href="https://gist.github.com/Zulko/7096011">a few lines</a> on top of Scipy’s 
-differential equations solver,</em> <code>odeint</code>.</p>
+    <content type="html"><![CDATA[<p><em>I wrote</em> <code>ddeint</code>, <em>a simple function/module for solving Delay Differential Equations (DDEs) in Python. It is not very fast, but very flexible, and coded in just <a href="https://gist.github.com/Zulko/7096011">a few lines</a> on top of Scipy’s differential equations solver,</em> <code>odeint</code>.</p>
 
 <!-- more -->
 
-<p>Say you have a DDE like this:</p>
+<p>Say you have a delay differential equation like this:</p>
 
-<p>$ y(t) = g(t) \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% &lt;![CDATA[
 
-<p>$ y’(t) = F( y, t) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = g(t), \,\,\,\, &\mbox{for $t<0$} \\
+y'(t) = F( y, t), \,\,\,\, &\mbox{for $t \geq 0$},
+\end{cases}
+ %]]&gt;</script>
 
-<p>Where $F(y, t)$ can involve delayed values of $y$, of the form $y(t-d)$.</p>
+<p>where $F(y, t)$ can involve delayed values of $y$, of the form $y(t-d)$.</p>
 
-<p>To  solve this DDE in a series of points <code>t=[t1, t2 ...]</code> you would just write</p>
+<p>To solve this DDE system at points <code>t=[t1, t2 ...]</code> you would just write</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="c"># returns [y(t1), y(t2) …]</span>
@@ -41,12 +160,15 @@ differential equations solver,</em> <code>odeint</code>.</p>
 
 <h2 id="a-simple-example">A simple example</h2>
 
-<p>Let us start with a Delay Differential Equation whose exact solution is 
-known (it is the sine function), just to check that the algorithm works as expected:</p>
+<p>Let us start with a DDE whose exact solution is known (it is the sine function), just to check that the algorithm works as expected:</p>
 
-<p>$ y(t) = \sin(t) \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% &lt;![CDATA[
 
-<p>$ y’(t) = y(t-3\pi/2) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = \sin(t), \,\,\,\, &\mbox{for $t<0$} \\ 
+y'(t) = y(t-3\pi/2), \,\,\,\, &\mbox{for $t \geq 0$}
+\end{cases}
+ %]]&gt;</script>
 
 <p>Here is how we solve it with <code>ddeint</code>:</p>
 
@@ -62,10 +184,12 @@ known (it is the sine function), just to check that the algorithm works as expec
 <span class='line-number'>10</span>
 <span class='line-number'>11</span>
 <span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">ddeint</span> <span class="kn">import</span> <span class="n">ddeint</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">Y</span><span class="p">,</span><span class="n">t</span> <span class="p">:</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c"># Model</span>
-</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="c"># Time start, end, and number of points/steps</span>
+</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="c"># Time start, time end, nb of points/steps</span>
 </span><span class='line'><span class="n">g</span><span class="o">=</span><span class="n">sin</span> <span class="c"># Expression of Y(t) before the integration interval</span>
 </span><span class='line'><span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">tt</span><span class="p">)</span> <span class="c"># Solving&lt;/p&gt;</span>
 </span><span class='line'>
@@ -82,14 +206,18 @@ known (it is the sine function), just to check that the algorithm works as expec
 
 <h2 id="an-example-with-parameters">An example with parameters</h2>
 
-<p>You can set the parameters of your model at integration time, like in 
-Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a chemical product with degradation rate r, and whose production rate is negatively linked to the quantity of this same product at the time (t-d):</p>
+<p>You can set the parameters of your model at integration time, like in Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a chemical product with degradation rate $r$, and whose production rate is negatively linked to the quantity of this same product at the time $(t-d)$:</p>
 
-<p>$ y(t) = 0 \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% &lt;![CDATA[
 
-<p>$ y’(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = 0, \,\,\,\, &\mbox{for $t<0$} \\
+y'(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t), \,\,\,\,
+&\mbox{ for $t\geq 0$}.
+\end{cases}
+ %]]&gt;</script>
 
-<p>We have three parameters that we can choose freely. For K = 0.1, d = 5, r = 1, we obtain oscillations !</p>
+<p>We have three parameters that we can choose freely. For $K = 0.1$, $d = 5$, $r = 1$, we obtain oscillations !</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -109,7 +237,7 @@ Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a che
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg"></p>
+<p><img class="center" src="/images/ddeint/dde_negativefeedback.jpeg"></p>
 
 <h2 id="example-with-several-variables">Example with several variables</h2>
 
@@ -119,11 +247,14 @@ Lotka-Volterra two-variables system, where we introduce a delay $d$.
 For $d=0$ the system is a classical Lotka-Volterra system ; for 
 $d\neq 0$ the system undergoes an important amplification:</p>
 
-<p>$ \big(x(t), y(t)\big) = (1,2) \ \ \ for\ \ t &lt; 0, \ \ else.$</p>
+<script type="math/tex; mode=display">% &lt;![CDATA[
 
-<p>$x’(t) = 0.5x(t)\big(1-y(t-d)\big)$</p>
-
-<p>$y’(t) = -0.5y(t)\big(1-x(t-d)\big)$</p>
+\begin{cases}
+\big(x(t), y(t)\big) = (1,2) \,\,\,\, &\mbox{for $t<0$}, \\
+x'(t) = 0.5x(t)\big(1-y(t-d)\big) \,\,\,\, &\mbox{for $t\geq 0$}, \\
+y'(t) = -0.5y(t)\big(1-x(t-d)\big) \,\,\,\, &\mbox{for $\geq 0$}.
+\end{cases}
+ %]]&gt;</script>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -155,15 +286,20 @@ $d\neq 0$ the system undergoes an important amplification:</p>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">legend</span><span class="p">()</span> <span class="c"># display the legend</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg"></p>
+<p><img class="center" src="/images/ddeint/dde_lotka.jpeg"></p>
 
 <h2 id="example-with-a-non-constant-delay">Example with a non-constant delay</h2>
 
 <p>In this last example the delay depends on the value of $y(t)$ :</p>
 
-<p>$ y(t) = 1,\ \ \ t \leq 0$</p>
+<script type="math/tex; mode=display">% &lt;![CDATA[
 
-<p>$ y’(t) = - y\big(t-3\cos(y(t))^2 \big),\ \ \ t &gt; 0 $</p>
+\begin{cases}
+y(t) = 1, \,\,\,\, &\mbox{for $t<0$}, \\
+y'(t) = - y\big(t-3\cos(y(t))^2 \big),\,\,\,\,
+&\mbox{for $t \geq 0$}.
+\end{cases}
+ %]]&gt;</script>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -177,7 +313,7 @@ $d\neq 0$ the system undergoes an important amplification:</p>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg"></p>
+<p><img class="center" src="/images/ddeint/ydependent.jpeg"></p>
 ]]></content>
   </entry>
   

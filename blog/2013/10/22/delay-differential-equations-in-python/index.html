@@ -9,8 +9,7 @@
   <meta name="author" content="Zulko">
 
   
-  <meta name="description" content="I wrote ddeint, a function for solving Delay Differential Equations (DDEs)
-in Python. It is not very fast, but very flexible, and simply coded: just &hellip;">
+  <meta name="description" content="I wrote ddeint, a simple function/module for solving Delay Differential Equations (DDEs) in Python. It is not very fast, but very flexible, and coded &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -110,22 +109,23 @@ in Python. It is not very fast, but very flexible, and simply coded: just &helli
   </header>
 
 
-<div class="entry-content"><p><em>I wrote</em> <code>ddeint</code>, <em>a function for solving Delay Differential Equations 
-(DDEs)
-in Python. It is not very fast, but very flexible, and simply coded: just <a href="https://gist.github.com/Zulko/7096011">a few lines</a> on top of Scipy’s 
-differential equations solver,</em> <code>odeint</code>.</p>
+<div class="entry-content"><p><em>I wrote</em> <code>ddeint</code>, <em>a simple function/module for solving Delay Differential Equations (DDEs) in Python. It is not very fast, but very flexible, and coded in just <a href="https://gist.github.com/Zulko/7096011">a few lines</a> on top of Scipy’s differential equations solver,</em> <code>odeint</code>.</p>
 
 <!-- more -->
 
-<p>Say you have a DDE like this:</p>
+<p>Say you have a delay differential equation like this:</p>
 
-<p>$ y(t) = g(t) \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>$ y’(t) = F( y, t) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = g(t), \,\,\,\, &\mbox{for $t<0$} \\
+y'(t) = F( y, t), \,\,\,\, &\mbox{for $t \geq 0$},
+\end{cases}
+ %]]></script>
 
-<p>Where $F(y, t)$ can involve delayed values of $y$, of the form $y(t-d)$.</p>
+<p>where $F(y, t)$ can involve delayed values of $y$, of the form $y(t-d)$.</p>
 
-<p>To  solve this DDE in a series of points <code>t=[t1, t2 ...]</code> you would just write</p>
+<p>To solve this DDE system at points <code>t=[t1, t2 ...]</code> you would just write</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">y</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="c"># returns [y(t1), y(t2) ...]</span>
@@ -133,12 +133,15 @@ differential equations solver,</em> <code>odeint</code>.</p>
 
 <h2 id="a-simple-example">A simple example</h2>
 
-<p>Let us start with a Delay Differential Equation whose exact solution is 
-known (it is the sine function), just to check that the algorithm works as expected:</p>
+<p>Let us start with a DDE whose exact solution is known (it is the sine function), just to check that the algorithm works as expected:</p>
 
-<p>$ y(t) = \sin(t) \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>$ y’(t) = y(t-3\pi/2) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = \sin(t), \,\,\,\, &\mbox{for $t<0$} \\ 
+y'(t) = y(t-3\pi/2), \,\,\,\, &\mbox{for $t \geq 0$}
+\end{cases}
+ %]]></script>
 
 <p>Here is how we solve it with <code>ddeint</code>:</p>
 
@@ -154,10 +157,12 @@ known (it is the sine function), just to check that the algorithm works as expec
 <span class="line-number">10</span>
 <span class="line-number">11</span>
 <span class="line-number">12</span>
+<span class="line-number">13</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">ddeint</span> <span class="kn">import</span> <span class="n">ddeint</span>
 </span><span class="line">
 </span><span class="line"><span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">Y</span><span class="p">,</span><span class="n">t</span> <span class="p">:</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c"># Model</span>
-</span><span class="line"><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="c"># Time start, end, and number of points/steps</span>
+</span><span class="line"><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="c"># Time start, time end, nb of points/steps</span>
 </span><span class="line"><span class="n">g</span><span class="o">=</span><span class="n">sin</span> <span class="c"># Expression of Y(t) before the integration interval</span>
 </span><span class="line"><span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">tt</span><span class="p">)</span> <span class="c"># Solving</span>
 </span><span class="line">
@@ -174,14 +179,18 @@ known (it is the sine function), just to check that the algorithm works as expec
 
 <h2 id="an-example-with-parameters">An example with parameters</h2>
 
-<p>You can set the parameters of your model at integration time, like in 
-Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a chemical product with degradation rate r, and whose production rate is negatively linked to the quantity of this same product at the time (t-d):</p>
+<p>You can set the parameters of your model at integration time, like in Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a chemical product with degradation rate $r$, and whose production rate is negatively linked to the quantity of this same product at the time $(t-d)$:</p>
 
-<p>$ y(t) = 0 \ \ \ for\ \ \ t &lt; 0 $</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>$ y’(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t) \ \ \ for\ \ \ t \geq 0$</p>
+\begin{cases}
+y(t) = 0, \,\,\,\, &\mbox{for $t<0$} \\
+y'(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t), \,\,\,\,
+&\mbox{ for $t\geq 0$}.
+\end{cases}
+ %]]></script>
 
-<p>We have three parameters that we can choose freely. For K = 0.1, d = 5, r = 1, we obtain oscillations !</p>
+<p>We have three parameters that we can choose freely. For $K = 0.1$, $d = 5$, $r = 1$, we obtain oscillations !</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -201,7 +210,7 @@ Scipy’s <code>ODE</code> and <code>odeint</code>. As an example, imagine a che
 </span><span class="line"><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg" /></p>
+<p><img class="center" src="/images/ddeint/dde_negativefeedback.jpeg" /></p>
 
 <h2 id="example-with-several-variables">Example with several variables</h2>
 
@@ -211,11 +220,14 @@ Lotka-Volterra two-variables system, where we introduce a delay $d$.
 For $d=0$ the system is a classical Lotka-Volterra system ; for 
 $d\neq 0$ the system undergoes an important amplification:</p>
 
-<p>$ \big(x(t), y(t)\big) = (1,2) \ \ \ for\ \ t &lt; 0, \ \ else.$</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>$x’(t) = 0.5x(t)\big(1-y(t-d)\big)$</p>
-
-<p>$y’(t) = -0.5y(t)\big(1-x(t-d)\big)$</p>
+\begin{cases}
+\big(x(t), y(t)\big) = (1,2) \,\,\,\, &\mbox{for $t<0$}, \\
+x'(t) = 0.5x(t)\big(1-y(t-d)\big) \,\,\,\, &\mbox{for $t\geq 0$}, \\
+y'(t) = -0.5y(t)\big(1-x(t-d)\big) \,\,\,\, &\mbox{for $\geq 0$}.
+\end{cases}
+ %]]></script>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -247,15 +259,20 @@ $d\neq 0$ the system undergoes an important amplification:</p>
 </span><span class="line"><span class="n">legend</span><span class="p">()</span> <span class="c"># display the legend</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg" /></p>
+<p><img class="center" src="/images/ddeint/dde_lotka.jpeg" /></p>
 
 <h2 id="example-with-a-non-constant-delay">Example with a non-constant delay</h2>
 
 <p>In this last example the delay depends on the value of $y(t)$ :</p>
 
-<p>$ y(t) = 1,\ \ \ t \leq 0$</p>
+<script type="math/tex; mode=display">% <![CDATA[
 
-<p>$ y’(t) = - y\big(t-3\cos(y(t))^2 \big),\ \ \ t &gt; 0 $</p>
+\begin{cases}
+y(t) = 1, \,\,\,\, &\mbox{for $t<0$}, \\
+y'(t) = - y\big(t-3\cos(y(t))^2 \big),\,\,\,\,
+&\mbox{for $t \geq 0$}.
+\end{cases}
+ %]]></script>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -269,7 +286,7 @@ $d\neq 0$ the system undergoes an important amplification:</p>
 </span><span class="line"><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg" /></p>
+<p><img class="center" src="/images/ddeint/ydependent.jpeg" /></p>
 </div>
 
 
