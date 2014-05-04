@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-05-04T10:15:28+02:00</updated>
+  <updated>2014-05-04T11:46:50+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -51,9 +51,9 @@
 <p><img class="center" src="http://Zulko.github.io/images/vmazes/classical_maze.jpeg" width="450" /></p>
 
 <ol>
-  <li>There must be a unique solution, the longer the better. In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
-  <li>There must be plenty of loops (like <em>b</em>), dead ends (like <em>c</em>), and links between false paths (like <em>d</em>), all of these preferally early on the path.</li>
-  <li>The maze should be be difficult to solve backwards too, by having false ending paths (like <em>e</em>). This criterion also tends to produce nicer-looking Viennese mazes, with a better balance of the different colors.</li>
+  <li><strong>There must be a unique solution, the longer the better.</strong> In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
+  <li><strong>There must be plenty of loops and dead ends</strong>, like in <em>b</em> and <em>c</em>, and also links between false paths (like <em>d</em>), all of these preferally early on the path.</li>
+  <li><strong>The maze should be difficult to solve backwards</strong>, by having false ending paths (like <em>e</em>). This criterion also tends to produce nicer-looking Viennese mazes, with a better balance of the different colors.</li>
 </ol>
 
 <p>For the computer to be able to compare mazes and identify the most interesting ones we define scores <script type="math/tex"> S_1, S_2, S_3 </script> which will quantify how well each of the criteria 1,2,3, are fullfilled by a given maze. For instance</p>
@@ -73,17 +73,17 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>where the exponents <script type="math/tex"> c_1, c_2, c_3 </script> reflect the relative importance that we decide to attach to each criterion.</p>
 
-<p>Evaluating this score on the states graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the states graph with no descendents, and the loops of the maze correspond to the thin edges. The states graph itself can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
+<p>Evaluating this score on the states graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the states graph with no descendents, and the loops of the maze correspond to the thin edges. The states graph itself and its different lines of nodes can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
 
-<h2 id="how-to-evolve-a-maze">How to evolve a maze</h2>
+<h2 id="lets-grow-mazes-">Let’s grow mazes !</h2>
 
-<p>Now that we have defined a score for our labyrinths, we will provide the computer with this uncolored canvas, for which we will ask a <em>coloring</em> (initial color of each traffic light) producing the best score possible :</p>
+<p>Now that we have defined how to score a Viennese maze, we will provide the computer with an uncolored canvas, and we will ask for a <em>coloring</em> (initial color of each traffic light) of this canvas that produces the best score possible :</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/vmazes/canvas.jpeg" width="250" /></p>
 
-<p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and studying all these possibilities would be too long. But we can hope that a large number of these colorings make interesting mazes, and we will look semi-randomly for some of them.</p>
+<p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and considering all of them would be too long. But a great many of these colorings make interesting mazes, so we can just look semi-randomly for some of these.</p>
 
-<p>An effective way to do so is to first colorize the canvas in a completely random way, then improve this coloring by repeating the following steps:</p>
+<p>An effective way to do so is to first colorize the canvas in a completely random way, then improve the coloring by repeating the following steps:</p>
 
 <ol>
   <li>Create a new maze by randomly changing just a few colors of the current maze.</li>
@@ -91,13 +91,13 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
   <li>If the new maze scores lower than the current maze, dump it, otherwise it replaces the current maze. Go back to step 1.</li>
 </ol>
 
-<p>Here is a maze being being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
+<p>Here is a maze being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
 
 <p><img class="center" src="http://i.imgur.com/yc1lwgh.gif" title="'hosted on imgur'" /></p>
 
 <p>This algorithm can be refined using annealing (in which you first evaluate many different mazes before refining the search around the best one), or any fancier search strategy such as genetic algorithms, ant colonies… What works best is still an open question.</p>
 
-<h2 id="give-it-a-try-">Give it a try !</h2>
+<h2 id="try-it-at-home">Try it at home</h2>
 
 <p>If you want to try and make your own Viennese mazes (using for instance you district as a canvas), I wrote a Python package called <a href="http://zulko.github.io/vmfactory/">vmfactory</a> which implements all the steps discussed above. It can generate two variants of Viennese mazes: one where passing through the same light twice in a row is forbidden, and one where it isn’t (algorithmically, the only difference is the way the states graph is computed).</p>
 
