@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MoviePy, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/moviepy/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-09T14:19:10+02:00</updated>
+  <updated>2014-06-09T14:23:46+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -23,24 +23,31 @@
 <!-- more -->
 
 <p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:
-{% codeblock lang:python %}
-FFMPEG_BIN = “ffmpeg” # on Linux
-FFMPEG_BIN = “ffmpeg.exe” # on Windows
-{% endcodeblock %}</p>
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="err">“</span><span class="n">ffmpeg</span><span class="err">”</span> <span class="c"># on Linux</span>
+</span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="err">“</span><span class="n">ffmpeg</span><span class="o">.</span><span class="n">exe</span><span class="err">”</span> <span class="c"># on Windows</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h2 id="reading">Reading</h2>
 
 <p>To read the frames of the video “myHolidays.mp4” we first ask FFMPEG to open this file and to direct its output to Python:</p>
 
-<p>{% codeblock lang:python %}
-import subprocess as sp
-command = [ FFMPEG_BIN,
-            ‘-i’, ‘myHolidays.mp4’,
-            ‘-f’, ‘image2pipe’,
-            ‘-pix_fmt’, ‘rgb24’,
-            ‘-vcodec’, ‘rawvideo’, ‘-‘]
-pipe = sp.Popen(command, stdout = sp.PIPE, bufsize=10**8)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">subprocess</span> <span class="kn">as</span> <span class="nn">sp</span>
+</span><span class='line'><span class="n">command</span> <span class="o">=</span> <span class="p">[</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">i</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">myHolidays</span><span class="o">.</span><span class="n">mp4</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">f</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">image2pipe</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">pix_fmt</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">rgb24</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">vcodec</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">rawvideo</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="o">-</span><span class="err">‘</span><span class="p">]</span>
+</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>In the code above <code>-i myHolidays.mp4</code> indicates the input file, while <code>rawvideo/rgb24</code> asks for a raw RGB output. The format <code>image2pipe</code> and the <code>-</code> at the end tell FFMPEG that it is being used with a pipe by another program. In <code>sp.Popen</code>, the <code>bufsize</code> parameter must be bigger than the size of one frame (see below). It can be omitted most of the time in Python 2 but not in Python 3 where its default value is pretty small.</p>
 
@@ -48,43 +55,61 @@ pipe = sp.Popen(command, stdout = sp.PIPE, bufsize=10**8)
 FFMPEG will give the RGB values of the pixels of the first frame, line by line, top to bottom. The next 420x360x3 bytes afer that will represent the second frame, etc.
 In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array:</p>
 
-<p>{% codeblock lang:python %}
-import numpy
-# read 420<em>360</em>3 bytes (= 1 frame)
-raw_image = pipe.stdout.read(420<em>360</em>3)
-# transform the byte read into a numpy array
-image =  numpy.fromstring(raw_image, dtype=’uint8’)
-image = image.reshape((360,420,3))
-# throw away the data in the pipe’s buffer.
-pipe.stdout.flush()
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span>
+</span><span class='line'><span class="c"># read 420&lt;em&gt;360&lt;/em&gt;3 bytes (= 1 frame)</span>
+</span><span class='line'><span class="n">raw_image</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">420</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="mi">360</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="c"># transform the byte read into a numpy array</span>
+</span><span class='line'><span class="n">image</span> <span class="o">=</span>  <span class="n">numpy</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">raw_image</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="err">’</span><span class="n">uint8</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">360</span><span class="p">,</span><span class="mi">420</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+</span><span class='line'><span class="c"># throw away the data in the pipe’s buffer.</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>You can now view the image with for instance Pylab’s <code>imshow( image )</code>. By repeating the two lines above you can read all the frames of the video one after the other. Reading one frame with this method takes 2 milliseconds on my computer.</p>
 
 <p>What if you want to read the frame that is at time 01h00 in the video ? You could do as above: open the pipe, and read all the frames of the video one by one until you reach that corresponding to t=01h00. But this may be VERY long. A better solution is to call FFMPEG with arguments telling it to start reading “myHolidays.mp4” at time 01h00:</p>
 
-<p>{% codeblock lang:python %}
-command = [FFMPEG_BIN,
-            ‘-ss’, ‘00:59;59’,
-            ‘-i’, ‘myHolidays.mp4’,
-            ‘-ss’, ‘1’,
-            ‘-f’, ‘image2pipe’,
-            ‘-pix_fmt’, ‘rgb24’,
-            ‘-vcodec’,’rawvideo’, ‘-‘]
-pipe = sp.Popen(command, stdout=sp.PIPE, bufsize=10**8)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">ss</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="mo">00</span><span class="p">:</span><span class="mi">59</span><span class="p">;</span><span class="mi">59</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">i</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">myHolidays</span><span class="o">.</span><span class="n">mp4</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">ss</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="mi">1</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">f</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">image2pipe</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">pix_fmt</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">rgb24</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>            <span class="err">‘</span><span class="o">-</span><span class="n">vcodec</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="n">rawvideo</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="o">-</span><span class="err">‘</span><span class="p">]</span>
+</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">bufsize</span><span class="o">=</span><span class="mi">10</span><span class="o">**</span><span class="mi">8</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>In the code above we ask FFMPEG to quickly (and imprecisely) reach 00:59:59, then to skip 1 second of movie with precision (<code>-ss 1</code>), so that it will effectively start at 01:00:00 sharp (see <a href="https://trac.ffmpeg.org/wiki/Seeking%20with%20FFmpeg">this page</a> for more infos).Then you can start reading frames as previously shown. Seeking a frame with this method takes at most 0.1 second on my computer.</p>
 
 <p>You can also get informations on a file (frames size, number of frames per second, etc.) by calling</p>
 
-<p>{% codeblock lang:python %}
-command = [FFMPEG_BINARY,’-i’, ‘my_video.mp4’, ‘-‘]
-pipe = sp.Popen(command, stdout=sp.PIPE stderr=sp.PIPE)
-pipe.stdout.readline()
-pipe.terminate()
-infos = proc.stderr.read()
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">command</span> <span class="o">=</span> <span class="p">[</span><span class="n">FFMPEG_BINARY</span><span class="p">,</span><span class="err">’</span><span class="o">-</span><span class="n">i</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">my_video</span><span class="o">.</span><span class="n">mp4</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="o">-</span><span class="err">‘</span><span class="p">]</span>
+</span><span class='line'><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">stdout</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+</span><span class='line'><span class="n">infos</span> <span class="o">=</span> <span class="n">proc</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Now <code>infos</code> contains a text describing the file, that you would need to parse to obtain the relevant informations. See the last section for a link to an implementation.</p>
 
@@ -92,27 +117,39 @@ infos = proc.stderr.read()
 
 <p>To write a series of frames of size 460x360 into the file <code>'my_output_videofile.mp4'</code>, we open FFMPEG and indicate that raw RGB data is going to be piped in:</p>
 
-<p>{% codeblock lang:python %}
-command = [ FFMPEG_BIN,
-        ‘-y’, # (optional) overwrite output file if it exists
-        ‘-f’, ‘rawvideo’,
-        ‘-vcodec’,’rawvideo’,
-        ‘-s’, ‘420x360’, # size of one frame
-        ‘-pix_fmt’, ‘rgb24’,
-        ‘-r’, ‘24’, # frames per second
-        ‘-i’, ‘-‘, # The imput comes from a pipe
-        ‘-an’, # Tells FFMPEG not to expect any audio
-        ‘-vcodec’, ‘mpeg’”,
-        ‘my_output_videofile.mp4’ ]</p>
-
-<p>pipe = sp.Popen( command, stdin=sp.PIPE, stderr=sp.PIPE)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">command</span> <span class="o">=</span> <span class="p">[</span> <span class="n">FFMPEG_BIN</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">y</span><span class="err">’</span><span class="p">,</span> <span class="c"># (optional) overwrite output file if it exists</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">f</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">rawvideo</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">vcodec</span><span class="err">’</span><span class="p">,</span><span class="err">’</span><span class="n">rawvideo</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">s</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="mi">420</span><span class="n">x360</span><span class="err">’</span><span class="p">,</span> <span class="c"># size of one frame</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">pix_fmt</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">rgb24</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">r</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="mi">24</span><span class="err">’</span><span class="p">,</span> <span class="c"># frames per second</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">i</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="o">-</span><span class="err">‘</span><span class="p">,</span> <span class="c"># The imput comes from a pipe</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">an</span><span class="err">’</span><span class="p">,</span> <span class="c"># Tells FFMPEG not to expect any audio</span>
+</span><span class='line'>        <span class="err">‘</span><span class="o">-</span><span class="n">vcodec</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">mpeg</span><span class="err">’”</span><span class="p">,</span>
+</span><span class='line'>        <span class="err">‘</span><span class="n">my_output_videofile</span><span class="o">.</span><span class="n">mp4</span><span class="err">’</span> <span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">pipe</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">Popen</span><span class="p">(</span> <span class="n">command</span><span class="p">,</span> <span class="n">stdin</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">sp</span><span class="o">.</span><span class="n">PIPE</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>The codec of the output video can be any valid FFMPEG codec but for many codecs you will need to provide the bitrate as an additional argument (for instance <code>-bitrate 3000k</code>). Now we can write raw frames one after another in the file. These will be raw frames, like the ones outputed by FFMPEG in the previous section: they should be strings of the form “RGBRGBRGB…” where R,G,B are <em>caracters</em> that represent a number between 0 and 255. If our frame is represented as a Numpy array, we simply write:</p>
 
-<p>{% codeblock lang:python %}
-pipe.proc.stdin.write( image_array.tostring() )
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">pipe</span><span class="o">.</span><span class="n">proc</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">image_array</span><span class="o">.</span><span class="n">tostring</span><span class="p">()</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <h2 id="going-further">Going further</h2>
 

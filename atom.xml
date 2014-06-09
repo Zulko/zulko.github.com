@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-09T14:19:04+02:00</updated>
+  <updated>2014-06-09T14:23:46+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -149,7 +149,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Pitch-shifting and Pianoputer in Python]]></title>
+    <title type="html"><![CDATA[Python, Pitch shifting, and the Pianoputer]]></title>
     <link href="http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-in-python/"/>
     <updated>2014-03-29T15:40:00+01:00</updated>
     <id>http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-in-python</id>

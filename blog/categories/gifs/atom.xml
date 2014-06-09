@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIFs | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gifs/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-09T14:19:10+02:00</updated>
+  <updated>2014-06-09T14:23:46+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -24,36 +24,45 @@
 
 <p>For this demo we will make a few GIFs out of this trailer:</p>
 
-<p>{% youtube 2Jw-AeaU5WI %}</p>
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div></p>
 
 <h2 id="converting-a-video-excerpt-into-a-gif">Converting a video excerpt into a GIF</h2>
 
 <p>In what follows we import <a href="http://zulko.github.io/moviepy/">MoviePy</a>, we open the video file, we select the part between 1’22.65 (1 minute 22.65 seconds) and 1’23.2, reduce its size (to 30% of the original) and save it as a GIF:</p>
 
-<p>{% codeblock lang:python %}
-from moviepy.editor import *</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.65</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">23.2</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">resize</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">to_gif</span><span class="p">(</span><span class="err">“</span><span class="n">use_your_head</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>VideoFileClip(“./frozen_trailer.mp4”).\
-              subclip((1,22.65),(1,23.2)).\
-              resize(0.3).\
-              to_gif(“use_your_head.gif”)
-{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/F1oOtnP.gif ‘Use Your Head - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/F1oOtnP.gif" title="‘Use Your Head - Hosted by imgur’" ></p>
 
 <h2 id="cropping-the-image">Cropping the image</h2>
 
 <p>For my next GIF I will only keep the center of the screen. If you intend to use MoviePy, note that you can preview a clip with <code>clip.preview()</code>. During the preview clicking on a pixel will print its position, which is convenient for cropping with precision.</p>
 
-<p>{% codeblock lang:python %}
-kris_sven = VideoFileClip(“./frozen_trailer.mp4”).\
-                   subclip((1,13.4),(1,13.9)).\
-                   resize(0.5).\
-                   crop(x1=145,x2=400).\ # remove left-right borders
-                   to_gif(“kris_sven.gif”)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">kris_sven</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                   <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.4</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.9</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>                   <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                   <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove left-right borders</span>
+</span><span class='line'>                   <span class="n">to_gif</span><span class="p">(</span><span class="err">“</span><span class="n">kris_sven</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>{% img center http://i.imgur.com/CFFYEpd.gif ‘Kris and Sven - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/CFFYEpd.gif" title="‘Kris and Sven - Hosted by imgur’" ></p>
 
 <h2 id="freezing-a-region">Freezing a region</h2>
 
@@ -62,73 +71,115 @@ kris_sven = VideoFileClip(“./frozen_trailer.mp4”).\
 <p>In the next GIF we freeze the left part of the clip. To do so we  take a snapshot of
 the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, then we make a composite clip which superimposes the cropped snapshot on the original clip:</p>
 
-<p>{% codeblock lang:python %}
-anna_olaf = VideoFileClip(“./frozen_trailer.mp4”).\
-              subclip(87.9,88.1).\
-              speedx(0.5).\ # Play at half speed
-              resize(.4)</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">anna_olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">(</span><span class="mf">87.9</span><span class="p">,</span><span class="mf">88.1</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># Play at half speed</span>
+</span><span class='line'>              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">crop</span><span class="p">(</span><span class="n">x2</span><span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove right half</span>
+</span><span class='line'>              <span class="n">to_ImageClip</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># snapshot of the clip at t=0.2s</span>
+</span><span class='line'>              <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_olaf</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class='line'>    <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">anna_olaf</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>snapshot = anna_olaf.\
-              crop(x2= anna_olaf.w/2).\ # remove right half
-              to_ImageClip(0.2).\ # snapshot of the clip at t=0.2s
-              set_duration(anna_olaf.duration)</p>
-
-<p>CompositeVideoClip([anna_olaf, snapshot]).\
-    to_gif(‘anna_olaf.gif’, fps=15)
-{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/Fc9Qc5f.gif ‘Anna and Olaf - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/Fc9Qc5f.gif" title="‘Anna and Olaf - Hosted by imgur’" ></p>
 
 <h2 id="freezing-a-more-complicated-region">Freezing a more complicated region</h2>
 
 <p>This time we will apply a custom mask to the snapshot to specify where it will be transparent (and let the animated part appear)
 .
-{% img center /images/gifs/mask.jpeg ‘That’s what a mask is for.’ %}</p>
+<img class="center" src="/images/gifs/mask.jpeg" title="‘That’s what a mask is for.’" ></p>
 
-<p>{% codeblock lang:python %}
-import moviepy.video.tools.drawing as dw</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">moviepy.video.tools.drawing</span> <span class="kn">as</span> <span class="nn">dw</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">anna_kris</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.5</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;coordinates-p1p2-define-the-edges-of-the-mask&quot;</span><span class="o">&gt;</span><span class="n">coordinates</span> <span class="n">p1</span><span class="p">,</span><span class="n">p2</span> <span class="n">define</span> <span class="n">the</span> <span class="n">edges</span> <span class="n">of</span> <span class="n">the</span> <span class="n">mask</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">mask</span> <span class="o">=</span> <span class="n">dw</span><span class="o">.</span><span class="n">color_split</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
+</span><span class='line'>                      <span class="n">p1</span><span class="o">=</span><span class="p">(</span><span class="mi">445</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="mi">275</span><span class="p">),</span>
+</span><span class='line'>                      <span class="n">grad_width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="c"># blur the mask’s edges&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_kris</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
+</span><span class='line'>                 <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                 <span class="n">set_mask</span><span class="p">(</span><span class="n">ImageClip</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_kris</span><span class="p">,</span><span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class='line'>    <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>    <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c"># fuzz= GIF compression&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>anna_kris = VideoFileClip(“./frozen_trailer.mp4”, audio=False).\
-              subclip((1,38.15),(1,38.5)).\
-              resize(.5)</p>
-
-<h1 id="coordinates-p1p2-define-the-edges-of-the-mask">coordinates p1,p2 define the edges of the mask</h1>
-<p>mask = dw.color_split(anna_kris.size,
-                      p1=(445, 20), p2=(345, 275),
-                      grad_width=5) # blur the mask’s edges</p>
-
-<p>snapshot = anna_kris.to_ImageClip().\
-                 set_duration(anna_kris.duration).\
-                 set_mask(ImageClip(mask, ismask=True))</p>
-
-<p>CompositeVideoClip([anna_kris,snapshot]).\
-    speedx(0.2).\
-    to_gif(‘anna_kris.gif’, fps=15, fuzz=3) # fuzz= GIF compression</p>
-
-<p>{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/SBHkNqt.gif ‘Anna and Olaf - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/SBHkNqt.gif" title="‘Anna and Olaf - Hosted by imgur’" ></p>
 
 <h2 id="time-symetrization">Time-symetrization</h2>
 
 <p>Surely you have noticed that in the previous GIFs, the end did not always look like the beginning. As a consequence, you could see a disruption every time the animation was restarted. A way to avoid this is to time-symetrize the clip, i.e. to make the clip play once forwards, then once backwards. This way the <em>end</em> of the clip really <em>is</em> the beginning of the clip. This creates a GIF that can loop fluidly, without a real beginning or end.</p>
 
-<p>{% codeblock lang:python %}
-def time_symetrize(clip):
-    “”” Returns the clip played forwards then backwards. In case
-    you are wondering, vfx (short for Video FX) is loaded by
-    »&gt; from moviepy.editor import * “””
-    return concatenate([clip, clip.fx( vfx.time_mirror )])</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">time_symetrize</span><span class="p">(</span><span class="n">clip</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">clip</span> <span class="n">played</span> <span class="n">forwards</span> <span class="n">then</span> <span class="n">backwards</span><span class="o">.</span> <span class="n">In</span> <span class="n">case</span>
+</span><span class='line'>    <span class="n">you</span> <span class="n">are</span> <span class="n">wondering</span><span class="p">,</span> <span class="n">vfx</span> <span class="p">(</span><span class="n">short</span> <span class="k">for</span> <span class="n">Video</span> <span class="n">FX</span><span class="p">)</span> <span class="ow">is</span> <span class="n">loaded</span> <span class="n">by</span>
+</span><span class='line'>   <span class="err"> »</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">clip</span><span class="p">,</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">vfx</span><span class="o">.</span><span class="n">time_mirror</span> <span class="p">)])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">subclip</span><span class="p">(</span><span class="mf">36.5</span><span class="p">,</span><span class="mf">36.9</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">189</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">433</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">sven</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>VideoFileClip(“./frozen_trailer.mp4”, audio=False).\
-          subclip(36.5,36.9).\
-          resize(0.5).\
-          crop(x1=189, x2=433).\
-          fx( time_symetrize ).\
-          to_gif(‘sven.gif’, fps=15, fuzz=2)
-{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/fuqLsRG.gif ‘Sven - hosted on Imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/fuqLsRG.gif" title="‘Sven - hosted on Imgur’" ></p>
 
 <p>Ok, this might be a bad example of time symetrization,it makes the snow flakes go upwards in the second half of the animation.</p>
 
@@ -136,150 +187,253 @@ def time_symetrize(clip):
 
 <p>In the next GIF there will be a text clip superimposed on the video clip.</p>
 
-<p>{% codeblock lang:python %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">21.6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.1</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;many-options-are-available-for-the-text-requires-imagemagick&quot;</span><span class="o">&gt;</span><span class="n">Many</span> <span class="n">options</span> <span class="n">are</span> <span class="n">available</span> <span class="k">for</span> <span class="n">the</span> <span class="n">text</span> <span class="p">(</span><span class="n">requires</span> <span class="n">ImageMagick</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">text</span> <span class="o">=</span> <span class="n">TextClip</span><span class="p">(</span><span class="err">“</span><span class="n">In</span> <span class="n">my</span> <span class="n">nightmares</span>\<span class="n">nI</span> <span class="n">see</span> <span class="n">rabbits</span><span class="o">.</span><span class="err">”</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="err">’</span><span class="n">white</span><span class="err">’</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">font</span><span class="o">=</span><span class="err">’</span><span class="n">Amiri</span><span class="o">-</span><span class="n">Bold</span><span class="err">’</span><span class="p">,</span> <span class="n">interline</span><span class="o">=-</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>            <span class="n">set_pos</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">190</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>            <span class="n">set_duration</span><span class="p">(</span><span class="n">olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">CompositeVideoClip</span><span class="p">(</span> <span class="p">[</span><span class="n">olaf</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>    <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">olaf</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>olaf = VideoFileClip(“./frozen_trailer.mp4”, audio=False).\
-              subclip((1,21.6),(1,22.1)).\
-              resize(.5).\
-              speedx(0.5).\
-              fx( time_symetrize )</p>
-
-<h1 id="many-options-are-available-for-the-text-requires-imagemagick">Many options are available for the text (requires ImageMagick)</h1>
-<p>text = TextClip(“In my nightmares\nI see rabbits.”,
-                fontsize=30, color=’white’,
-                font=’Amiri-Bold’, interline=-25).\
-            set_pos((20,190)).\
-            set_duration(olaf.duration)</p>
-
-<p>CompositeVideoClip( [olaf, text] ).\
-    to_gif(‘olaf.gif’, fps=10, fuzz=2)
-{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/ZQzgNo6.gif ‘Olaf - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/ZQzgNo6.gif" title="‘Olaf - Hosted by imgur’" ></p>
 
 <h2 id="making-the-gif-loopable">Making the gif loopable</h2>
 
 <p>The following GIF features a lot of snow falling. Therefore it cannot be made loopable using time-symetrization (or you will snow floating upwards !). So we will make this animation loopable by having the beginning of the animation appear progressively (<em>fade in</em>) just before the end of the clip. The montage here is a little complicated, I cannot explain it better than with this picture:</p>
 
-<p>{% img center /images/gifs/castle_loopable.jpeg ‘I hope it’s clear !’ 400 %}</p>
+<p><img class="center" src="/images/gifs/castle_loopable.jpeg" title="‘I hope it’s clear !’ 400" ></p>
 
-<p>{% codeblock lang:python %}
-castle = VideoFileClip(“./frozen_trailer.mp4”, audio=False).\
-              subclip(22.8,23.2).\
-              speedx(0.2).\
-              resize(.4)</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">castle</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">./</span><span class="n">frozen_trailer</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">(</span><span class="mf">22.8</span><span class="p">,</span><span class="mf">23.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">duration</span>
+</span><span class='line'><span class="n">castle</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">castle</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
+</span><span class='line'>                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span><span class="o">.</span>\
+</span><span class='line'>   <span class="n">subclip</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>   <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">castle</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">fuzz</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>d = castle.duration
-castle = castle.crossfadein(d/2)</p>
-
-<p>CompositeVideoClip([castle,
-                    castle.set_start(d/2),
-                    castle.set_start(d)]).\
-   subclip(d/2, 3*d/2).\
-   to_gif(‘castle.gif’, fps=5,fuzz=5)
-{% endcodeblock %}</p>
-
-<p>{% img center http://i.imgur.com/VnoRpdq.gif ‘Disney Castle - Hosted by Imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/VnoRpdq.gif" title="‘Disney Castle - Hosted by Imgur’" ></p>
 
 <h2 id="another-example-of-a-gif-made-loopable">Another example of a GIF made loopable</h2>
 
 <p>The next clip (from the movie <em>Charade</em>) was almost loopable: you can see Carry Grant smiling, then making a funny face, then coming back to normal. The problem is that at the end of the excerpt Cary is not exactly in the same position, and he is not smiling as he was at the beginning. To correct this, we take a snapshot of the first frame and we make it appear progressively at the end. This seems to do the trick.</p>
 
-<p>{% codeblock lang:python %}
-carry = VideoFileClip(“../videos/charade.mp4”, audio=False).\
-              subclip((1,51,18.3),(1,51,20.6)).\
-              crop(x1=102, y1=2, x2=297, y2=202)</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">carry</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">../</span><span class="n">videos</span><span class="o">/</span><span class="n">charade</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">18.3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">20.6</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>              <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">297</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">202</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">d</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">duration</span>
+</span><span class='line'><span class="n">snapshot</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
+</span><span class='line'>                  <span class="n">set_duration</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                  <span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                  <span class="n">set_start</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">carry</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
+</span><span class='line'>    <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">carry</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">carry</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>d = carry.duration
-snapshot = carry.to_ImageClip().\
-                  set_duration(d/6).\
-                  crossfadein(d/6).\
-                  set_start(5*d/6)</p>
-
-<p>CompositeVideoClip([carry, snapshot]).\
-    to_gif(‘carry.gif’, fps=carry.fps, fuzz=3)
-{% endcodeblock %}</p>
-
-<p>{% img center  http://i.imgur.com/k1sz49h.gif ‘Carry Grant in Charade - Hosted by Imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/k1sz49h.gif" title="‘Carry Grant in Charade - Hosted by Imgur’" ></p>
 
 <h2 id="big-finish-background-removal">Big finish: background removal</h2>
 
 <p>Let us dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<p>{% youtube Nh11A41klL4 %}</p>
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Nh11A41klL4 "></iframe></div></p>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 
-<p>{% img center http://i.imgur.com/Fo2BxBK.gif ‘PigsPolka - Hosted by imgur’ %}</p>
+<p><img class="center" src="http://i.imgur.com/Fo2BxBK.gif" title="‘PigsPolka - Hosted by imgur’" ></p>
 
 <p>The main difficulty was to find what the background of the scene is. To do so, the script gathers a few images in which the little pigs are are different positions (so that every part part of the background is visible on at least several (actually most) of the slides, then it takes the pixel-per-pixel median of these pictures, which gives the background.</p>
 
-<p>{% codeblock lang:python %}
-# Requires Scikit Images installed
-import numpy as np
-import skimage.morphology as skm
-import skimage.filter as skf</p>
-
-<p>from moviepy.editor import *</p>
-
-<h3 id="load-the-clip">LOAD THE CLIP</h3>
-
-<p>pigsPolka =  VideoFileClip(“pigs_in_a_polka.mp4”).\
-                 subclip((2,16.85),(2,35)).\
-                 resize(.5).\
-                 crop(x1=140, y1=41, x2=454, y2=314)</p>
-
-<h3 id="compute-the-background">COMPUTE THE BACKGROUND</h3>
-<p># There is no single frame showing the background only (there
-# is always a little pig in the screen) so we use the median of
-# several carefully chosen frames to reconstitute the background.
-# I must have spent half an hour to find the right set of frames.</p>
-
-<p>times = (list(np.linspace(2.3,4.2,30))+
-         list(np.linspace(6.0,7.1,30))+
-         8*[6.2])</p>
-
-<p>frames_bg = [pigsPolka.get_frame(t) for t in times]
-background = np.percentile(np.array(frames_bg), 50,axis=0)</p>
-
-<h3 id="mask-generation">MASK GENERATION</h3>
-
-<p>def get_mask_frame(t):
-    “”” Computes the mask for the frame at time t “””</p>
-
-<pre><code># THRESHOLD THE PIXEL-TO-PIXEL DIFFERENCE
-# BETWEEN THE FRAME AND THE BACKGROUND
-im = pigsPolka.get_frame(t)
-mask = ((im-background)**2).sum(axis=2) &gt; 1500
-
-# REMOVE SMALL OBJECTS
-mask = skm.remove_small_objects(mask)
-
-# REMOVE SMALL HOLES (BY DILATIATION/EROSION)
-selem=np.array([[1,1,1],[1,1,1],[1,1,1]])
-for i in range(2):
-    mask = skm.binary_dilation(mask,selem)
-for i in range(2):
-    mask = skm.binary_erosion(mask,selem)
-
-# BLUR THE MASK A LITTLE
-mask = skf.gaussian_filter(mask.astype(float),1.5)
-
-return mask
-</code></pre>
-
-<p>mask = VideoClip(ismask=True).\
-          set_get_frame(get_mask_frame).\
-          set_duration(pigsPolka.duration)</p>
-
-<h3 id="last-effects-and-gif-generation">LAST EFFECTS AND GIF GENERATION</h3>
-
-<p>pigsPolka.set_mask(mask).\
-          subclip(12.95,15.9).\
-          fx(vfx.blackwhite).\ # black &amp; white effect !
-          to_gif(‘pigs_polka.gif’, fps=10,
-          dispose=True, fuzz=10)
-{% endcodeblock %}</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Requires Scikit Images installed</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.morphology</span> <span class="kn">as</span> <span class="nn">skm</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.filter</span> <span class="kn">as</span> <span class="nn">skf</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h3</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;load-the-clip&quot;</span><span class="o">&gt;</span><span class="n">LOAD</span> <span class="n">THE</span> <span class="n">CLIP</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">pigsPolka</span> <span class="o">=</span>  <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">pigs_in_a_polka</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                 <span class="n">subclip</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mf">16.85</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">35</span><span class="p">))</span><span class="o">.</span>\
+</span><span class='line'>                 <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>                 <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">140</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">454</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">314</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h3</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;compute-the-background&quot;</span><span class="o">&gt;</span><span class="n">COMPUTE</span> <span class="n">THE</span> <span class="n">BACKGROUND</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="c"># There is no single frame showing the background only (there</span>
+</span><span class='line'><span class="c"># is always a little pig in the screen) so we use the median of</span>
+</span><span class='line'><span class="c"># several carefully chosen frames to reconstitute the background.</span>
+</span><span class='line'><span class="c"># I must have spent half an hour to find the right set of frames.&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">times</span> <span class="o">=</span> <span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">2.3</span><span class="p">,</span><span class="mf">4.2</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span><span class="o">+</span>
+</span><span class='line'>         <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span><span class="mf">7.1</span><span class="p">,</span><span class="mi">30</span><span class="p">))</span><span class="o">+</span>
+</span><span class='line'>         <span class="mi">8</span><span class="o">*</span><span class="p">[</span><span class="mf">6.2</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">frames_bg</span> <span class="o">=</span> <span class="p">[</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">times</span><span class="p">]</span>
+</span><span class='line'><span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">frames_bg</span><span class="p">),</span> <span class="mi">50</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h3</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;mask-generation&quot;</span><span class="o">&gt;</span><span class="n">MASK</span> <span class="n">GENERATION</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">get_mask_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Computes</span> <span class="n">the</span> <span class="n">mask</span> <span class="k">for</span> <span class="n">the</span> <span class="n">frame</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span> <span class="err">“””</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="c"># THRESHOLD THE PIXEL-TO-PIXEL DIFFERENCE</span>
+</span><span class='line'><span class="c"># BETWEEN THE FRAME AND THE BACKGROUND</span>
+</span><span class='line'><span class="n">im</span> <span class="o">=</span> <span class="n">pigsPolka</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span class='line'><span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">im</span><span class="o">-</span><span class="n">background</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="mi">1500</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># REMOVE SMALL OBJECTS</span>
+</span><span class='line'><span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">remove_small_objects</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># REMOVE SMALL HOLES (BY DILATIATION/EROSION)</span>
+</span><span class='line'><span class="n">selem</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">binary_dilation</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">selem</span><span class="p">)</span>
+</span><span class='line'><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">mask</span> <span class="o">=</span> <span class="n">skm</span><span class="o">.</span><span class="n">binary_erosion</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span><span class="n">selem</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># BLUR THE MASK A LITTLE</span>
+</span><span class='line'><span class="n">mask</span> <span class="o">=</span> <span class="n">skf</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">),</span><span class="mf">1.5</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">mask</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">mask</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">set_get_frame</span><span class="p">(</span><span class="n">get_mask_frame</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">set_duration</span><span class="p">(</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h3</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;last-effects-and-gif-generation&quot;</span><span class="o">&gt;</span><span class="n">LAST</span> <span class="n">EFFECTS</span> <span class="n">AND</span> <span class="n">GIF</span> <span class="n">GENERATION</span><span class="o">&lt;/</span><span class="n">h3</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">subclip</span><span class="p">(</span><span class="mf">12.95</span><span class="p">,</span><span class="mf">15.9</span><span class="p">)</span><span class="o">.</span>\
+</span><span class='line'>          <span class="n">fx</span><span class="p">(</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># black &amp;amp; white effect !</span>
+</span><span class='line'>          <span class="n">to_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">pigs_polka</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">dispose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 ]]></content>
   </entry>
   
