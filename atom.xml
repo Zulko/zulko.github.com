@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-09T14:14:17+02:00</updated>
+  <updated>2014-06-09T14:19:04+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -370,8 +370,6 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 <p>That’s it ! Now let me play a little traditional Turkish song for you !</p>
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/z410eauCnHc "></iframe></div>
-
-<h2 id="where-to-go-from-here-">Where to go from here ?</h2>
 
 <p>I you want to try this at home, here are <a href="https://github.com/Zulko/pianoputer">all the files</a> you need. I believe it would be great if a HTML5/JS/elm developer reading this implemented a browser-based version of the Pianoputer, it would make it accessible to more people.</p>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Mathematics | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/mathematics/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-09T14:14:17+02:00</updated>
+  <updated>2014-06-09T14:19:10+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -24,7 +24,7 @@
 
 <p>For some time now I have been designing labyrinths based on traffic lights, like this one:</p>
 
-<p><img class="center" src="/images/vmazes/viennese_maze.jpeg" width="550"></p>
+<p>{% img center /images/vmazes/viennese_maze.jpeg 550 %}</p>
 
 <p>I call these <em>Viennese mazes</em> (long story) and since I couldn’t find anything similar on the Web, I assume that this is something new. Here are <a href="https://i.imgur.com/j2gWurM.jpg">some more</a> with other shapes, and <a href="https://i.imgur.com/bReTSfN.png">their solutions</a>.</p>
 
@@ -38,7 +38,7 @@
 
 <p>If we draw a map of all (reachable) states and their connexions we obtain the following <em>states graph</em> :</p>
 
-<p><img class="center" src="/images/vmazes/graph.jpeg"></p>
+<p>{% img center /images/vmazes/graph.jpeg %}</p>
 
 <p>The green node marks the starting point, while the blue node is a reunion of all states corresponding to the goal (m). The nodes on the $i$-th line from the top can be reached in $i$ moves but no less, thick lines go downwards and thin lines go upwards.</p>
 
@@ -48,7 +48,7 @@
 
 <p>Here is an illustration of a few criteria which make a labyrinth insteresting :</p>
 
-<p><img class="center" src="/images/vmazes/classical_maze.jpeg" width="450"></p>
+<p>{% img center /images/vmazes/classical_maze.jpeg 450 %}</p>
 
 <ol>
   <li><strong>There must be a unique solution, the longer the better.</strong> In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
@@ -79,7 +79,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>Now that we have defined how to score a Viennese maze, we will provide the computer with an uncolored canvas, and we will ask for a <em>coloring</em> (initial color of each traffic light) of this canvas that produces the best score possible :</p>
 
-<p><img class="center" src="/images/vmazes/canvas.jpeg" width="250"></p>
+<p>{% img center /images/vmazes/canvas.jpeg 250 %}</p>
 
 <p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and considering all of them would be too long. But a great many of these colorings make interesting mazes, so we can just look semi-randomly for some of these.</p>
 
@@ -93,7 +93,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>Here is a maze being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
 
-<p><img class="center" src="http://i.imgur.com/yc1lwgh.gif" title="‘hosted on imgur’" ></p>
+<p>{% img center http://i.imgur.com/yc1lwgh.gif ‘hosted on imgur’ %}</p>
 
 <p>This algorithm can be refined using annealing (in which you first evaluate many different mazes before refining the search around the best one), or any fancier search strategy such as genetic algorithms, ant colonies… What works best is still an open question.</p>
 
@@ -103,27 +103,19 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>In the following example, we generate a squared canvas, we initialize a maze with random colors, optimize it, and generate a report (maze/graph/solution): </p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vmfactory</span> <span class="kn">import</span> <span class="n">Vmaze_NHT</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">vmfactory.canvas</span> <span class="kn">import</span> <span class="n">squares_grid</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">squares_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c"># nodes will be numbered 0..15</span>
-</span><span class='line'><span class="c"># NHT means no half-turns (can’t pass a light twice in a row) </span>
-</span><span class='line'><span class="n">maze</span> <span class="o">=</span> <span class="n">Vmaze_NHT</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
-</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span> <span class="n">maze</span><span class="o">.</span><span class="n">random_colors</span><span class="p">()</span> <span class="p">)</span>
-</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">anneal</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span> <span class="c"># optimize the maze</span>
-</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">make_report</span><span class="p">()</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="err">‘</span><span class="n">myreport</span><span class="o">.</span><span class="n">png</span><span class="err">’</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+from vmfactory import Vmaze_NHT
+from vmfactory.canvas import squares_grid</p>
 
-<p><img class="center" src="/images/vmazes/report.jpeg" width="550"></p>
+<p>canvas = squares_grid(4,4) # nodes will be numbered 0..15
+# NHT means no half-turns (can’t pass a light twice in a row) 
+maze = Vmaze_NHT(canvas, start = 0, goal = 15)
+maze.colorize( maze.random_colors() )
+maze.anneal(200,20) # optimize the maze
+maze.make_report().savefig(‘myreport.png’)
+{% endcodeblock %}</p>
+
+<p>{% img center /images/vmazes/report.jpeg 550 %}</p>
 
 <p>The package is based on Networkx, Numpy and Matplotlib. The code is rather short (most of it serves to draw fancy graphs !), and modular : you can easily change the rules, change the way the score is computed, change the optimization procedure, or the way the reports are drawn.</p>
 
@@ -154,9 +146,9 @@ y'(t) = F( y, t), \,\,\,\, &\mbox{for $t \geq 0$},
 
 <p>To solve this DDE system at points <code>t=[t1, t2 ...]</code> you would just write</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">y</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">t</span><span class="p">)</span> <span class="c"># returns [y(t1), y(t2) …]</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+y = ddeint(F, g, t) # returns [y(t1), y(t2) …]
+{% endcodeblock %}</p>
 
 <h2 id="a-simple-example">A simple example</h2>
 
@@ -172,35 +164,23 @@ y'(t) = y(t-3\pi/2), \,\,\,\, &\mbox{for $t \geq 0$}
 
 <p>Here is how we solve it with <code>ddeint</code>:</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span>
-</span><span class='line'><span class="kn">from</span> <span class="nn">ddeint</span> <span class="kn">import</span> <span class="n">ddeint</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">Y</span><span class="p">,</span><span class="n">t</span> <span class="p">:</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="mi">3</span><span class="o">*</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c"># Model</span>
-</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span> <span class="c"># Time start, time end, nb of points/steps</span>
-</span><span class='line'><span class="n">g</span><span class="o">=</span><span class="n">sin</span> <span class="c"># Expression of Y(t) before the integration interval</span>
-</span><span class='line'><span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">tt</span><span class="p">)</span> <span class="c"># Solving&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;plotting&quot;</span><span class="o">&gt;</span><span class="n">PLOTTING</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">c</span><span class="o">=</span><span class="err">’</span><span class="n">r</span><span class="err">’</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="err">”$</span><span class="n">y</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="err">$”</span><span class="p">)</span>
-</span><span class='line'><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span><span class="n">sin</span><span class="p">(</span><span class="n">tt</span><span class="p">),</span><span class="n">c</span><span class="o">=</span><span class="err">’</span><span class="n">b</span><span class="err">’</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="err">”$</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="err">$”</span><span class="p">)</span>
-</span><span class='line'><span class="n">set_ylim</span><span class="p">(</span><span class="n">ymax</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c"># make room for the legend</span>
-</span><span class='line'><span class="n">legend</span><span class="p">()</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+from pylab import *
+from ddeint import ddeint</p>
 
-<p><img class="center" src="/images/ddeint/dde_sin.jpeg"></p>
+<p>model = lambda Y,t : Y(t - 3*pi/2) # Model
+tt = linspace(0,50,10000) # Time start, time end, nb of points/steps
+g=sin # Expression of Y(t) before the integration interval
+yy = ddeint(model,g,tt) # Solving</p>
+
+<h1 id="plotting">PLOTTING</h1>
+<p>plot(tt,yy,c=’r’,label=”$y(t)$”)
+plot(tt,sin(tt),c=’b’,label=”$sin(t)$”)
+set_ylim(ymax=2) # make room for the legend
+legend()
+{% endcodeblock %}</p>
+
+<p>{% img center /images/ddeint/dde_sin.jpeg %}</p>
 
 <p>The resulting plot compares our solution (red) with the exact solution (blue). See how our result eventually detaches itself from the actual solution as a consequence of many successive approximations ? As DDEs tend to create chaotic behaviors, you can expect the error to explode very fast. As I am no DDE expert, I would recommend checking for convergence in all cases, i.e. increasing the time resolution and see how it affects the result. Keep in mind that the past values of Y(t) are computed by interpolating the values of Y found at the previous integration points, so the more points you ask for, the more precise your result.</p>
 
@@ -219,25 +199,18 @@ y'(t) = \dfrac{1}{1+(\dfrac{y(t-d)}{K})^2} -ry(t), \,\,\,\,
 
 <p>We have three parameters that we can choose freely. For $K = 0.1$, $d = 5$, $r = 1$, we obtain oscillations !</p>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># MODEL, WITH UNKNOWN PARAMETERS</span>
-</span><span class='line'><span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">Y</span><span class="p">,</span><span class="n">t</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span><span class="n">d</span><span class="p">,</span><span class="n">r</span> <span class="p">:</span>  <span class="mi">1</span><span class="o">/</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="p">(</span><span class="n">Y</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">d</span><span class="p">)</span><span class="o">/</span><span class="n">k</span><span class="p">)</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;*</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">r</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">Y</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-</span><span class='line'><span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span><span class="mi">0</span> <span class="c"># history before t=0&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">10000</span><span class="p">)</span>
-</span><span class='line'><span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">tt</span><span class="p">,</span> <span class="n">fargs</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span> <span class="c"># K=0.1, d=5, r=1&lt;/p&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+# MODEL, WITH UNKNOWN PARAMETERS
+model = lambda Y,t, k,d,r :  1/(1+(Y(t-d)/k)<em>*2) - r</em>Y(t)
+g = lambda t:0 # history before t=0</p>
 
-<p><img class="center" src="/images/ddeint/dde_negativefeedback.jpeg"></p>
+<p>tt = linspace(0,50,10000)
+yy = ddeint(model, g, tt, fargs=(0.1, 5, 1)) # K=0.1, d=5, r=1</p>
+
+<p>plot(tt,yy,lw=2)
+{% endcodeblock %}</p>
+
+<p>{% img center /images/ddeint/dde_negativefeedback.jpeg %}</p>
 
 <h2 id="example-with-several-variables">Example with several variables</h2>
 
@@ -256,37 +229,24 @@ y'(t) = -0.5y(t)\big(1-x(t-d)\big) \,\,\,\, &\mbox{for $\geq 0$}.
 \end{cases}
  %]]&gt;</script>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span><span class="n">t</span><span class="p">,</span><span class="n">d</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">x</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">xd</span><span class="p">,</span><span class="n">yd</span> <span class="o">=</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">d</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">array</span><span class="p">([</span><span class="mf">0.5</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">yd</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.5</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">y</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">xd</span><span class="p">)])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">g</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">])</span>
-</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">20000</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]:</span>
-</span><span class='line'>    <span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">g</span><span class="p">,</span><span class="n">tt</span><span class="p">,</span><span class="n">fargs</span><span class="o">=</span><span class="p">(</span><span class="n">d</span><span class="p">,))</span>
-</span><span class='line'>    <span class="c"># WE PLOT X AGAINST Y</span>
-</span><span class='line'>    <span class="n">plot</span><span class="p">(</span><span class="n">yy</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">yy</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="err">’</span><span class="n">delay</span> <span class="o">=</span> <span class="o">%.</span><span class="mo">01</span><span class="n">f</span><span class="err">’</span><span class="o">%</span><span class="n">d</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">legend</span><span class="p">()</span> <span class="c"># display the legend</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+def model(Y,t,d):
+    x,y = Y(t)
+    xd,yd = Y(t-d)
+    return array([0.5<em>x</em>(1-yd), -0.5<em>y</em>(1-xd)])</p>
 
-<p><img class="center" src="/images/ddeint/dde_lotka.jpeg"></p>
+<p>g = lambda t : array([1,2])
+tt = linspace(2,30,20000)</p>
+
+<p>for d in [0, 0.2]:
+    yy = ddeint(model,g,tt,fargs=(d,))
+    # WE PLOT X AGAINST Y
+    plot(yy[:,0], yy[:,1], lw=2, label=’delay = %.01f’%d)</p>
+
+<p>legend() # display the legend
+{% endcodeblock %}</p>
+
+<p>{% img center /images/ddeint/dde_lotka.jpeg %}</p>
 
 <h2 id="example-with-a-non-constant-delay">Example with a non-constant delay</h2>
 
@@ -301,19 +261,15 @@ y'(t) = - y\big(t-3\cos(y(t))^2 \big),\,\,\,\,
 \end{cases}
  %]]&gt;</script>
 
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">model</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">Y</span><span class="p">,</span><span class="n">t</span><span class="p">:</span>  <span class="o">-</span><span class="n">Y</span><span class="p">(</span> <span class="n">t</span><span class="o">-</span><span class="mi">3</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span> <span class="n">Y</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
-</span><span class='line'><span class="n">tt</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>
-</span><span class='line'><span class="n">yy</span> <span class="o">=</span> <span class="n">ddeint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">t</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="n">tt</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">plot</span><span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">yy</span><span class="p">)</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+<p>{% codeblock lang:python %}
+model = lambda Y,t:  -Y( t-3*cos( Y(t) )**2 )
+tt = linspace(0, 30, 2000)
+yy = ddeint(model, lambda t:1, tt)</p>
 
-<p><img class="center" src="/images/ddeint/ydependent.jpeg"></p>
+<p>plot(tt, yy)
+{% endcodeblock %}</p>
+
+<p>{% img center /images/ddeint/ydependent.jpeg %}</p>
 ]]></content>
   </entry>
   
