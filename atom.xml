@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-05-04T11:46:50+02:00</updated>
+  <updated>2014-06-09T13:57:34+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[A covers mix with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/06/07/a-covers-mix-with-python/"/>
+    <updated>2014-06-07T16:02:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/06/07/a-covers-mix-with-python</id>
+    <content type="html"><![CDATA[<p><em>My first ambitious video project with MoviePy</em></p>
+
+<!-- more -->
+
+<p>I just finished this mix of 60 covers of the Cup Song, entirely edited using <a href="http://nbviewer.ipython.org/github/Zulko/--video-editing---Cup-Song-Covers-Mix/blob/master/CupSongsCovers.ipynb">this Python script</a> !</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/rIehsqqYFEM "></iframe></div>
+
+<p>The code uses extensively <a href="http://zulko.github.io/moviepy/">MoviePy</a>, a video editing library I wrote to automatize simple tasks such as title insertions, concatenations, transitions, etc. With this video I hope to show that MoviePy is becoming mature, and that it can be more than just a FFMPEG wrapper or a <a href="http://zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">GIF editor</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Viennese Mazes: what they are, and how to make one]]></title>
@@ -954,7 +971,7 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p>Let us dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/BVBRDooRAXU "></iframe></div>
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Nh11A41klL4 "></iframe></div>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 
@@ -1351,7 +1368,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </span><span class="line"><span class="n">shuffle</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">myList</span> <span class="p">:</span> <span class="n">myList</span><span class="p">[::</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">myList</span><span class="p">[</span><span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>The problem with thid shuffling, as someone on Reddit pointed out, is that even if you shuffle a great number of times there is no warranty that everyone will have worked besides everyone in the end. For instance in the shuffling shown above employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which it will fail to create all possible pairs of neighbours !</p>
+<p>The problem with this shuffling, as someone on Reddit pointed out, is that even if you shuffle a great number of times there is no warranty that everyone will have worked besides everyone else in the end. For instance in the shuffling shown above employees 1 and 8 will never be neighbours. And it seems that you can imagine a shuffling as complicated as you want, there will always be a number of people for which it will fail to create all possible pairs of neighbours !</p>
 
 <p>This leads us to our problem: how to ensure that all possible pairs of neighbours will be created, and in a minimum amount of time ? We will see that there is an optimal strategy. It does NOT use a shuffling, but rather a 120 years old mathematical construction.</p>
 
@@ -1359,7 +1376,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 
 <p>If you have N employees, then they can form N(N-1)/2 pairs. Each day you create at most (N-1) new pairs of neighbours by placing the employees on a line. Therefore you will need at least N/2 days to create all possible pairs. This means that you cannot solve the problem in less than N/2 days if N is even, and (N+1)/2 days if n is odd. What we will show is that <strong>it is actually possible to solve the problem in N/2 days (for even N) or (N+1)/2 days (for odd N)</strong>.</p>
 
-<p>Actually, <strong>we only need to solve the problem for even N</strong>, and the solutions for odd N will follow very simply. Indeed, suppose that you have an odd number N of employees. If you add one <em>imaginary</em> employee, you come to an even number (N+1) of employees. Suppose that you have found a solution for these (N+1) employees, which means that you have found a series of (N+1)/2 arrangements which form all pairs of neighbours. Then remove the <em>imaginary</em> employee from each of these arrangements. What you obtain is a series of (N+1)/2 arrangements, in which all pairs of the employees 1 to N are formed. In other words, you have solved the problem for N.</p>
+<p>In fact <strong>we only need to solve the problem for even N</strong>, and the solutions for odd N will follow very simply. To see this, suppose that you have an odd number N of employees. If you add one <em>imaginary</em> employee, you come to an even number (N+1) of employees. Suppose that you have found a solution for these (N+1) employees, which means that you have found a series of (N+1)/2 arrangements which form all pairs of neighbours. Then remove the <em>imaginary</em> employee from each of these arrangements. What you obtain is a series of (N+1)/2 arrangements, in which all pairs of the employees 1 to N are formed. In other words, you have solved the problem for N.</p>
 
 <h2 id="representing-the-problem-with-a-graph">Representing the problem with a graph</h2>
 

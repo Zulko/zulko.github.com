@@ -26,7 +26,7 @@
         <loc>
             http://Zulko.github.io/blog/2013/11/08/placing-your-employees-so-that-everyone-meets/
         </loc>
-        <lastmod>2014-02-20T21:08:05+01:00</lastmod>
+        <lastmod>2014-05-27T21:15:36+02:00</lastmod>
     </url>
     <url>
         <loc>
@@ -38,7 +38,7 @@
         <loc>
             http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/
         </loc>
-        <lastmod>2014-04-12T11:45:59+02:00</lastmod>
+        <lastmod>2014-06-07T14:50:28+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/</loc>
@@ -49,15 +49,19 @@
         <lastmod>2014-05-04T11:46:49+02:00</lastmod>
     </url>
     <url>
+        <loc>http://Zulko.github.io/blog/2014/06/07/a-covers-mix-with-python/</loc>
+        <lastmod>2014-06-09T11:05:05+02:00</lastmod>
+    </url>
+    <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
         <lastmod>2013-09-19T21:33:12+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-05-04T11:46:49+02:00</lastmod>
+        <lastmod>2014-06-09T11:05:05+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-05-04T11:46:49+02:00</lastmod>
+        <lastmod>2014-06-09T11:05:05+02:00</lastmod>
     </url>
 </urlset>
