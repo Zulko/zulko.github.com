@@ -145,15 +145,15 @@
 </span><span class="line">    <span class="k">return</span> <span class="n">sound_array</span><span class="p">[</span> <span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>What is more difficult to do is to change the duration of a clip while preserving its pitch (sound stretching), or change the pitch of a clip while preserving its duration (pitch shifting).</p>
+<p>What is more difficult to do is to change the duration of a sound while preserving its pitch (sound stretching), or change the pitch of a sound while preserving its duration (pitch shifting).</p>
 
 <h2 id="sound-stretching">Sound stretching</h2>
 
-<p>Sound stretching can be done using the classical <em>phase vocoder</em> method. You first break the sound into overlapping bits, and you rearrange these bits so that they will overlap more (to shorten the sound) or less (to stretch the sound), like in this figure:</p>
+<p>Sound stretching can be done using the classical <em>phase vocoder</em> method. You first break the sound into overlapping bits, and you rearrange these bits so that they will overlap even more (if you want to shorten the sound) or less (if you want to stretch the sound), like in this figure:</p>
 
 <p><img class="center" src="/images/soundstretching/stretchsound.png" /></p>
 
-<p>The difficulty is that the reorganized bits can interfer badly with one another, and some phase-transformation is necessary so that it won’t happen. Here is the Python code, freely rewritten from <a href="http://audioprograming.wordpress.com/2012/03/02/a-phase-vocoder-in-python/">there</a>:</p>
+<p>The difficulty is that the reorganized bits can interfer badly with one another, and some phase-transformation is necessary so that this won’t happen. Here is the Python code, freely rewritten from <a href="http://audioprograming.wordpress.com/2012/03/02/a-phase-vocoder-in-python/">there</a>:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -247,7 +247,7 @@
 </span><span class="line"><span class="n">transposed</span> <span class="o">=</span> <span class="p">[</span><span class="n">pitchshift</span><span class="p">(</span><span class="n">bowl_sound</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We will assign to each sound a key of the computer keyboard, following the order in <a href="https://raw.githubusercontent.com/Zulko/pianoputer/master/typewriter.kb">this file</a>, which organizes the keyboard as follows:</p>
+<p>We will assign to each sound a key of the computer keyboard, following the order in <a href="https://raw.githubusercontent.com/Zulko/pianoputer/master/typewriter.kb">this file</a>, which organizes the keyboard like this:</p>
 
 <p><img class="center" src="/images/soundstretching/keyboard.jpeg" /></p>
 
@@ -319,11 +319,11 @@
 </span><span class="line">
 </span><span class="line">    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYUP</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">key_sound</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
 </span><span class="line">
-</span><span class="line">        <span class="n">key_sound</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fadeout</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="c"># stops with 10ms fadeout</span>
+</span><span class="line">        <span class="n">key_sound</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">fadeout</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="c"># stops with 50ms fadeout</span>
 </span><span class="line">        <span class="n">is_playing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>That’s it ! Now let me play a little traditional Turkish song for you:</p>
+<p>That’s it ! Now let me play a little traditional Turkish song for you !</p>
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/z410eauCnHc "></iframe></div>
 
