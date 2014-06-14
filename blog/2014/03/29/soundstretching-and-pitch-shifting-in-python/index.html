@@ -227,7 +227,7 @@
 </span><span class="line">    <span class="k">return</span> <span class="n">speedx</span><span class="p">(</span><span class="n">stretched</span><span class="p">[</span><span class="n">window_size</span><span class="p">:],</span> <span class="n">factor</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<h2 id="an-application-the-pianoputer">An application: the Pianoputer</h2>
+<h2 id="application-the-pianoputer">Application: the Pianoputer</h2>
 
 <p>Let us play around with our new pitch-shifter. We first strike a bowl:</p>
 
@@ -247,11 +247,11 @@
 </span><span class="line"><span class="n">transposed</span> <span class="o">=</span> <span class="p">[</span><span class="n">pitchshift</span><span class="p">(</span><span class="n">bowl_sound</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">tones</span><span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We will assign to each sound a key of the computer keyboard, following the order in <a href="https://raw.githubusercontent.com/Zulko/pianoputer/master/typewriter.kb">this file</a>, which organizes the keyboard like this:</p>
+<p>We will assign each sound to a key of the computer keyboard, following the order in <a href="https://raw.githubusercontent.com/Zulko/pianoputer/master/typewriter.kb">this file</a>, which organizes the keyboard like this:</p>
 
 <p><img class="center" src="/images/soundstretching/keyboard.jpeg" /></p>
 
-<p>Here is the Python code turning your computer into a piano (a <em>pianoputer</em>):</p>
+<p>We simply tell the computer to play the corresponding sound when a key is pressed, and stop the sound when the key is released:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -323,11 +323,13 @@
 </span><span class="line">        <span class="n">is_playing</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">False</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>That’s it ! Now let me play a little traditional Turkish song for you !</p>
+<p>And we have turned our computer into a piano ! Now, to thank you for reading until there, let me play a little turkish song for you:</p>
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/z410eauCnHc "></iframe></div>
 
-<p>I you want to try this at home, here are <a href="https://github.com/Zulko/pianoputer">all the files</a> you need. I believe it would be great if a HTML5/JS/elm developer reading this implemented a browser-based version of the Pianoputer, it would make it accessible to more people.</p>
+<p>Here are <a href="https://github.com/Zulko/pianoputer">all the files</a> you need if you want to try this at home. Since not everyone uses Python, I also coded a pianoputer in Javascript/HTML5 (<a href="https://github.com/Zulko/pianoputer.js">here</a>) but it is <em>very far</em> from good. It would be really great if an experienced HTML5/JS/elm developer improved it, or rewrote it from scratch.</p>
+
+<h2 id="what-next-">What next ?</h2>
 
 <p>On a more general note, I find that computers have been under-used to produce <em>performance</em> music. I get it that it is easier to use a piano keyboard or record from an instrument directly, but look at what you can do with just a bowl and 60 lines of Python !</p>
 
