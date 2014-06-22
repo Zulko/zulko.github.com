@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-22T12:37:41+02:00</updated>
+  <updated>2014-06-22T13:26:49+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -24,7 +24,7 @@
 
 <p>This week Sam Lavigne wrote a very entertaining <a href="http://lav.io/2014/06/videogrep-automatic-supercuts-with-python/">blog post</a> introducing Videogrep, a Python script that searches through dialog in videos (using the associated subtitles file), selects scenes (for instance all scenes containing a given word), and cuts together a new video.</p>
 
-<p>The <a href="https://github.com/antiboredom/videogrep">script on Github</a> implements many tweaks and goodies (such as working on multiple files, identifying complex patterns, etc.). For this post I implement a minimal videogreper and attempt to refine cuts to get scenes containing whole sentences or single words.</p>
+<p>The <a href="https://github.com/antiboredom/videogrep">script on Github</a> implements many tweaks and goodies (such as working on multiple files, identifying complex patterns, etc.). In this post I present the code for a minimal videogreper in Python and attempt to refine cuts to get scenes containing whole sentences or single words.</p>
 
 <h2 id="getting-started">Getting started</h2>
 
@@ -144,7 +144,7 @@
 </span><span class="line">        <span class="k">if</span> <span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">&quot;should&quot;</span><span class="p">,</span><span class="n">text</span><span class="p">)</span> <span class="o">!=</span> <span class="p">[])]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>And now we cut and put together all these scenes using MoviePy:</p>
+<p>Now we cut and put together all these scenes using MoviePy:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -174,11 +174,11 @@
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/dNme5GR1Al4 "></iframe></div>
 
-<p>It is promising, but in some scenes we don’t get to know exactly <em>what should be done</em>, which is frustrating. In the next section we add a little content-awareness to refine the cuts.</p>
+<p>It is promising, but in some scenes we don’t get to know exactly <em>what should be done</em>, which is frustrating. In the next section we add a little content-awareness to get more relevant cuts.</p>
 
 <h2 id="greping-whole-sentences">Greping whole sentences</h2>
 
-<p>We will now try to cut together all the sentences containing the word <em>should</em>. We look into the whole text for sentences containing the word, then then find the groups of subtitles corresponding to the start and the end of each sentence, and we cut the video file accordingly.</p>
+<p>We now want to cut together all the sentences containing the word <em>“should”</em>. We first explore the whole text looking for sentences containing that word, then we find the subtitle blocks corresponding to the start and end of each sentence, and we cut the video file accordingly.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -220,18 +220,18 @@
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/0nDgurPQsXc "></iframe></div>
 
-<p>Note that with just a little more code you could look for much more than words and sentences. In Videogrep the author uses the Python package <code>pattern</code> to look for advanced phrase constructions, such as all phrases of the form gerund-determiner-adjective-noun.</p>
+<p>Note that with just a little more code you could achieve much more. In Videogrep the author uses the Python package <code>pattern</code> to look for advanced phrase constructions, such as all phrases of the form gerund-determiner-adjective-noun.</p>
 
 <h2 id="greping-single-words">Greping single words</h2>
 
-<p>Now we take a step in the other direction and see if it is possible to get a scene with exactly one word or expression and as little possible of the rest. Consider the following subtitle block:</p>
+<p>Let us take a step in the other direction and see if it is possible to automaticallyt cut a scene with exactly one word or expression, and as little possible of the words around it. Consider the following subtitle block:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
 </pre></td><td class="code"><pre><code class=""><span class="line">00:03:20,100 --&gt; 00:03:23,100
 </span><span class="line">We can do this.</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We can roughly evaluate that <em>“We”</em> is in the first quarter of the time span (from 3:20.1 to 3:20.85), <em>“can”</em> is in the second quarter (from 3:20.85 to 3:21.6), etc. The following function finds the <em>exact</em> times based on the relative position of the caracters in the subtitles block:</p>
+<p>We can roughly evaluate that the word <em>“We”</em> will be pronounced in the first quarter of the time span (from 3:20.1 to 3:20.85), <em>“can”</em> in the second quarter (from 3:20.85 to 3:21.6), etc. Following this reasoning, here is a function that finds the <em>exact</em> times using the relative position of the characters in the subtitles blocks:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -251,15 +251,15 @@
 </span><span class="line">             <span class="k">if</span> <span class="p">(</span><span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">)]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Let’s try it on <em>Americans</em>:</p>
+<p>Let us try it on <em>“Americans”</em>:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">assemble_cuts</span><span class="p">(</span><span class="n">find_word</span><span class="p">(</span><span class="s">&quot;Americans&quot;</span><span class="p">),</span> <span class="s">&quot;americans.mp4&quot;</span><span class="p">)</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">assemble_cuts</span><span class="p">(</span> <span class="n">find_word</span><span class="p">(</span><span class="s">&quot;Americans&quot;</span><span class="p">),</span> <span class="s">&quot;americans.mp4&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/L59kcu6Zy9Q "></iframe></div>
 
-<p>At least some of the cuts worked properly. So if we use much-pronounced words we may find a good cut for each of them and we can build a whole sentence:</p>
+<p>At least some of the cuts worked properly. If we use much-pronounced words we may find at least one correct cut for each of them and we can build a whole sentence:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -279,7 +279,7 @@
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/iWRYGULFd_c "></iframe></div>
 
-<p>Wow ! That seemed <em>so</em> real, and it almost made sense. It could be tweaked the times by hands, but it surely deserved 14 minutes of standing ovation:</p>
+<p>Wow ! That seemed <em>so</em> real, and it almost made sense. From there the cuts could be refined by hand, but the script did most of the work and surely deserved, if not a Nobel Peace Prize, fourteen minutes of applause:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
