@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Videogrep, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/videogrep/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-22T13:26:49+02:00</updated>
+  <updated>2014-06-23T08:26:27+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -81,7 +81,7 @@
 <span class='line-number'>21</span>
 <span class='line-number'>22</span>
 <span class='line-number'>23</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">re</span> <span class="c"># module for egular expressions&lt;/p&gt;</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">re</span> <span class="c"># module for regular expressions&lt;/p&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">convert_time</span><span class="p">(</span><span class="n">timestring</span><span class="p">):</span>
 </span><span class='line'>    <span class="err">“””</span> <span class="n">Converts</span> <span class="n">a</span> <span class="n">string</span> <span class="n">into</span> <span class="n">seconds</span> <span class="err">“””</span>
@@ -123,16 +123,16 @@
 <span class='line-number'>5</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 </span><span class='line'><span class="n">whole_text</span> <span class="o">=</span> <span class="err">“</span> <span class="err">“</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">text</span> <span class="k">for</span> <span class="p">(</span><span class="n">time</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span> <span class="ow">in</span> <span class="n">times_texts</span><span class="p">])</span>
-</span><span class='line'><span class="n">words</span> <span class="o">=</span> <span class="n">whole_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
-</span><span class='line'><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">([</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="mi">5</span><span class="p">])</span>
+</span><span class='line'><span class="n">all_words</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="err">“</span>\<span class="n">w</span><span class="o">+</span><span class="err">”</span><span class="p">,</span> <span class="n">whole_text</span><span class="p">)</span>
+</span><span class='line'><span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">all_words</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="mi">5</span><span class="p">])</span>
 </span><span class='line'><span class="k">print</span> <span class="p">(</span><span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 <div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>»&gt; [(‘(applause)’, 66), (‘American’, 33), (‘America’, 24),
-</span><span class='line'>»&gt;  (‘should’, 24), (‘because’, 21), (‘people’, 18), (“That’s”, 18),
-</span><span class='line'>»&gt;  (‘applause)’, 16), (‘Americans’, 16), (‘(cheering’, 15)]</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+</pre></td><td class='code'><pre><code class=''><span class='line'>»&gt; [(‘applause’, 82), (‘american’, 35), (‘america’, 33), (‘because’, 25),
+</span><span class='line'>»&gt;  (‘should’, 24), (‘energy’, 23), (‘people’, 23), (‘americans’, 20),
+</span><span class='line'>»&gt;  (‘country’, 18), (‘cheering’, 15)]</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>Seems like the word <em>“should”</em> has been pronounced a lot. Let us find the times of all the subtitle blocks in which it appears:</p>
 
@@ -222,7 +222,7 @@
 
 <h2 id="greping-single-words">Greping single words</h2>
 
-<p>Let us take a step in the other direction and see if it is possible to automaticallyt cut a scene with exactly one word or expression, and as little possible of the words around it. Consider the following subtitle block:</p>
+<p>Let us take a step in the other direction and see if it is possible to automatically cut a scene with exactly one word or expression, and as little possible of the words around it. Consider the following subtitle block:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
