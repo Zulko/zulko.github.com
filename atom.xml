@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-07-05T13:59:00+02:00</updated>
+  <updated>2014-07-05T17:14:19+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -98,11 +98,9 @@
 </span><span class="line"><span class="n">final</span><span class="o">.</span><span class="n">to_videofile</span><span class="p">(</span><span class="s">&#39;soccer_cuts.mp4&#39;</span><span class="p">)</span> <span class="c"># low quality is the default</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We obtain the following 3:30 video summary:</p>
+<p>We obtain the following 3:30 <a href="http://youtu.be/zJtWPFX2bA0">video summary</a> (sorry for the external links, these videos can’t be embedded).</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/zJtWPFX2bA0 "></iframe></div>
-
-<p>Nicely enough, the same 25 lines can be used to make <a href="http://youtu.be/T2zTZ4bEVmQ">this other cut</a> from <a href="https://www.youtube.com/watch?v=neYtV3nY7jE">this other match</a>. The limitations of the method appear in <a href="http://youtu.be/zAIFwa9e0Ww">yet another cut</a> which only captured 8 out of the 9 goals of the match, one or two being badly cut. The algorithm seems to be confused by broadcasters which make lots of replays or lower the sound of the crowd after goals. And sometimes it miscuts goals on penalties, because the crowd starts whistling long before the shoot. So large-scale applications would require a less naive model.</p>
+<p>Nicely enough, the same 25 lines of code can be used to cut <a href="http://youtu.be/T2zTZ4bEVmQ">this other summary</a> of <a href="https://www.youtube.com/watch?v=neYtV3nY7jE">this other match</a>. The limitations of the method appear in <a href="http://youtu.be/zAIFwa9e0Ww">yet another summary</a> which only captured 8 out of the 9 goals of the match, one or two being badly cut. The algorithm can be confused by broadcasters which make lots of replays or lower the sound of the crowd after goals, and it may miscut some goals on penalties, because the crowd starts whistling long before the shoot. So large-scale applications would require a less naive model.</p>
 
 <p>It would also be interesting to see how the method works on other sports, or how it could be generalized to other uses, like spotting action scenes in movies.</p>
 ]]></content>
