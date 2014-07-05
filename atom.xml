@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-06-23T08:26:27+02:00</updated>
+  <updated>2014-07-05T13:53:06+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,99 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Automatic Soccer Highlights Compilations with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/07/04/automatic-soccer-highlights-compilations-with-python/"/>
+    <updated>2014-07-04T20:36:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/07/04/automatic-soccer-highlights-compilations-with-python</id>
+    <content type="html"><![CDATA[<p><em>Python and soccer… who knew ?</em></p>
+
+<!-- more -->
+
+<p>In this post we will make a video summary of <a href="https://www.youtube.com/watch?v=rPEd-h8DdRI">this soccer game</a>, using the fact that supporters (and commentators) tend to be louder when something interesting happens.</p>
+
+<p>The next lines open the video file with Python and compute the audio volume of each second of the match:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span> <span class="c"># for numerical operations</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span><span class="p">,</span> <span class="n">concatenate</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;soccer_game.mp4&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">cut</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">i</span><span class="p">:</span> <span class="n">clip</span><span class="o">.</span><span class="n">audio</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">to_soundarray</span><span class="p">(</span><span class="n">fps</span><span class="o">=</span><span class="mi">22000</span><span class="p">)</span>
+</span><span class="line"><span class="n">volume</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">array</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(((</span><span class="mf">1.0</span><span class="o">*</span><span class="n">array</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span>
+</span><span class="line"><span class="n">volumes</span> <span class="o">=</span> <span class="p">[</span><span class="n">volume</span><span class="p">(</span><span class="n">cut</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">int</span><span class="p">(</span><span class="n">clip</span><span class="o">.</span><span class="n">duration</span><span class="o">-</span><span class="mi">1</span><span class="p">))]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>If we plot the obtained volumes we see that each goal is followed by a few seconds of loudness:</p>
+
+<p><img class="center" src="http://Zulko.github.io/images/soccer_highlights/goals.png" /></p>
+
+<p>It is much clearer if we compute the average volumes over periods of 10 seconds:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">averaged_volumes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">volumes</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">10</span><span class="p">])</span><span class="o">/</span><span class="mi">10</span>
+</span><span class="line">                             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">volumes</span><span class="p">)</span><span class="o">-</span><span class="mi">10</span><span class="p">)])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://Zulko.github.io/images/soccer_highlights/peaks.png" /></p>
+
+<p>The five higher peaks in the above graph give us the times of the five goals of the game, but other peaks may also indicate interesting events. In the next lines, we select the times of the 10% highest peaks:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">increases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">averaged_volumes</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="mi">0</span>
+</span><span class="line"><span class="n">decreases</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">averaged_volumes</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span><span class="o">&lt;=</span><span class="mi">0</span>
+</span><span class="line"><span class="n">peaks_times</span> <span class="o">=</span> <span class="p">(</span><span class="n">increases</span> <span class="o">*</span> <span class="n">decreases</span><span class="p">)</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line"><span class="n">peaks_vols</span> <span class="o">=</span> <span class="n">averaged_volumes</span><span class="p">[</span><span class="n">peaks_times</span><span class="p">]</span>
+</span><span class="line"><span class="n">peaks_times</span> <span class="o">=</span> <span class="n">peaks_times</span><span class="p">[</span><span class="n">peaks_vols</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">peaks_vols</span><span class="p">,</span><span class="mi">90</span><span class="p">)]</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>As a refinement, we regroup the times that are less than one minute apart, as they certainly correspond to the same event:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">final_times</span><span class="o">=</span><span class="p">[</span><span class="n">peaks_times</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+</span><span class="line"><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">peaks_times</span><span class="p">:</span>
+</span><span class="line">    <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">final_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">60</span><span class="p">:</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">averaged_volumes</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">averaged_volumes</span><span class="p">[</span><span class="n">final_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]:</span>
+</span><span class="line">            <span class="n">final_times</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+</span><span class="line">    <span class="k">else</span><span class="p">:</span>
+</span><span class="line">        <span class="n">final_times</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Now <code>final_times</code> contains the times (in seconds) of 21 events, from which we can cut our video. For each event we will start five seconds before its time and stop five seconds after :</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">final</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">clip</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span><span class="nb">min</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">5</span><span class="p">,</span> <span class="n">clip</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
+</span><span class="line">                     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">final_times</span><span class="p">])</span>
+</span><span class="line"><span class="n">final</span><span class="o">.</span><span class="n">to_videofile</span><span class="p">(</span><span class="s">&#39;soccer_cuts.mp4&#39;</span><span class="p">)</span> <span class="c"># low quality is the default</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We obtain the following 3:30 video summary:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/zJtWPFX2bA0 "></iframe></div>
+
+<p>Nicely enough, the same 25 lines can be used to make <a href="http://youtu.be/T2zTZ4bEVmQ">this other cut</a> from <a href="https://www.youtube.com/watch?v=neYtV3nY7jE">this other match</a>. The limitations of the method appear in <a href="http://youtu.be/zAIFwa9e0Ww">yet another cut</a> which only captured 8 out of the 9 goals of the match, one or two being badly cut. The algorithm seems to be confused by broadcasters which make lots of replays or lower the sound of the crowd after goals. And sometimes it miscuts goals on penalties, because the crowd starts whistling long before the shoot. So large-scale applications would require a less naive model. It would also be interesting to see how the method works on other sports, or how it could be generalized to other uses, like spotting action scenes in movies.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Some more Videogreping with Python]]></title>

@@ -63,15 +63,21 @@
         <lastmod>2014-06-23T08:25:41+02:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://Zulko.github.io/blog/2014/07/04/automatic-soccer-highlights-compilations-with-python/
+        </loc>
+        <lastmod>2014-07-05T13:52:22+02:00</lastmod>
+    </url>
+    <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
         <lastmod>2013-09-19T21:33:12+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-06-23T08:25:41+02:00</lastmod>
+        <lastmod>2014-07-05T13:52:22+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-06-23T08:25:41+02:00</lastmod>
+        <lastmod>2014-07-05T13:52:22+02:00</lastmod>
     </url>
 </urlset>
