@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Python | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-07-26T19:07:22+02:00</updated>
+  <updated>2014-07-26T19:13:24+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -130,7 +130,7 @@
 </span><span class='line'><span class="n">bot</span><span class="o">.</span><span class="n">watch_every</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="c"># check every 20s</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Just run that script all day on your computer (or rather on your <a href="http://www.raspberrypi.org/">Raspberry Pi</a>) and you will be updated every time someone drinks chocolate milk and feels the urge to tweet about it (which is a LOT of times !).</p>
+<p>Just run that script all day on your computer (or rather on your <a href="http://www.raspberrypi.org/">Raspberry Pi</a>) and you will be updated every time someone drinks chocolate milk and feels the urge to tweet about it (which is a very often).</p>
 ]]></content>
   </entry>
   
