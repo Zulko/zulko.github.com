@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Twitter | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/twitter/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-07-26T12:05:32+02:00</updated>
+  <updated>2014-07-26T19:07:22+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -14,16 +14,16 @@
 
   
   <entry>
-    <title type="html"><![CDATA[A tweets-controlled Python script]]></title>
+    <title type="html"><![CDATA[A Python script controlled via Twitter]]></title>
     <link href="http://Zulko.github.io/blog/2014/07/26/a-tweets-controlled-python-script/"/>
     <updated>2014-07-26T09:01:00+02:00</updated>
     <id>http://Zulko.github.io/blog/2014/07/26/a-tweets-controlled-python-script</id>
     <content type="html"><![CDATA[<p><em>Let us watch and react to the lattest tweets with Python, the dirty way.</em>
 <!-- more --></p>
 
-<p>Python modules like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a> all depend on the Twitter API. As a consequence they require you to open a Twitter account, register at <em>dev.twitter.com</em>, create an app, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
+<p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API. To use them, you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
 
-<p>If you just want to read the lattest tweets of some Twitter user, a simpler and not-so-clean way is to parse the HTML of that user’s Twitter page: </p>
+<p>If you just want to read the lattest tweets of some Twitter user, it is simpler to parse the HTML of that user’s Twitter page: </p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -62,11 +62,21 @@
 </span><span class='line'>         <span class="k">if</span> <span class="p">(</span><span class="s">&quot;class&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">attrs</span><span class="p">)</span> <span class="ow">and</span>
 </span><span class='line'>         <span class="p">(</span><span class="s">&quot;ProfileTweet-timestamp&quot;</span> <span class="ow">in</span> <span class="n">a</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s">&quot;class&quot;</span><span class="p">])]</span>
 </span><span class='line'>
-</span><span class='line'><span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">links</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># (text, link), chronological order </span>
+</span><span class='line'><span class="k">return</span> <span class="nb">zip</span><span class="p">(</span><span class="n">texts</span><span class="p">,</span> <span class="n">links</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 </code></pre>
 
-<p>As an application, the following script watches my (useless) Twitter page, and each time I tweet something like <code>cmd: my_command</code> it executes <code>my_command</code> in a terminal:</p>
+<p>Let us try it on <a href="https://twitter.com/JohnDCook">John D. Cook</a>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="err">»</span><span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="k">print</span><span class="p">(</span><span class="n">get_tweets</span><span class="p">(</span><span class="err">“</span><span class="n">JohnDCook</span><span class="err">”</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="c"># John’s lattest tweet</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>(u”Data cleaning code cannot be clean. It’s a sort of sin eater.”,
+</span><span class='line'>  ‘/StatFact/status/492753200190341120’)</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>As an application, here is a script that watches my (useless) Twitter page every 20 seconds, and each time I tweet something like <code>cmd: my_command</code> it executes <code>my_command</code> in a terminal:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -98,7 +108,7 @@
 
 <h2 id="introducing-twittcher">Introducing Twittcher</h2>
 
-<p>If you want more, I wrote <a href="https://github.com/Zulko/twittcher">Twittcher</a>, a small Python module which doesn’t depend on the Twitter API, to make bots that watch search results or user pages and reacts to the new tweets.</p>
+<p>If you want more, I wrote <a href="https://github.com/Zulko/twittcher">Twittcher</a>, a small Python module which doesn’t depend on the Twitter API, to make bots that watch search results or user pages and react to the tweets they find.</p>
 
 <p>For instance this script checks the search results for <em>chocolate milk</em> every 20 seconds, and sends all the new tweets (with date, username, and link) to my mail box.</p>
 
