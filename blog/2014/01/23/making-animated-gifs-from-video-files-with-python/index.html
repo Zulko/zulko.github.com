@@ -129,10 +129,10 @@
 <span class="line-number">6</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="o">*</span>
 </span><span class="line">
-</span><span class="line"><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.65</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">23.2</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">to_gif</span><span class="p">(</span><span class="s">&quot;use_your_head.gif&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.65</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">23.2</span><span class="p">))</span>
+</span><span class="line">        <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.3</span><span class="p">))</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;use_your_head.gif&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/F1oOtnP.gif" title="'Use Your Head - Hosted by imgur'" /></p>
@@ -146,11 +146,11 @@
 <span class="line-number">3</span>
 <span class="line-number">4</span>
 <span class="line-number">5</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">kris_sven</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                   <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.4</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.9</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">                   <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                   <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove left-right borders</span>
-</span><span class="line">                   <span class="n">to_gif</span><span class="p">(</span><span class="s">&quot;kris_sven.gif&quot;</span><span class="p">)</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">kris_sven</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span>
+</span><span class="line">             <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.4</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">13.9</span><span class="p">))</span>
+</span><span class="line">             <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class="line">             <span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">145</span><span class="p">,</span><span class="n">x2</span><span class="o">=</span><span class="mi">400</span><span class="p">))</span> <span class="c"># remove left-right borders</span>
+</span><span class="line"><span class="n">kris_sven</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;kris_sven.gif&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/CFFYEpd.gif" title="'Kris and Sven - Hosted by imgur'" /></p>
@@ -174,18 +174,18 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">10</span>
 <span class="line-number">11</span>
 <span class="line-number">12</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anna_olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">(</span><span class="mf">87.9</span><span class="p">,</span><span class="mf">88.1</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># Play at half speed</span>
-</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">anna_olaf</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">)</span>
+</span><span class="line">             <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mf">87.9</span><span class="p">,</span><span class="mf">88.1</span><span class="p">)</span>
+</span><span class="line">             <span class="o">.</span><span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span> <span class="c"># Play at half speed</span>
+</span><span class="line">             <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">))</span>
 </span><span class="line">
-</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">crop</span><span class="p">(</span><span class="n">x2</span><span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># remove right half</span>
-</span><span class="line">              <span class="n">to_ImageClip</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># snapshot of the clip at t=0.2s</span>
-</span><span class="line">              <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="p">(</span><span class="n">anna_olaf</span>
+</span><span class="line">            <span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">x2</span><span class="o">=</span> <span class="n">anna_olaf</span><span class="o">.</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span> <span class="c"># remove right half</span>
+</span><span class="line">            <span class="o">.</span><span class="n">to_ImageClip</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span> <span class="c"># snapshot of the clip at t=0.2s</span>
+</span><span class="line">            <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">anna_olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
 </span><span class="line">
-</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_olaf</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
-</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;anna_olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span><span class="line"><span class="n">composition</span> <span class="o">=</span> <span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_olaf</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span>
+</span><span class="line"><span class="n">composition</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;anna_olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/Fc9Qc5f.gif" title="'Anna and Olaf - Hosted by imgur'" /></p>
@@ -213,27 +213,23 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">15</span>
 <span class="line-number">16</span>
 <span class="line-number">17</span>
-<span class="line-number">18</span>
-<span class="line-number">19</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">moviepy.video.tools.drawing</span> <span class="kn">as</span> <span class="nn">dw</span>
 </span><span class="line">
-</span><span class="line"><span class="n">anna_kris</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.5</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line"><span class="n">anna_kris</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line">             <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.15</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">38.5</span><span class="p">))</span>
+</span><span class="line">             <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">))</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># coordinates p1,p2 define the edges of the mask</span>
-</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="n">dw</span><span class="o">.</span><span class="n">color_split</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">size</span><span class="p">,</span>
-</span><span class="line">                      <span class="n">p1</span><span class="o">=</span><span class="p">(</span><span class="mi">445</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="mi">275</span><span class="p">),</span>
+</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="n">dw</span><span class="o">.</span><span class="n">color_split</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">p1</span><span class="o">=</span><span class="p">(</span><span class="mi">445</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">p2</span><span class="o">=</span><span class="p">(</span><span class="mi">345</span><span class="p">,</span> <span class="mi">275</span><span class="p">),</span>
 </span><span class="line">                      <span class="n">grad_width</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span> <span class="c"># blur the mask&#39;s edges</span>
 </span><span class="line">
-</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">anna_kris</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
-</span><span class="line">                 <span class="n">set_duration</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                 <span class="n">set_mask</span><span class="p">(</span><span class="n">ImageClip</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span>
+</span><span class="line">            <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">anna_kris</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line">            <span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">ImageClip</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
 </span><span class="line">
-</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_kris</span><span class="p">,</span><span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
-</span><span class="line">    <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;anna_kris.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c"># fuzz= GIF compression</span>
-</span><span class="line">
+</span><span class="line"><span class="n">composition</span> <span class="o">=</span> <span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">anna_kris</span><span class="p">,</span><span class="n">snapshot</span><span class="p">])</span><span class="o">.</span><span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span class="line"><span class="c"># &#39;fuzz&#39; (0-100) below is for gif compression</span>
+</span><span class="line"><span class="n">composition</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;anna_kris.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/SBHkNqt.gif" title="'Anna and Olaf - Hosted by imgur'" /></p>
@@ -254,18 +250,20 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">10</span>
 <span class="line-number">11</span>
 <span class="line-number">12</span>
+<span class="line-number">13</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="k">def</span> <span class="nf">time_symetrize</span><span class="p">(</span><span class="n">clip</span><span class="p">):</span>
 </span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns the clip played forwards then backwards. In case</span>
 </span><span class="line"><span class="sd">    you are wondering, vfx (short for Video FX) is loaded by</span>
 </span><span class="line"><span class="sd">    &gt;&gt;&gt; from moviepy.editor import * &quot;&quot;&quot;</span>
 </span><span class="line">    <span class="k">return</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">clip</span><span class="p">,</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">vfx</span><span class="o">.</span><span class="n">time_mirror</span> <span class="p">)])</span>
 </span><span class="line">
-</span><span class="line"><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">subclip</span><span class="p">(</span><span class="mf">36.5</span><span class="p">,</span><span class="mf">36.9</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">189</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">433</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;sven.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mf">36.5</span><span class="p">,</span><span class="mf">36.9</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">189</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">433</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;sven.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/fuqLsRG.gif" title="'Sven - hosted on Imgur'" /></p>
@@ -291,21 +289,21 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">13</span>
 <span class="line-number">14</span>
 <span class="line-number">15</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">olaf</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">21.6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.1</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">)</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">olaf</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mf">21.6</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">22.1</span><span class="p">))</span>
+</span><span class="line">        <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">speedx</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">time_symetrize</span> <span class="p">))</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># Many options are available for the text (requires ImageMagick)</span>
-</span><span class="line"><span class="n">text</span> <span class="o">=</span> <span class="n">TextClip</span><span class="p">(</span><span class="s">&quot;In my nightmares</span><span class="se">\n</span><span class="s">I see rabbits.&quot;</span><span class="p">,</span>
-</span><span class="line">                <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
-</span><span class="line">                <span class="n">font</span><span class="o">=</span><span class="s">&#39;Amiri-Bold&#39;</span><span class="p">,</span> <span class="n">interline</span><span class="o">=-</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">            <span class="n">set_pos</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">190</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">            <span class="n">set_duration</span><span class="p">(</span><span class="n">olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line"><span class="n">text</span> <span class="o">=</span> <span class="p">(</span><span class="n">TextClip</span><span class="p">(</span><span class="s">&quot;In my nightmares</span><span class="se">\n</span><span class="s">I see rabbits.&quot;</span><span class="p">,</span>
+</span><span class="line">                 <span class="n">fontsize</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">,</span>
+</span><span class="line">                 <span class="n">font</span><span class="o">=</span><span class="s">&#39;Amiri-Bold&#39;</span><span class="p">,</span> <span class="n">interline</span><span class="o">=-</span><span class="mi">25</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">set_pos</span><span class="p">((</span><span class="mi">20</span><span class="p">,</span><span class="mi">190</span><span class="p">))</span>
+</span><span class="line">        <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">olaf</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
 </span><span class="line">
-</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">(</span> <span class="p">[</span><span class="n">olaf</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span> <span class="p">)</span><span class="o">.</span>\
-</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line"><span class="n">composition</span> <span class="o">=</span> <span class="n">CompositeVideoClip</span><span class="p">(</span> <span class="p">[</span><span class="n">olaf</span><span class="p">,</span> <span class="n">text</span><span class="p">]</span> <span class="p">)</span>
+</span><span class="line"><span class="n">composition</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;olaf.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/ZQzgNo6.gif" title="'Olaf - Hosted by imgur'" /></p>
@@ -329,19 +327,21 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">11</span>
 <span class="line-number">12</span>
 <span class="line-number">13</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">castle</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">(</span><span class="mf">22.8</span><span class="p">,</span><span class="mf">23.2</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">castle</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;./frozen_trailer.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line">          <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mf">22.8</span><span class="p">,</span><span class="mf">23.2</span><span class="p">)</span>
+</span><span class="line">          <span class="o">.</span><span class="n">speedx</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span>
+</span><span class="line">          <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">))</span>
 </span><span class="line">
 </span><span class="line"><span class="n">d</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">duration</span>
 </span><span class="line"><span class="n">castle</span> <span class="o">=</span> <span class="n">castle</span><span class="o">.</span><span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 </span><span class="line">
-</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">castle</span><span class="p">,</span>
+</span><span class="line"><span class="n">composition</span> <span class="o">=</span> <span class="p">(</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">castle</span><span class="p">,</span>
 </span><span class="line">                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span>
-</span><span class="line">                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span><span class="o">.</span>\
-</span><span class="line">   <span class="n">subclip</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">   <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;castle.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">fuzz</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line">                    <span class="n">castle</span><span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="n">d</span><span class="p">)])</span>
+</span><span class="line">               <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">composition</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;castle.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">fuzz</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/VnoRpdq.gif" title="'Disney Castle - Hosted by Imgur'" /></p>
@@ -362,18 +362,18 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">10</span>
 <span class="line-number">11</span>
 <span class="line-number">12</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">carry</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;../videos/charade.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">18.3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">20.6</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">              <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">297</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">202</span><span class="p">)</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">carry</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;../videos/charade.mp4&quot;</span><span class="p">,</span> <span class="n">audio</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</span><span class="line">         <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">18.3</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">51</span><span class="p">,</span><span class="mf">20.6</span><span class="p">))</span>
+</span><span class="line">         <span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">102</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">297</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">202</span><span class="p">))</span>
 </span><span class="line">
 </span><span class="line"><span class="n">d</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">duration</span>
-</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="n">carry</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span><span class="o">.</span>\
-</span><span class="line">                  <span class="n">set_duration</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                  <span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                  <span class="n">set_start</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+</span><span class="line"><span class="n">snapshot</span> <span class="o">=</span> <span class="p">(</span><span class="n">carry</span><span class="o">.</span><span class="n">to_ImageClip</span><span class="p">()</span>
+</span><span class="line">            <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+</span><span class="line">            <span class="o">.</span><span class="n">crossfadein</span><span class="p">(</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">)</span>
+</span><span class="line">            <span class="o">.</span><span class="n">set_start</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">d</span><span class="o">/</span><span class="mi">6</span><span class="p">))</span>
 </span><span class="line">
-</span><span class="line"><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">carry</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span><span class="o">.</span>\
-</span><span class="line">    <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;carry.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">carry</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="n">composition</span> <span class="o">=</span> <span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">carry</span><span class="p">,</span> <span class="n">snapshot</span><span class="p">])</span>
+</span><span class="line"><span class="n">composition</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;carry.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">carry</span><span class="o">.</span><span class="n">fps</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/k1sz49h.gif" title="'Carry Grant in Charade - Hosted by Imgur'" /></p>
@@ -454,7 +454,6 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 <span class="line-number">62</span>
 <span class="line-number">63</span>
 <span class="line-number">64</span>
-<span class="line-number">65</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># Requires Scikit Images installed</span>
 </span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 </span><span class="line"><span class="kn">import</span> <span class="nn">skimage.morphology</span> <span class="kn">as</span> <span class="nn">skm</span>
@@ -464,10 +463,10 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 </span><span class="line">
 </span><span class="line"><span class="c">### LOAD THE CLIP</span>
 </span><span class="line">
-</span><span class="line"><span class="n">pigsPolka</span> <span class="o">=</span>  <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;pigs_in_a_polka.mp4&quot;</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                 <span class="n">subclip</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mf">16.85</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">35</span><span class="p">))</span><span class="o">.</span>\
-</span><span class="line">                 <span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">                 <span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">140</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">454</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">314</span><span class="p">)</span>
+</span><span class="line"><span class="n">pigsPolka</span> <span class="o">=</span>  <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;pigs_in_a_polka.mp4&quot;</span><span class="p">))</span>
+</span><span class="line">              <span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span><span class="mf">16.85</span><span class="p">),(</span><span class="mi">2</span><span class="p">,</span><span class="mi">35</span><span class="p">))</span>
+</span><span class="line">              <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line">              <span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">x1</span><span class="o">=</span><span class="mi">140</span><span class="p">,</span> <span class="n">y1</span><span class="o">=</span><span class="mi">41</span><span class="p">,</span> <span class="n">x2</span><span class="o">=</span><span class="mi">454</span><span class="p">,</span> <span class="n">y2</span><span class="o">=</span><span class="mi">314</span><span class="p">))</span>
 </span><span class="line">
 </span><span class="line">
 </span><span class="line"><span class="c">### COMPUTE THE BACKGROUND</span>
@@ -509,17 +508,16 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 </span><span class="line">
 </span><span class="line">    <span class="k">return</span> <span class="n">mask</span>
 </span><span class="line">
-</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">set_get_frame</span><span class="p">(</span><span class="n">get_mask_frame</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">set_duration</span><span class="p">(</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line"><span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">ismask</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">get_frame</span><span class="o">=</span><span class="n">get_mask_frame</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
 </span><span class="line">
 </span><span class="line"><span class="c">### LAST EFFECTS AND GIF GENERATION</span>
 </span><span class="line">
-</span><span class="line"><span class="n">pigsPolka</span><span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">subclip</span><span class="p">(</span><span class="mf">12.95</span><span class="p">,</span><span class="mf">15.9</span><span class="p">)</span><span class="o">.</span>\
-</span><span class="line">          <span class="n">fx</span><span class="p">(</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span><span class="o">.</span>\ <span class="c"># black &amp; white effect !</span>
-</span><span class="line">          <span class="n">to_gif</span><span class="p">(</span><span class="s">&#39;pigs_polka.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
-</span><span class="line">          <span class="n">dispose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span class="line"><span class="n">final</span> <span class="o">=</span> <span class="p">(</span><span class="n">pigsPolka</span><span class="o">.</span><span class="n">set_mask</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+</span><span class="line">         <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mf">12.95</span><span class="p">,</span><span class="mf">15.9</span><span class="p">)</span>
+</span><span class="line">         <span class="o">.</span><span class="n">fx</span><span class="p">(</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span> <span class="c"># black &amp; white effect !</span>
+</span><span class="line">
+</span><span class="line"><span class="n">final</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;pigs_polka.gif&#39;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dispose</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 </div>
