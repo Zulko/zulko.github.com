@@ -222,19 +222,21 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 <span class="line-number">31</span>
 <span class="line-number">32</span>
 <span class="line-number">33</span>
+<span class="line-number">34</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># imports srqt, norm, array, plot...</span>
 </span><span class="line">
 </span><span class="line"><span class="k">def</span> <span class="nf">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">):</span>
 </span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns ``(t_C, C)`` if A can catch B, before B </span>
 </span><span class="line"><span class="sd">    reaches H. Otherwise, returns ``None``. &quot;&quot;&quot;</span>
 </span><span class="line">
-</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">AB</span><span class="p">,</span> <span class="n">AH</span><span class="p">,</span> <span class="n">BH</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">H</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">AB</span><span class="o">*</span><span class="n">BH</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line">    <span class="n">sin_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sb</span> <span class="o">/</span> <span class="n">Sa</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_b</span>
 </span><span class="line">
 </span><span class="line">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
 </span><span class="line">
-</span><span class="line">        <span class="k">print</span> <span class="s">&quot;B moves too fast to be ever caught !&quot;</span>
+</span><span class="line">        <span class="k">print</span><span class="p">(</span><span class="s">&quot;B moves too fast to be ever caught !&quot;</span><span class="p">)</span>
 </span><span class="line">        <span class="k">return</span> <span class="bp">None</span>
 </span><span class="line">
 </span><span class="line">    <span class="k">else</span><span class="p">:</span>
@@ -242,19 +244,19 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </span><span class="line">        <span class="n">sin_c</span> <span class="o">=</span> <span class="p">(</span> <span class="n">sin_a</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 </span><span class="line">                  <span class="o">+</span> <span class="n">sin_b</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
 </span><span class="line">
-</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
+</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">AB</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
 </span><span class="line">
-</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">A</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">BH</span><span class="p">:</span>
 </span><span class="line">
-</span><span class="line">            <span class="k">print</span> <span class="s">&quot;B reaches H before interception by A !&quot;</span>
+</span><span class="line">            <span class="k">print</span><span class="p">(</span><span class="s">&quot;B reaches H before interception by A !&quot;</span><span class="p">)</span>
 </span><span class="line">            <span class="k">return</span> <span class="bp">None</span>
 </span><span class="line">
 </span><span class="line">        <span class="k">else</span><span class="p">:</span>
 </span><span class="line">
-</span><span class="line">            <span class="k">print</span> <span class="s">&quot;A intercepted B !&quot;</span>
+</span><span class="line">            <span class="k">print</span><span class="p">(</span><span class="s">&quot;A intercepted B !&quot;</span><span class="p">)</span>
 </span><span class="line">            <span class="n">t_C</span> <span class="o">=</span> <span class="n">BC</span> <span class="o">/</span> <span class="n">Sb</span>
-</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span>
-</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span><span class="n">C</span>
+</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span> <span class="n">BH</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span> <span class="n">C</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>And here it is in action:</p>
@@ -293,7 +295,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># PARAMETERS OF THE PROBLEM</span>
 </span><span class="line"><span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">1.0</span> <span class="p">,</span> <span class="mf">5.0</span> <span class="p">))</span> <span class="c"># Alice&#39;s initial position</span>
 </span><span class="line"><span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">4.0</span> <span class="p">,</span> <span class="mf">1.0</span> <span class="p">))</span> <span class="c"># Rabbit&#39;s initial position</span>
-</span><span class="line"><span class="n">H</span> <span class="o">=</span>  <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># Hole&#39;s coordinates</span>
+</span><span class="line"><span class="n">H</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># The hole&#39;s coordinates</span>
 </span><span class="line"><span class="n">Sa</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="c"># Alice&#39;s speed</span>
 </span><span class="line"><span class="n">Sb</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># Rabbit&#39;s speed</span>
 </span><span class="line">
@@ -306,7 +308,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </span><span class="line">
 </span><span class="line"><span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span><span class="s">&#39;B&#39;</span><span class="p">,</span><span class="s">&#39;H&#39;</span><span class="p">,</span><span class="s">&#39;C&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">]):</span>
 </span><span class="line">    <span class="n">annotate</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">xytext</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-</span><span class="line">        <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">              <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
 </span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
@@ -395,6 +397,10 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/09/20/vector-animations-with-python/">Vector Animations With Python</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/07/26/a-tweets-controlled-python-script/">A Python Script Controlled via Twitter</a>
       </li>
     
@@ -408,10 +414,6 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
     
       <li class="post">
         <a href="/blog/2014/06/07/a-covers-mix-with-python/">A Covers Mix With Python</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/04/27/viennese-mazes-what-they-are/">Viennese Mazes: What They Are, and How to Make One</a>
       </li>
     
   </ul>

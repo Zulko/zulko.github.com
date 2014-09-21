@@ -32,7 +32,7 @@
         <loc>
             http://Zulko.github.io/blog/2013/11/11/interception-of-a-linear-trajectory-with-constant-speed/
         </loc>
-        <lastmod>2014-02-20T21:07:49+01:00</lastmod>
+        <lastmod>2014-08-01T14:51:53+02:00</lastmod>
     </url>
     <url>
         <loc>
@@ -48,7 +48,7 @@
         <loc>
             http://Zulko.github.io/blog/2014/03/29/soundstretching-and-pitch-shifting-in-python/
         </loc>
-        <lastmod>2014-06-14T18:55:12+02:00</lastmod>
+        <lastmod>2014-09-20T16:57:39+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/</loc>
@@ -70,7 +70,11 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/07/26/a-tweets-controlled-python-script/</loc>
-        <lastmod>2014-07-28T18:15:58+02:00</lastmod>
+        <lastmod>2014-08-11T19:29:45+02:00</lastmod>
+    </url>
+    <url>
+        <loc>http://Zulko.github.io/blog/2014/09/20/vector-animations-with-python/</loc>
+        <lastmod>2014-09-21T11:57:11+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
@@ -78,10 +82,10 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-07-30T13:58:01+02:00</lastmod>
+        <lastmod>2014-09-21T11:57:11+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-07-30T13:58:01+02:00</lastmod>
+        <lastmod>2014-09-21T11:57:11+02:00</lastmod>
     </url>
 </urlset>

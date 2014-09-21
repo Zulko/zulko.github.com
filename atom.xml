@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-07-30T18:46:56+02:00</updated>
+  <updated>2014-09-21T12:03:41+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,720 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Vector animations with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/09/20/vector-animations-with-python/"/>
+    <updated>2014-09-20T16:48:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/09/20/vector-animations-with-python</id>
+    <content type="html"><![CDATA[<p><em>Because neat animations are neat.</em></p>
+
+<!-- more -->
+
+<p>I am a big fan of <a href="https://dribbble.com/beesandbombs">Dave Whyte</a>’s vector animations, like this one:</p>
+
+<p><img class="center" src="https://d13yacurqjgara.cloudfront.net/users/583436/screenshots/1692659/spiral.gif" width="400" /></p>
+
+<p>It was generated using a special animation language called <a href="http://www.processing.org/">Processing</a> (here is <a href="https://dribbble.com/shots/1692659-Shell-Spiral/attachments/268926">Dave’s code</a>). While it seems powerful, Processing it is not very elegant in my opinion. This post shows how to do 2D vector animations in Python using two libraries, <a href="https://github.com/Zulko/gizeh">Gizeh</a> (for the graphics) and <a href="http://zulko.github.io/moviepy">MoviePy</a> (for the animations). I will quickly present these libraries before we get to the examples.</p>
+
+<h2 id="gizeh-and-moviepy">Gizeh and Moviepy</h2>
+
+<p>Gizeh is a Python library I wrote on top of PyCairo to make it more intuitive. To make a picture with Gizeh you create a <em>surface</em>, draw stuff on it, and export:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">320</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">260</span><span class="p">)</span> <span class="c"># dimensions in pixel</span>
+</span><span class="line"><span class="n">circle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span> <span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">40</span><span class="p">,</span> <span class="c"># radius, in pixels</span>
+</span><span class="line">                       <span class="n">xy</span><span class="o">=</span> <span class="p">[</span><span class="mi">156</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span> <span class="c"># coordinates of the center</span>
+</span><span class="line">                       <span class="n">fill</span><span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span> <span class="c"># &#39;red&#39; in RGB coordinates</span>
+</span><span class="line"><span class="n">circle</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span> <span class="n">surface</span> <span class="p">)</span> <span class="c"># draws the circle on the surface</span>
+</span><span class="line"><span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span> <span class="c"># to export as a numpy array</span>
+</span><span class="line"><span class="n">surface</span><span class="o">.</span><span class="n">write_to_png</span><span class="p">(</span><span class="s">&quot;my_drawing.png&quot;</span><span class="p">)</span> <span class="c"># to export as a PNG</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>We obtain this magnificent Japanese flag:
+<img class="center" src="http://Zulko.github.io/images/vector_animations/my_drawing.png" /></p>
+
+<p>To make an animation with MoviePy, you write a function <code>make_frame</code> which, given some time <code>t</code>, returns the video frame at time <code>t</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; returns a numpy array of the frame at time t &quot;&quot;&quot;</span>
+</span><span class="line">    <span class="c"># ... here make a frame_for_time_t</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">frame_for_time_t</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c"># 3-second clip</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="s">&quot;my_animation.mp4&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span> <span class="c"># export as video</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="s">&quot;my_animation.gif&quot;</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span> <span class="c"># export as GIF</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-1">Example 1</h2>
+
+<p><img class="center" src="http://i.imgur.com/xF4lpHU.gif" /></p>
+
+<p>In <code>make_frame</code> we draw a red circle, whose radius depends on the time <code>t</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span><span class="mi">128</span> <span class="c"># width, height, in pixels</span>
+</span><span class="line"><span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># duration of the clip, in seconds</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="n">radius</span> <span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span> <span class="p">(</span><span class="n">t</span><span class="o">*</span><span class="p">(</span><span class="n">duration</span><span class="o">-</span><span class="n">t</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span><span class="o">/</span><span class="mi">6</span>
+</span><span class="line">    <span class="n">circle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">radius</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">H</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+</span><span class="line">    <span class="n">circle</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;circle.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-2">Example 2</h2>
+
+<p><img class="center" src="http://i.imgur.com/rlrOFg4.gif" /></p>
+
+<p>Now there are more circles, and we start to see the interest of making animations programmatically using <code>for</code> loops. The useful function <code>polar2cart</code> transforms polar coordinates (radius, angle) into cartesian coordinates (x,y).</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span><span class="mi">128</span>
+</span><span class="line"><span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class="line"><span class="n">ncircles</span> <span class="o">=</span> <span class="mi">20</span> <span class="c"># Number of circles</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncircles</span><span class="p">):</span>
+</span><span class="line">        <span class="n">angle</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="n">ncircles</span><span class="o">+</span><span class="n">t</span><span class="o">/</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line">        <span class="n">center</span> <span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="p">(</span> <span class="mf">0.5</span><span class="o">+</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">polar2cart</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="n">angle</span><span class="p">))</span>
+</span><span class="line">        <span class="n">circle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">r</span><span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="p">(</span><span class="mf">1.0</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="n">ncircles</span><span class="p">),</span>
+</span><span class="line">                              <span class="n">xy</span><span class="o">=</span> <span class="n">center</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span> <span class="p">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">,</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="line">        <span class="n">circle</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;circles.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-3">Example 3</h2>
+
+<p><img class="center" src="http://i.imgur.com/E1vjoRq.gif" /></p>
+
+<p>Here we fill the circles with a slightly excentred radial gradient to give and impression of volume. The colors, initial positions and centers of rotations of the circles are chosen randomly at the beginning.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span> <span class="kn">as</span> <span class="nn">gz</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span> <span class="o">=</span> <span class="n">H</span> <span class="o">=</span> <span class="mi">150</span>
+</span><span class="line"><span class="n">D</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># duration</span>
+</span><span class="line"><span class="n">nballs</span><span class="o">=</span><span class="mi">60</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># generate random values of radius, color, center</span>
+</span><span class="line"><span class="n">radii</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="o">.</span><span class="mi">1</span><span class="o">*</span><span class="n">W</span><span class="p">,</span><span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">W</span><span class="p">,</span> <span class="n">nballs</span><span class="p">)</span>
+</span><span class="line"><span class="n">colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nballs</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line"><span class="n">centers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">W</span><span class="p">,</span> <span class="p">(</span><span class="n">nballs</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">r</span><span class="p">,</span><span class="n">color</span><span class="p">,</span> <span class="n">center</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">radii</span><span class="p">,</span> <span class="n">colors</span><span class="p">,</span> <span class="n">centers</span><span class="p">):</span>
+</span><span class="line">        <span class="n">angle</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">color</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-.</span><span class="mi">5</span><span class="p">)</span><span class="o">+</span><span class="n">color</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class="line">        <span class="n">xy</span> <span class="o">=</span> <span class="n">center</span><span class="o">+</span><span class="n">gz</span><span class="o">.</span><span class="n">polar2cart</span><span class="p">(</span><span class="n">W</span><span class="o">/</span><span class="mi">5</span><span class="p">,</span><span class="n">angle</span><span class="p">)</span> <span class="c"># center of the ball</span>
+</span><span class="line">        <span class="n">gradient</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">ColorGradient</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s">&quot;radial&quot;</span><span class="p">,</span>
+</span><span class="line">                     <span class="n">stops_colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">color</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">color</span><span class="o">/</span><span class="mi">10</span><span class="p">)],</span>
+</span><span class="line">                     <span class="n">xy1</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span><span class="o">-</span><span class="mf">0.3</span><span class="p">],</span> <span class="n">xy2</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy3</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.4</span><span class="p">])</span>
+</span><span class="line">        <span class="n">ball</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">gradient</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">r</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">xy</span><span class="p">)</span>
+</span><span class="line">        <span class="n">ball</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">D</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;balls.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span><span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-4">Example 4</h2>
+
+<p><img class="center" src="http://i.imgur.com/6rx7SUz.gif" /></p>
+
+<p>This is a derivative of the Dave Whyte animation shown in the introduction. It is made of stacked circles moving towards the picture’s border, with carefully chosen sizes, starting times, and colors (I say <em>carefully chosen</em> because it took me a few dozens random tries). The black around the picture is simply a big circle with no fill and a very very thick black border.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span> <span class="mi">256</span>
+</span><span class="line"><span class="n">DURATION</span> <span class="o">=</span> <span class="mf">2.0</span>
+</span><span class="line"><span class="n">NDISKS_PER_CYCLE</span> <span class="o">=</span> <span class="mi">8</span>
+</span><span class="line"><span class="n">SPEED</span> <span class="o">=</span> <span class="o">.</span><span class="mo">05</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">DURATION</span><span class="o">/</span><span class="mi">2</span><span class="o">/</span><span class="n">NDISKS_PER_CYCLE</span> <span class="c"># delay between disks</span>
+</span><span class="line">    <span class="n">N</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">NDISKS_PER_CYCLE</span><span class="o">/</span><span class="n">SPEED</span><span class="p">)</span> <span class="c"># total number of disks</span>
+</span><span class="line">    <span class="n">t0</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="n">SPEED</span> <span class="c"># indicates at which avancement to start</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">N</span><span class="p">):</span>
+</span><span class="line">        <span class="n">a</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="n">NDISKS_PER_CYCLE</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">        <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">.</span><span class="mo">05</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="n">t0</span><span class="o">-</span><span class="n">dt</span><span class="o">*</span><span class="p">(</span><span class="n">N</span><span class="o">-</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)))</span>
+</span><span class="line">        <span class="n">center</span> <span class="o">=</span> <span class="n">W</span><span class="o">*</span><span class="p">(</span><span class="mf">0.5</span><span class="o">+</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">polar2cart</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="n">a</span><span class="p">))</span>
+</span><span class="line">        <span class="n">color</span> <span class="o">=</span> <span class="mi">3</span><span class="o">*</span><span class="p">((</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="n">NDISKS_PER_CYCLE</span><span class="p">)</span> <span class="o">%</span> <span class="mf">1.0</span><span class="p">,)</span>
+</span><span class="line">        <span class="n">circle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="mf">0.3</span><span class="o">*</span><span class="n">W</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">center</span><span class="p">,</span><span class="n">fill</span> <span class="o">=</span> <span class="n">color</span><span class="p">,</span>
+</span><span class="line">                              <span class="n">stroke_width</span><span class="o">=</span><span class="mf">0.01</span><span class="o">*</span><span class="n">W</span><span class="p">)</span>
+</span><span class="line">        <span class="n">circle</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="n">contour1</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">r</span><span class="o">=.</span><span class="mi">65</span><span class="o">*</span><span class="n">W</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">[</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="n">stroke_width</span><span class="o">=.</span><span class="mi">5</span><span class="o">*</span><span class="n">W</span><span class="p">)</span>
+</span><span class="line">    <span class="n">contour2</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">r</span><span class="o">=.</span><span class="mi">42</span><span class="o">*</span><span class="n">W</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">[</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">],</span> <span class="n">stroke_width</span><span class="o">=.</span><span class="mo">02</span><span class="o">*</span><span class="n">W</span><span class="p">,</span>
+</span><span class="line">                            <span class="n">stroke</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</span><span class="line">    <span class="n">contour1</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="n">contour2</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">DURATION</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;shutter.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-5">Example 5</h2>
+
+<p><img class="center" src="http://i.imgur.com/JAJvFdT.gif" /></p>
+
+<p>You can draw more than circles ! You can also group different elements so that they will move together.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span> <span class="kn">as</span> <span class="nn">gz</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">75</span>
+</span><span class="line"><span class="n">D</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># duration in seconds</span>
+</span><span class="line"><span class="n">r</span> <span class="o">=</span> <span class="mi">22</span> <span class="c"># size of the letters / pentagons</span>
+</span><span class="line">
+</span><span class="line"><span class="n">gradient</span><span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">ColorGradient</span><span class="p">(</span><span class="s">&quot;linear&quot;</span><span class="p">,((</span><span class="mi">0</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span><span class="mi">1</span><span class="p">)),(</span><span class="mi">1</span><span class="p">,(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))),</span>
+</span><span class="line">                           <span class="n">xy1</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">-</span><span class="n">r</span><span class="p">),</span> <span class="n">xy2</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">r</span><span class="p">))</span>
+</span><span class="line"><span class="n">polygon</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">regular_polygon</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">gradient</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">letter</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="s">&quot;GIZEH&quot;</span><span class="p">):</span>
+</span><span class="line">        <span class="n">angle</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="o">-</span><span class="mf">1.0</span><span class="o">*</span><span class="n">i</span><span class="o">/</span><span class="mi">5</span><span class="p">))</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+</span><span class="line">        <span class="n">txt</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">letter</span><span class="p">,</span> <span class="s">&quot;Amiri&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="o">*</span><span class="n">r</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s">&#39;bold&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="n">group</span> <span class="o">=</span> <span class="p">(</span><span class="n">gz</span><span class="o">.</span><span class="n">Group</span><span class="p">([</span><span class="n">polygon</span><span class="p">,</span> <span class="n">txt</span><span class="p">])</span>
+</span><span class="line">                 <span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+</span><span class="line">                 <span class="o">.</span><span class="n">translate</span><span class="p">((</span><span class="n">W</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="n">H</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
+</span><span class="line">        <span class="n">group</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">D</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;gizeh.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-6">Example 6</h2>
+
+<p><img class="center" src="http://i.imgur.com/dfJ2Skz.gif" /></p>
+
+<p>Here we start with just a triangle. By rotating this triangle three time we obtain four triangles which fit nicely into a square. Then we copy this square following a checkerboard pattern. Finally we do the same with another color to fill the missing tiles. Now, if the original triangle is rotated, all the triangles on the picture will also be rotated.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span><span class="mi">200</span>
+</span><span class="line"><span class="n">WSQ</span> <span class="o">=</span> <span class="n">W</span><span class="o">/</span><span class="mi">4</span> <span class="c"># width of one &#39;square&#39;</span>
+</span><span class="line"><span class="n">D</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># duration</span>
+</span><span class="line"><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">8</span> <span class="c"># small angle in one triangle</span>
+</span><span class="line"><span class="n">points</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),(</span><span class="mi">1</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">),(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)]</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="p">(</span><span class="n">c1</span><span class="p">,</span><span class="n">c2</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([[(</span><span class="o">.</span><span class="mi">7</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)],</span>
+</span><span class="line">                                <span class="p">[(</span><span class="mf">0.05</span><span class="p">,</span><span class="mf">0.05</span><span class="p">,</span><span class="o">.</span><span class="mi">7</span><span class="p">),(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">)]]):</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">grad</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">ColorGradient</span><span class="p">(</span><span class="s">&quot;linear&quot;</span><span class="p">,</span><span class="n">xy1</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">xy2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+</span><span class="line">                               <span class="n">stops_colors</span><span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span><span class="n">c1</span><span class="p">),(</span><span class="mi">1</span><span class="p">,</span><span class="n">c2</span><span class="p">)])</span>
+</span><span class="line">        <span class="n">r</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">D</span><span class="o">/</span><span class="mi">3</span><span class="p">)</span><span class="o">/</span><span class="n">D</span><span class="p">))</span>
+</span><span class="line">        <span class="n">triangle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">polyline</span><span class="p">(</span><span class="n">points</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="n">grad</span><span class="p">,</span>
+</span><span class="line">                        <span class="n">angle</span><span class="o">=</span><span class="n">r</span><span class="p">,</span> <span class="n">stroke</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">stroke_width</span><span class="o">=.</span><span class="mo">02</span><span class="p">)</span>
+</span><span class="line">        <span class="n">square</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Group</span><span class="p">([</span><span class="n">triangle</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">i</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">                              <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">)])</span>
+</span><span class="line">        <span class="n">squares</span> <span class="o">=</span> <span class="p">(</span><span class="n">gizeh</span><span class="o">.</span><span class="n">Group</span><span class="p">([</span><span class="n">square</span><span class="o">.</span><span class="n">translate</span><span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="n">k</span><span class="p">,</span><span class="n">j</span><span class="p">))</span>
+</span><span class="line">                            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">                            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">)])</span>
+</span><span class="line">                   <span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">WSQ</span><span class="p">)</span>
+</span><span class="line">                   <span class="o">.</span><span class="n">translate</span><span class="p">((</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="o">-</span><span class="n">WSQ</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="p">,</span><span class="n">H</span><span class="o">/</span><span class="mi">2</span><span class="p">)))</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">squares</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="o">=</span><span class="n">make_frame</span><span class="p">)</span><span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;blueradsquares.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-7">Example 7</h2>
+
+<p><img class="center" src="http://i.imgur.com/79tTac9.gif" /></p>
+
+<p>A nice thing to do with vector graphics is fractals. We first build a ying-yang, then we use this ying-yang as the dots of a bigger ying-yang, and we use the bigger ying-yang as the dots of an even bigger ying yang etc. In the end we go one level deep into the imbricated ying-yangs, and we start zooming.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">256</span><span class="p">,</span><span class="mi">256</span>
+</span><span class="line"><span class="n">R</span><span class="o">=</span><span class="mf">1.0</span><span class="o">*</span><span class="n">W</span><span class="o">/</span><span class="mi">3</span>
+</span><span class="line"><span class="n">D</span> <span class="o">=</span> <span class="mi">4</span>
+</span><span class="line"><span class="n">yingyang</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Group</span><span class="p">(</span> <span class="p">[</span>
+</span><span class="line">      <span class="n">gizeh</span><span class="o">.</span><span class="n">arc</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span>
+</span><span class="line">      <span class="n">gizeh</span><span class="o">.</span><span class="n">arc</span><span class="p">(</span><span class="n">R</span><span class="p">,</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)),</span>
+</span><span class="line">      <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)),</span>
+</span><span class="line">      <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">fractal</span> <span class="o">=</span> <span class="n">yingyang</span>
+</span><span class="line"><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+</span><span class="line">    <span class="n">fractal</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Group</span><span class="p">([</span><span class="n">yingyang</span><span class="p">,</span>
+</span><span class="line">                <span class="n">fractal</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span>
+</span><span class="line">                <span class="n">fractal</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">0.25</span><span class="p">)</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="o">-</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">]),</span>
+</span><span class="line">                <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="mf">0.26</span><span class="o">*</span><span class="n">R</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+</span><span class="line">                    <span class="n">stroke</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span>
+</span><span class="line">                <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="mf">0.26</span><span class="o">*</span><span class="n">R</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+</span><span class="line">                    <span class="n">stroke</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">1</span><span class="p">)])</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Go one level deep into the fractal</span>
+</span><span class="line"><span class="n">fractal</span> <span class="o">=</span> <span class="n">fractal</span><span class="o">.</span><span class="n">translate</span><span class="p">([(</span><span class="n">R</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="n">G</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="p">))</span> <span class="c"># zoom coefficient</span>
+</span><span class="line">    <span class="p">(</span><span class="n">fractal</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="n">R</span><span class="o">*</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="mf">1.0</span><span class="o">/</span><span class="n">G</span><span class="p">)</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="c"># zoom</span>
+</span><span class="line">     <span class="o">.</span><span class="n">translate</span><span class="p">(</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="n">gizeh</span><span class="o">.</span><span class="n">polar2cart</span><span class="p">(</span><span class="n">W</span><span class="o">/</span><span class="mi">12</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="p">))</span> <span class="c"># spiral effect</span>
+</span><span class="line">     <span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">))</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">D</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;yingyang.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-8">Example 8</h2>
+
+<p><img class="center" src="http://i.imgur.com/JanwSIf.gif" /></p>
+
+<p>That one is inspired by this <a href="http://33.media.tumblr.com/ff988433be4970277349b0b57ae0abc6/tumblr_nb1fzsolQd1r2geqjo1_500.gif">Dave Whyte animation</a>. We draw white-filled circles, each of these being almost completely transparent so that they only add 1 to the value of the pixels that they cover. Pixels with an even value, which are the pixels covered by an even number of circles, are then painted white, while the others will be black. To complexify and have a nicely-looping animation, we draw two circles in each direction, one being a time-shifted version of the other.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line">
+</span><span class="line"><span class="n">W</span><span class="p">,</span><span class="n">H</span> <span class="o">=</span> <span class="mi">400</span><span class="p">,</span><span class="mi">400</span>
+</span><span class="line"><span class="n">D</span> <span class="o">=</span> <span class="mi">5</span> <span class="c"># duration, in seconds</span>
+</span><span class="line"><span class="n">ncircles</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">W</span><span class="p">,</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="n">ncircles</span><span class="o">+</span><span class="mi">1</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class="line">        <span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">W</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span><span class="n">H</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">polar2cart</span><span class="p">(</span><span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">W</span><span class="p">,</span><span class="n">angle</span><span class="p">)</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]:</span> <span class="c"># two circles belongin to two groups</span>
+</span><span class="line">            <span class="n">circle</span> <span class="o">=</span> <span class="n">gizeh</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">W</span><span class="o">*.</span><span class="mi">45</span><span class="o">*</span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">t</span><span class="o">/</span><span class="n">D</span><span class="p">),</span><span class="n">xy</span><span class="o">=</span><span class="n">center</span><span class="p">,</span>
+</span><span class="line">                                  <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mf">1.0</span><span class="o">/</span><span class="mi">255</span><span class="p">))</span>
+</span><span class="line">            <span class="n">circle</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="mi">255</span><span class="o">*</span><span class="p">((</span><span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">D</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;rose.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">fuzz</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s">&quot;OptimizePlus&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-9">Example 9</h2>
+
+<p><img class="center" src="http://i.imgur.com/2YdW9yf.gif" /></p>
+
+<p>What a nice pentagon ! Interestingly, making the squares rotate the other direction creates a very different-looking <a href="http://i.imgur.com/C8IKy28.gif">animation</a>. I don’t feel like giving the code for this one, but it’s also just 30 lines of Python (with a trick) so I’ll leave it as an exercise ;)</p>
+
+<h2 id="mixing-videos-and-vector-graphics">Mixing videos and vector graphics</h2>
+
+<p>A nice advantage of using Gizeh with MoviePy is that you can read actual video files (or gifs) and use their content to fill the shapes you draw with Gizeh. </p>
+
+<p>We will use this <a href="https://www.youtube.com/watch?v=t4gjl-uwUHc">video</a> from the Blender Foundation (it’s under a Creative Common licence). Since you have read until there I’ll show you a little unrelated trick: at <em>4:32</em> the rabbit is jumping rope, so there is a potential for a well-looping GIF. We open the video around <em>4:32</em>, and let MoviePy automatically decide where to cut to have the best-looping GIF possible:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.video.tools.cuts</span> <span class="kn">as</span> <span class="nn">cuts</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;bunny.mp4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">33</span><span class="p">))</span>
+</span><span class="line"><span class="n">t_loop</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">find_period</span><span class="p">(</span><span class="n">clip</span><span class="p">)</span> <span class="c"># gives t=0.56</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t_loop</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;jumping_bunny.gif&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/MVp4TSx.gif" /></p>
+
+<p>Now we can feed the frames of this GIF to Gizeh. This can be simply done using MoviePy’s <code>clip.fl(some_filter)</code>, which says <em>“I want a new clip made by transforming the frames of the current clip with some_filter”</em>.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span> <span class="kn">as</span> <span class="nn">gz</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;jumping_bunny.gif&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="n">d</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">clip</span><span class="o">.</span><span class="n">duration</span>
+</span><span class="line"><span class="n">center</span><span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">h</span><span class="o">/</span><span class="mi">2</span><span class="p">])</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">my_filter</span><span class="p">(</span><span class="n">get_frame</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Transforms a frame (given by get_frame(t)) into a different</span>
+</span><span class="line"><span class="sd">    frame, using vector graphics.&quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">surface</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">w</span><span class="p">,</span><span class="n">h</span><span class="p">)</span>
+</span><span class="line">    <span class="n">fill</span> <span class="o">=</span> <span class="p">(</span><span class="n">gz</span><span class="o">.</span><span class="n">ImagePattern</span><span class="p">(</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">pixel_zero</span><span class="o">=</span><span class="n">center</span><span class="p">)</span>
+</span><span class="line">            <span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">center</span><span class="p">))</span>
+</span><span class="line">    <span class="k">for</span> <span class="p">(</span><span class="n">nfaces</span><span class="p">,</span><span class="n">angle</span><span class="p">,</span><span class="n">f</span><span class="p">)</span> <span class="ow">in</span> <span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">1.0</span><span class="o">/</span><span class="mi">6</span><span class="p">],</span>
+</span><span class="line">                              <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mf">3.0</span><span class="o">/</span><span class="mi">6</span><span class="p">],</span>
+</span><span class="line">                              <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="mf">5.0</span><span class="o">/</span><span class="mi">6</span><span class="p">]):</span>
+</span><span class="line">        <span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="o">*</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="o">*</span><span class="p">(</span><span class="o">.</span><span class="mi">5</span><span class="o">+</span> <span class="o">.</span><span class="mo">05</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="p">(</span><span class="n">t</span><span class="o">/</span><span class="n">d</span><span class="o">+</span><span class="n">f</span><span class="p">))))</span>
+</span><span class="line">        <span class="n">shape</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">regular_polygon</span><span class="p">(</span><span class="n">w</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span><span class="n">nfaces</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">xy</span><span class="p">,</span>
+</span><span class="line">                <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">center</span><span class="p">))</span>
+</span><span class="line">        <span class="n">shape</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">fl</span><span class="p">(</span><span class="n">my_filter</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;jumping_bunny_shapes.gif&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/ltArnnc.gif" /></p>
+
+<p>Finally, this function adds a zoom on some part of the video.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">gizeh</span> <span class="kn">as</span> <span class="nn">gz</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">add_zoom</span><span class="p">(</span><span class="n">clip</span><span class="p">,</span> <span class="n">target_center</span><span class="p">,</span> <span class="n">zoom_center</span><span class="p">,</span> <span class="n">zoom_radius</span><span class="p">,</span> <span class="n">zoomx</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">size</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">fl</span><span class="p">(</span><span class="n">im</span><span class="p">):</span>
+</span><span class="line">        <span class="sd">&quot;&quot;&quot; transforms the image by adding a zoom &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">surface</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">Surface</span><span class="o">.</span><span class="n">from_image</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+</span><span class="line">        <span class="n">fill</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">ImagePattern</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">pixel_zero</span><span class="o">=</span><span class="n">target_center</span><span class="p">,</span>
+</span><span class="line">                               <span class="nb">filter</span><span class="o">=</span><span class="s">&#39;best&#39;</span><span class="p">)</span>
+</span><span class="line">        <span class="n">line</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">polyline</span><span class="p">([</span><span class="n">target_center</span><span class="p">,</span> <span class="n">zoom_center</span><span class="p">],</span>
+</span><span class="line">                           <span class="n">stroke_width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</span><span class="line">        <span class="n">circle_target</span><span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">zoom_radius</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">target_center</span><span class="p">,</span>
+</span><span class="line">                                 <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span> <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</span><span class="line">        <span class="n">circle_zoom</span> <span class="o">=</span> <span class="n">gz</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">zoom_radius</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">zoom_center</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="n">fill</span><span class="p">,</span>
+</span><span class="line">                       <span class="n">stroke_width</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">zoomx</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="n">zoom_center</span><span class="p">)</span>
+</span><span class="line">        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">line</span><span class="p">,</span> <span class="n">circle_zoom</span><span class="p">,</span> <span class="n">circle_target</span><span class="p">:</span>
+</span><span class="line">            <span class="n">e</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">surface</span><span class="o">.</span><span class="n">get_npimage</span><span class="p">()</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">clip</span><span class="o">.</span><span class="n">fl_image</span><span class="p">(</span><span class="n">fl</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;jumping_bunny.gif&quot;</span><span class="p">)</span>
+</span><span class="line"><span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">size</span>
+</span><span class="line"><span class="n">clip_with_zoom</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span><span class="n">add_zoom</span><span class="p">,</span> <span class="n">target_center</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">h</span><span class="o">/</span><span class="mi">3</span><span class="p">],</span> <span class="n">zoomx</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+</span><span class="line">                   <span class="n">zoom_center</span> <span class="o">=</span> <span class="p">[</span><span class="mi">5</span><span class="o">*</span><span class="n">w</span><span class="o">/</span><span class="mi">6</span><span class="p">,</span> <span class="n">h</span><span class="o">/</span><span class="mi">4</span><span class="p">],</span> <span class="n">zoom_radius</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span><span class="line"><span class="n">clip_with_zoom</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;jumping_bunnyt_zoom.gif&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/VAvDKRN.gif" /></p>
+
+<h2 id="your-turn-now-">Your turn now !</h2>
+
+<p>I hope I have convinced you that Python is a nice language for making vector animations. It keeps the code small and simple so that you can concentrate on the maths, and still enables export in many formats and fine-tuning the quality of your animation. If you give it a try, let me know of any difficulty you may meet installing or using MoviePy and Gizeh. And any feedback, improvement ideas, commits, etc. are also very appreciated.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[A Python script controlled via Twitter]]></title>
@@ -130,7 +844,7 @@
 </span><span class="line"><span class="n">bot</span><span class="o">.</span><span class="n">watch_every</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="c"># check every 20s</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Just run that script all day on your computer (or rather on your <a href="http://www.raspberrypi.org/">Raspberry Pi</a>) and you will be updated every time someone drinks chocolate milk and feels the urge to tweet about it (which is a very often).</p>
+<p>Just run that script all day on your computer (or rather on your <a href="http://www.raspberrypi.org/">Raspberry Pi</a>) and you will be updated every time someone drinks chocolate milk and feels the urge to tweet about it (which is very often).</p>
 ]]></content>
   </entry>
   
@@ -681,8 +1395,8 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 </span><span class="line">
 </span><span class="line"><span class="k">def</span> <span class="nf">speedx</span><span class="p">(</span><span class="n">sound_array</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
 </span><span class="line">    <span class="sd">&quot;&quot;&quot; Multiplies the sound&#39;s speed by some `factor` &quot;&quot;&quot;</span>
-</span><span class="line">    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">snd_array</span><span class="p">),</span> <span class="n">factor</span><span class="p">)</span> <span class="p">)</span>
-</span><span class="line">    <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">snd_array</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</span><span class="line">    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound_array</span><span class="p">),</span> <span class="n">factor</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="p">[</span><span class="n">indices</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">sound_array</span><span class="p">)]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
 </span><span class="line">    <span class="k">return</span> <span class="n">sound_array</span><span class="p">[</span> <span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="p">]</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
@@ -1960,19 +2674,21 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 <span class="line-number">31</span>
 <span class="line-number">32</span>
 <span class="line-number">33</span>
+<span class="line-number">34</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="o">*</span> <span class="c"># imports srqt, norm, array, plot...</span>
 </span><span class="line">
 </span><span class="line"><span class="k">def</span> <span class="nf">interception</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">Sa</span><span class="p">,</span> <span class="n">Sb</span><span class="p">):</span>
 </span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns ``(t_C, C)`` if A can catch B, before B </span>
 </span><span class="line"><span class="sd">    reaches H. Otherwise, returns ``None``. &quot;&quot;&quot;</span>
 </span><span class="line">
-</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span> <span class="p">)</span>
+</span><span class="line">    <span class="n">AB</span><span class="p">,</span> <span class="n">AH</span><span class="p">,</span> <span class="n">BH</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">A</span><span class="o">-</span><span class="n">H</span><span class="p">),</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">H</span><span class="p">)</span>
+</span><span class="line">    <span class="n">sin_b</span> <span class="o">=</span> <span class="n">det</span><span class="p">(</span><span class="n">array</span><span class="p">((</span><span class="n">A</span><span class="o">-</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span><span class="n">AB</span><span class="o">*</span><span class="n">BH</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line">    <span class="n">sin_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">Sb</span> <span class="o">/</span> <span class="n">Sa</span><span class="p">)</span> <span class="o">*</span> <span class="n">sin_b</span>
 </span><span class="line">
 </span><span class="line">    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sin_a</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
 </span><span class="line">
-</span><span class="line">        <span class="k">print</span> <span class="s">&quot;B moves too fast to be ever caught !&quot;</span>
+</span><span class="line">        <span class="k">print</span><span class="p">(</span><span class="s">&quot;B moves too fast to be ever caught !&quot;</span><span class="p">)</span>
 </span><span class="line">        <span class="k">return</span> <span class="bp">None</span>
 </span><span class="line">
 </span><span class="line">    <span class="k">else</span><span class="p">:</span>
@@ -1980,19 +2696,19 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </span><span class="line">        <span class="n">sin_c</span> <span class="o">=</span> <span class="p">(</span> <span class="n">sin_a</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_b</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
 </span><span class="line">                  <span class="o">+</span> <span class="n">sin_b</span> <span class="o">*</span> <span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sin_a</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="p">)</span>
 </span><span class="line">
-</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">norm</span><span class="p">(</span><span class="n">B</span><span class="o">-</span><span class="n">A</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
+</span><span class="line">        <span class="n">BC</span> <span class="o">=</span> <span class="n">AB</span> <span class="o">*</span> <span class="p">(</span><span class="n">sin_a</span> <span class="o">/</span> <span class="n">sin_c</span><span class="p">)</span>
 </span><span class="line">
-</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">A</span><span class="p">):</span>
+</span><span class="line">        <span class="k">if</span> <span class="n">BC</span> <span class="o">&gt;</span> <span class="n">BH</span><span class="p">:</span>
 </span><span class="line">
-</span><span class="line">            <span class="k">print</span> <span class="s">&quot;B reaches H before interception by A !&quot;</span>
+</span><span class="line">            <span class="k">print</span><span class="p">(</span><span class="s">&quot;B reaches H before interception by A !&quot;</span><span class="p">)</span>
 </span><span class="line">            <span class="k">return</span> <span class="bp">None</span>
 </span><span class="line">
 </span><span class="line">        <span class="k">else</span><span class="p">:</span>
 </span><span class="line">
-</span><span class="line">            <span class="k">print</span> <span class="s">&quot;A intercepted B !&quot;</span>
+</span><span class="line">            <span class="k">print</span><span class="p">(</span><span class="s">&quot;A intercepted B !&quot;</span><span class="p">)</span>
 </span><span class="line">            <span class="n">t_C</span> <span class="o">=</span> <span class="n">BC</span> <span class="o">/</span> <span class="n">Sb</span>
-</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span>
-</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span><span class="n">C</span>
+</span><span class="line">            <span class="n">C</span> <span class="o">=</span> <span class="n">B</span> <span class="o">+</span> <span class="n">BC</span> <span class="o">*</span> <span class="p">(</span><span class="n">H</span><span class="o">-</span><span class="n">B</span><span class="p">)</span><span class="o">/</span> <span class="n">BH</span>
+</span><span class="line">            <span class="k">return</span> <span class="n">t_C</span><span class="p">,</span> <span class="n">C</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p>And here it is in action:</p>
@@ -2031,7 +2747,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># PARAMETERS OF THE PROBLEM</span>
 </span><span class="line"><span class="n">A</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">1.0</span> <span class="p">,</span> <span class="mf">5.0</span> <span class="p">))</span> <span class="c"># Alice&#39;s initial position</span>
 </span><span class="line"><span class="n">B</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">4.0</span> <span class="p">,</span> <span class="mf">1.0</span> <span class="p">))</span> <span class="c"># Rabbit&#39;s initial position</span>
-</span><span class="line"><span class="n">H</span> <span class="o">=</span>  <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># Hole&#39;s coordinates</span>
+</span><span class="line"><span class="n">H</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span> <span class="mf">6.0</span> <span class="p">,</span> <span class="mf">7.0</span> <span class="p">))</span> <span class="c"># The hole&#39;s coordinates</span>
 </span><span class="line"><span class="n">Sa</span> <span class="o">=</span> <span class="mf">1.1</span> <span class="c"># Alice&#39;s speed</span>
 </span><span class="line"><span class="n">Sb</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="c"># Rabbit&#39;s speed</span>
 </span><span class="line">
@@ -2044,7 +2760,7 @@ Note that the lengths AC and BC denote the distance run by Alice and the Rabbit 
 </span><span class="line">
 </span><span class="line"><span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">point</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="s">&#39;A&#39;</span><span class="p">,</span><span class="s">&#39;B&#39;</span><span class="p">,</span><span class="s">&#39;H&#39;</span><span class="p">,</span><span class="s">&#39;C&#39;</span><span class="p">],</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="n">B</span><span class="p">,</span><span class="n">H</span><span class="p">,</span><span class="n">C</span><span class="p">]):</span>
 </span><span class="line">    <span class="n">annotate</span><span class="p">(</span> <span class="n">label</span><span class="p">,</span> <span class="n">xy</span> <span class="o">=</span> <span class="n">point</span><span class="p">,</span> <span class="n">xytext</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
-</span><span class="line">        <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
+</span><span class="line">              <span class="n">textcoords</span> <span class="o">=</span> <span class="s">&#39;offset points&#39;</span><span class="p">,</span> <span class="n">fontsize</span> <span class="o">=</span> <span class="mi">24</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="n">annotate</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">H</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="n">B</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span>
 </span><span class="line">         <span class="n">textcoords</span><span class="o">=</span><span class="s">&#39;data&#39;</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
