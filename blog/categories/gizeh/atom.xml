@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gizeh | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gizeh/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-21T12:03:41+02:00</updated>
+  <updated>2014-09-21T12:09:12+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -79,7 +79,7 @@
 
 <h2 id="example-1">Example 1</h2>
 
-<p><img class="center" src="http://i.imgur.com/xF4lpHU.gif"></p>
+<p><img class="center" src="http://i.imgur.com/HRDUHf9.gif"></p>
 
 <p>In <code>make_frame</code> we draw a red circle, whose radius depends on the time <code>t</code>:</p>
 
