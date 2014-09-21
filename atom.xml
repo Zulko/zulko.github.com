@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-21T17:44:00+02:00</updated>
+  <updated>2014-09-22T01:32:20+02:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -709,7 +709,7 @@
 
 <h2 id="mixing-videos-and-vector-graphics">Mixing videos and vector graphics</h2>
 
-<p>A nice advantage of using Gizeh with MoviePy is that you can read actual video files (or gifs) and use their content to fill the shapes you draw with Gizeh. </p>
+<p>A nice advantage of using Gizeh with MoviePy is that you can read actual video files (or gifs) and uise them to fill shapes drawn with Gizeh. </p>
 
 <p>We will use this <a href="https://www.youtube.com/watch?v=t4gjl-uwUHc">video</a> from the Blender Foundation (it’s under a Creative Common licence). Since you have read until there I’ll show you a little unrelated trick: at <em>4:32</em> the rabbit is jumping rope, so there is a potential for a well-looping GIF. We open the video around <em>4:32</em>, and let MoviePy automatically decide where to cut to have the best-looping GIF possible:</p>
 
@@ -857,7 +857,7 @@
 
 <h2 id="your-turn-now-">Your turn now !</h2>
 
-<p>I hope I have convinced you that Python is a nice language for making vector animations. It keeps the code small and simple so that you can concentrate on the maths, and still enables export in many formats and fine-tuning the quality of your animation. If you give it a try, let me know of any difficulty you may meet installing or using MoviePy and Gizeh. And any feedback, improvement ideas, commits, etc. are also very appreciated.</p>
+<p>I hope I have convinced you that Python is a nice language for making vector animations. If you give it a try, let me know of any difficulty you may meet installing or using MoviePy and Gizeh. And any feedback, improvement ideas, commits, etc. are also very appreciated.</p>
 ]]></content>
   </entry>
   
