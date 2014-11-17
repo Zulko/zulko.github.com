@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Twitter | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/twitter/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-22T01:32:20+02:00</updated>
+  <updated>2014-11-17T15:12:25+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -21,7 +21,7 @@
     <content type="html"><![CDATA[<p><em>Let us watch and react to the lattest tweets with Python, the dirty way.</em>
 <!-- more --></p>
 
-<p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API. To use them, you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
+<p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API, which makes them a little complicated to use: you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
 
 <p>If you just want to read the lattest tweets of some Twitter user, it is simpler to parse the HTML of that user’s Twitter page: </p>
 

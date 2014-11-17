@@ -4,7 +4,7 @@
   <title><![CDATA[Category: transcription, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/transcription/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-22T01:32:20+02:00</updated>
+  <updated>2014-11-17T15:12:25+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -181,7 +181,7 @@ mean that a periodic pattern is present in the curve:</p>
 
 <p><img class="center" src="/images/rolls_transcription/lum_plus_keycolumns.jpeg"></p>
 
-<p>We can now reduce our image the piano roll to keep only one pixel per hole column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
+<p>We can now reduce our image the piano roll to keep only one pixel per hole-column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -304,7 +304,7 @@ the beat. Therefore, computing the main period in the graph above will give us t
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">tempo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">fps</span> <span class="o">*</span> <span class="mf">60.0</span><span class="o">/</span><span class="n">quarter_duration</span><span class="p">)</span> <span class="c"># we find 252.</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>We will now separate the hands. Let’s keep things simple and say that the left hand takes all the notes below the middle C.</p>
+<p>We will now separate the hands. Let us keep things simple and say that the left hand takes all the notes below the middle C.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -394,7 +394,7 @@ was a quarter</li>
 </span><span class='line'><span class="n">right_hand__quantized</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">right_hand</span><span class="p">,</span> <span class="n">quarter_duration</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Here is what the final data looks like:</p>
+<p>The final data looks like this:</p>
 
 <pre><code>&gt;&gt;&gt; right_hand_q[:4]
 #&gt; [{'duration': 1.0, 'notes': [70, 72, 76, 80], 't_strike': 20},
@@ -469,7 +469,7 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class='line'><span class="s">right_hand_lily = lilyscore(right_hand_quantized)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Then we just write this lilyfied sheet music in a file and render the sheet music by calling lilypond.</p>
+<p>Then we write this lilyfied sheet music in a file and render the sheet music by calling lilypond as an external program:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -491,25 +491,22 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="err">‘</span><span class="n">lilypond</span> <span class="o">%</span><span class="n">s</span><span class="err">’</span><span class="o">%</span><span class="n">filename</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>Here are the first lines of the resulting PDF file, showing the right 
-hand’s part.</p>
+<p>The resulting PDF file starts like this (we only aksed for the right-hand part):</p>
 
 <p><img class="center" src="/images/rolls_transcription/right_hand_ly.jpg"></p>
 
-<p>The script has made a pretty good work here, all the notes are there 
-with the right pitch and the right duration. If we now transcribe the 
+<p>The script has made a pretty good work, all the notes are there 
+with the right pitch and the right duration. If we transcribe the 
 whole piece we will see some mistakes (mostly notes attributed to the 
 wrong hand, and more rarely notes with a wrong duration, wrong pitch, etc.), 
 which have to be corrected, but still it is pretty cool to have these 
-1500 notes crunched in just a few seconds.
-The Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a> is perfect 
-to finish the editing.</p>
+1500 notes crunched in just a few seconds.</p>
 
 <p><a name="final_result"></a></p>
 
 <h2 id="final-result">Final result</h2>
 
-<p>After 3 hours of editing we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
+<p>After 3 hours of editing (with the Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a>, which I recommend) we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
 
 <p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div></p>
 
@@ -553,11 +550,9 @@ scans (starting from MIDI files is equivalent to starting directly to
 Step 3, quantization and hands separation). Thousands of MIDI files 
 from rolls scans are available on the internet (like 
 <a href="http://www.iammp.org">here</a> or <a href="http://www.pianola.co.nz">here</a>) but 
-not all mechanical piano owners have the appropriate scanner, so 
+not all mechanical piano owners have an appropriate scanner, so 
 there must be thousands of other rolls in private collections which 
-have never been scanned and pushed on the Internet.</p>
-
-<p>I wrote this post to show that just filming piano rolls in action is enough for transcriptions purposes.</p>
+have never been scanned and pushed on the Internet. With this post I wanted to show that just filming piano rolls in action is enough for transcriptions purposes.</p>
 ]]></content>
   </entry>
   

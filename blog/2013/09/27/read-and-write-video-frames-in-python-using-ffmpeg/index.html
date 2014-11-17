@@ -9,7 +9,7 @@
   <meta name="author" content="Zulko">
 
   
-  <meta name="description" content="This article shows how easy it is to read or write video frames with Python, by calling the external software FFMPEG through pipes. Check also that &hellip;">
+  <meta name="description" content="This article shows how easy it is to read or write video frames with a few lines of Python, by calling the external software FFMPEG through pipes. If &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -109,15 +109,15 @@
   </header>
 
 
-<div class="entry-content"><p><em>This article shows how easy it is to read or write video frames with Python, by calling the external software FFMPEG through pipes. Check also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
+<div class="entry-content"><p><em>This article shows how easy it is to read or write video frames with a few lines of Python, by calling the external software FFMPEG through pipes. If you want a battle-tested  and more sophisticated version, check out my module <a href="https://github.com/Zulko/moviepy/">MoviePy</a>. See also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">this other article</a> for the same with audio files.</em></p>
 
 <!-- more -->
 
-<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
+<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary. It should be one of the following:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux ans Mac OS</span>
 </span><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
@@ -317,6 +317,10 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/">Things You Can Do With Python and POV-Ray</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/09/20/vector-animations-with-python/">Vector Animations With Python</a>
       </li>
     
@@ -330,10 +334,6 @@ In the next lines we extract one frame and reshape it as a 420x360x3 Numpy array
     
       <li class="post">
         <a href="/blog/2014/06/21/some-more-videogreping-with-python/">Some More Videogreping With Python</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/07/a-covers-mix-with-python/">A Covers Mix With Python</a>
       </li>
     
   </ul>

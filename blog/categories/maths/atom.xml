@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Maths | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/maths/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-22T01:32:20+02:00</updated>
+  <updated>2014-11-17T15:12:25+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -381,7 +381,7 @@
 
 <p><img class="center" src="http://i.imgur.com/JAJvFdT.gif"></p>
 
-<p>You can draw more than circles ! You can also group different elements so that they will move together.</p>
+<p>You can draw more than circles ! And you can group different elements so that they will move together (here, a letter and a pentagon).</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -647,7 +647,7 @@
 
 <p>A pentagon made of rotating squares ! Interestingly, making the squares rotate the other direction creates a very different-looking <a href="http://i.imgur.com/C8IKy28.gif">animation</a>. The squares are placed according to <a href="http://math.stackexchange.com/a/41954/43338">this polar equation</a>.</p>
 
-<p>The difficulty in this animation is that the last square drawn will necessarily be on top of all the others, and not, as it should be, below the first square ! The solution is to draw each frame twice. The first time, we draw the squares starting from the right, so that the faulty square will also be on the right, and we only keep the left part of that picture. The second time we start drawing the squares from the left, so that the faulty square is on the left, and we keep the right part. By assembling the two valid parts we reconstitute a valid drawing.</p>
+<p>The difficulty in this animation is that the last square drawn will necessarily be on top of all the others, and not, as it should be, below the first square ! The solution is to draw each frame twice. The first time, we draw the squares starting from the right, so that the faulty square will also be on the right, and we only keep the left part of that picture. The second time we start drawing the squares from the left, so that the faulty square is on the left, and we keep the right part. By assembling the two valid parts we reconstitute a valid picture.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -713,7 +713,7 @@
 
 <h2 id="mixing-videos-and-vector-graphics">Mixing videos and vector graphics</h2>
 
-<p>A nice advantage of using Gizeh with MoviePy is that you can read actual video files (or gifs) and uise them to fill shapes drawn with Gizeh. </p>
+<p>A nice advantage of combining Gizeh with MoviePy is that you can read actual video files (or gifs) and use the frames to fill shapes drawn with Gizeh.</p>
 
 <p>We will use this <a href="https://www.youtube.com/watch?v=t4gjl-uwUHc">video</a> from the Blender Foundation (it’s under a Creative Common licence). Since you have read until there I’ll show you a little unrelated trick: at <em>4:32</em> the rabbit is jumping rope, so there is a potential for a well-looping GIF. We open the video around <em>4:32</em>, and let MoviePy automatically decide where to cut to have the best-looping GIF possible:</p>
 
@@ -727,13 +727,13 @@
 </span><span class='line'><span class="kn">import</span> <span class="nn">moviepy.video.tools.cuts</span> <span class="kn">as</span> <span class="nn">cuts</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
 </span><span class='line'>
 </span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">bunny</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">33</span><span class="p">))</span>
-</span><span class='line'><span class="n">t_loop</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">find_period</span><span class="p">(</span><span class="n">clip</span><span class="p">)</span> <span class="c"># gives t=0.56</span>
+</span><span class='line'><span class="n">t_loop</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">find_video_period</span><span class="p">(</span><span class="n">clip</span><span class="p">)</span> <span class="c"># gives t=0.56</span>
 </span><span class='line'><span class="n">clip</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t_loop</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">jumping_bunny</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p><img class="center" src="http://i.imgur.com/MVp4TSx.gif"></p>
 
-<p>Now we can feed the frames of this GIF to Gizeh. This can be simply done using MoviePy’s <code>clip.fl(some_filter)</code>, which says <em>“I want a new clip made by transforming the frames of the current clip with some_filter”</em>.</p>
+<p>Now we can feed the frames of this GIF to Gizeh, using MoviePy’s <code>clip.fl(some_filter)</code>, which means <em>“I want a new clip made by transforming the frames of the current clip with some_filter”</em>.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

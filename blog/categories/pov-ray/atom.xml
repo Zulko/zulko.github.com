@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: POV-Ray | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/pov-ray/atom.xml" rel="self"/>
+  <link href="http://Zulko.github.io/"/>
+  <updated>2014-11-17T15:12:25+01:00</updated>
+  <id>http://Zulko.github.io/</id>
+  <author>
+    <name><![CDATA[Zulko]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Things you can do with Python and POV-Ray]]></title>
+    <link href="http://Zulko.github.io/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/"/>
+    <updated>2014-11-13T17:05:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray</id>
+    <content type="html"><![CDATA[<p><em>This post presents Vapory, a library I wrote to bring POV-Ray’s 3D rendering capabilities to Python.</em></p>
+
+<!-- more -->
+
+<p>POV-ray is a popular 3D rendering software which produces photo-realistic scenes like this one:</p>
+
+<p><img class="center" src="http://hof.povray.org/images/glasses.jpg" width="450"></p>
+
+<p>It may not be as good as Cinema4D or Pixar’s RenderMan, but POV-Ray is free, open-source, and cross-platform. Rendering is launched from the terminal with <code>povray myscene.pov</code>, where <code>myscene.pov</code> contains the description of a 3D scene:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>/* LET’S DRAW A PURPLE SPHERE ! */
+</span><span class='line'>camera { location &lt;0, 2, -3&gt; look_at &lt;0, 1, 2&gt;  }
+</span><span class='line'>light_source { &lt;2, 4, -3&gt; color &lt;1, 1, 1&gt; }
+</span><span class='line'>sphere { &lt;0, 1, 2&gt;, 2 texture{ pigment{ color &lt;1, 0, 1&gt; } } }</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="/images/povray/purple_sphere.png"></p>
+
+<p>While POV-Ray has a very nice and sophisticated scene description language, I wanted to use it together with libraries from the Python world, so I wrote <a href="https://github.com/Zulko/vapory">Vapory</a>, a library to render POV-Ray scenes directly from Python, like this:
+https://github.com/Zulko/moviepy
+<div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># LET’S DRAW A PURPLE SPHERE !</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span> <span class="err">‘</span><span class="n">location</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="err">‘</span><span class="n">look_at</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">(</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'><span class="n">sphere</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">camera</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span> <span class="p">[</span><span class="n">light</span><span class="p">,</span> <span class="n">sphere</span><span class="p">]</span> <span class="p">)</span>
+</span><span class='line'><span class="n">scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="err">“</span><span class="n">purple_sphere</span><span class="o">.</span><span class="n">png</span><span class="err">”</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This script simply generates a <code>scene.pov</code> file (hat tip <a href="http://code.activestate.com/recipes/205451-povray-for-python/">this script</a> by Simon Burton) and then sends the file to POV-Ray for rendering. Vapory can also pipe the resulting image back to Python, and has a few additional features to make it easy to use in an IPython Notebook.</p>
+
+<h2 id="example-1-basic-animation-with-post-processing">Example 1: Basic animation with post-processing</h2>
+
+<p>We first create a scene where the positions of the objects depend on the time :</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">color</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">col</span><span class="p">:</span> <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">scene</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Returns</span> <span class="n">the</span> <span class="n">scene</span> <span class="n">at</span> <span class="n">time</span> <span class="err">‘</span><span class="n">t</span><span class="err">’</span> <span class="p">(</span><span class="ow">in</span> <span class="n">seconds</span><span class="p">)</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">Camera</span><span class="p">(</span> <span class="err">‘</span><span class="n">location</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="err">‘</span><span class="n">look_at</span><span class="err">’</span><span class="p">,</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">),</span>
+</span><span class='line'>            <span class="p">[</span> <span class="n">LightSource</span><span class="p">(</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="n">color</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">])</span> <span class="p">),</span>
+</span><span class='line'>              <span class="n">Background</span><span class="p">(</span> <span class="err">“</span><span class="n">color</span><span class="err">”</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">),</span>
+</span><span class='line'>              <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="n">color</span><span class="p">([</span><span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">])),</span>
+</span><span class='line'>              <span class="n">Box</span><span class="p">(</span> <span class="p">[</span><span class="o">-.</span><span class="mi">8</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-.</span><span class="mi">5</span><span class="p">]</span> <span class="p">,</span> <span class="p">[</span><span class="o">-.</span><span class="mi">75</span><span class="o">+.</span><span class="mi">5</span><span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="c"># &amp;lt;= t</span>
+</span><span class='line'>                    <span class="n">color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">]),</span> <span class="err">‘</span><span class="n">rotate</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">),</span>
+</span><span class='line'>              <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">]</span> <span class="p">,</span> <span class="o">.</span><span class="mi">75</span><span class="p">,</span>  <span class="n">color</span><span class="p">([</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]))])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>Then we animate this scene with <a href="http://zulko.github.io/moviepy/">MoviePy</a>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">scene</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">anim</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/IixYOsI.gif"></p>
+
+<p>Note that one can also make basic animations directly with POV-Ray. But since we use Python we can use its image processing libraries for post-processing. As an example, let us use Scikit-image’s sobel filter to obtain a nice geometry animation</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">skimage.filter</span> <span class="kn">import</span> <span class="n">sobel</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="c"># We will use “quality=1” so that shadows won’t be rendered,</span>
+</span><span class='line'>    <span class="c"># and double the rendering resolution to avoid pixelization.</span>
+</span><span class='line'>    <span class="n">im</span><span class="o">=</span> <span class="n">scene</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span><span class='line'>                        <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">sobelized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sobel</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">im</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="mi">3</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="p">[</span><span class="mi">255</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="p">(</span><span class="n">sobelized</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">anim_sobel</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/U7L9O1m.gif"></p>
+
+<p>The contours look pretty nice because POV-Ray uses exact formulas to render geometrical objects (contrary to libraries like ITK or OpenGL, which rely on triangular meshes). With a few more lines we can mix the two animations to create a cel-shading effect:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span>
+</span><span class='line'><span class="n">normal</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">anim</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span> <span class="c"># The first animation</span>
+</span><span class='line'><span class="n">sobelized</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">anim_sobel</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span> <span class="c"># The second animation</span>
+</span><span class='line'><span class="c"># We take the frame-by-frame minimum of the two animations</span>
+</span><span class='line'><span class="n">cel_shade</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">gf</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">gf</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">sobelized</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</span><span class='line'><span class="n">normal</span><span class="o">.</span><span class="n">fl</span><span class="p">(</span><span class="n">cel_shade</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">cel_shaded</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/FwKXr8X.gif"></p>
+
+<h2 id="example-2-embedding-a-video-in-a-3d-scene">Example 2: Embedding a video in a 3D scene</h2>
+
+<p>Since we are playing around with MoviePy, let’s embed an actual movie in a 3D scene:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/M9R21SquDSk "></iframe></div></p>
+
+<p>We start with a basic scene:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">])</span>
+</span><span class='line'><span class="n">wall</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">20</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span><span class="n">Pigment</span><span class="p">(</span><span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])))</span>
+</span><span class='line'><span class="n">ground</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+</span><span class='line'>                         <span class="n">Finish</span><span class="p">(</span> <span class="err">‘</span><span class="n">phong</span><span class="err">’</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="err">‘</span><span class="n">reflection</span><span class="err">’</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span class='line'>                                 <span class="err">‘</span><span class="n">metallic</span><span class="err">’</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)))</span>
+</span><span class='line'><span class="n">sphere1</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">([</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">Pigment</span><span class="p">(</span><span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+</span><span class='line'>                                           <span class="n">Finish</span><span class="p">(</span><span class="err">‘</span><span class="n">phong</span><span class="err">’</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>
+</span><span class='line'>                                                  <span class="err">‘</span><span class="n">reflection</span><span class="err">’</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+</span><span class='line'><span class="n">sphere2</span> <span class="o">=</span><span class="n">Sphere</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span><span class="err">‘</span><span class="n">T_Ruby_Glass</span><span class="err">’</span><span class="p">),</span>
+</span><span class='line'>                <span class="n">Interior</span><span class="p">(</span><span class="err">‘</span><span class="n">ior</span><span class="err">’</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">Camera</span><span class="p">(</span><span class="err">“</span><span class="n">location</span><span class="err">”</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">],</span> <span class="err">“</span><span class="n">look_at</span><span class="err">”</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+</span><span class='line'>               <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span> <span class="n">ground</span><span class="p">,</span> <span class="n">wall</span><span class="p">,</span> <span class="n">sphere1</span><span class="p">,</span> <span class="n">sphere2</span><span class="p">,</span> <span class="n">light</span><span class="p">],</span>
+</span><span class='line'>               <span class="n">included</span><span class="o">=</span><span class="p">[</span><span class="err">“</span><span class="n">glass</span><span class="o">.</span><span class="n">inc</span><span class="err">”</span><span class="p">]</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="/images/povray/scene_home_theater.png" width="400"></p>
+
+<p>To this scene we will add a flat box (our <em>theater screen</em>), and for each frame of the movie we will make a PNG image file that will be used by POV-Ray as the texture of our flat box.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.video.io.ffmpeg_writer</span> <span class="kn">import</span> <span class="n">ffmpeg_write_image</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">embed_in_scene</span><span class="p">(</span><span class="n">image</span><span class="p">):</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">ffmpeg_write_image</span><span class="p">(</span><span class="s">&quot;__temp__.png&quot;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span><span class='line'><span class="n">image_ratio</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'><span class="n">screen</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Texture</span><span class="p">(</span>
+</span><span class='line'>                <span class="n">Pigment</span><span class="p">(</span> <span class="n">ImageMap</span><span class="p">(</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;__temp__.png&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">)),</span>
+</span><span class='line'>                <span class="n">Finish</span><span class="p">(</span><span class="s">&#39;ambient&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span> <span class="p">),</span>
+</span><span class='line'>             <span class="s">&#39;scale&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="o">/</span><span class="n">image_ratio</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+</span><span class='line'>             <span class="s">&#39;rotate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span><span class='line'>             <span class="s">&#39;translate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</span><span class='line'><span class="n">new_scene</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">add_objects</span><span class="p">([</span><span class="n">screen</span><span class="p">])</span>
+</span><span class='line'><span class="k">return</span> <span class="n">new_scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">bunny</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span> <span class="c"># File containing the original video</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">47</span><span class="p">)</span> <span class="c"># cut between t=23 and 47 seconds</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">fl_image</span><span class="p">(</span><span class="n">embed_in_scene</span><span class="p">)</span>  <span class="c"># &amp;lt;= The magic happens</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">fadein</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fadeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>        <span class="o">.</span><span class="n">audio_fadein</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">audio_fadeout</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="err">“</span><span class="n">bunny2</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span><span class="n">bitrate</span><span class="o">=</span><span class="err">’</span><span class="mi">8000</span><span class="n">k</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>This 25-seconds clip takes 150 minutes to generate (!!!) which may be due to the good resolution settings, numerous light reflexions in the balls and the ground, and the complex texture of the screen.</p>
+
+<h2 id="example-3-a-more-complex-scene">Example 3: A more complex scene</h2>
+
+<p>In this exemple we write “VAPORY” using 240 bricks:</p>
+
+<p><img class="center" src="/images/povray/vapory.jpeg" width="600"></p>
+
+<p>First, we generate an image of the white-on-black text “VAPORY”. Many libraries can do that, here we use ImageMagick through MoviePy:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">TextClip</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">txtclip</span> <span class="o">=</span> <span class="n">TextClip</span><span class="p">(</span><span class="err">“</span><span class="n">VAPORY</span><span class="err">”</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="err">”</span><span class="mi">8</span><span class="n">BIT</span><span class="o">-</span><span class="n">WONDER</span><span class="o">-</span><span class="n">Nominal</span><span class="err">”</span><span class="p">,</span> <span class="n">kerning</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="err">’</span><span class="n">black</span><span class="err">’</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="err">’</span><span class="n">white</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">txt_image</span> <span class="o">=</span> <span class="n">txtclip</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+Here is the result:
+<img class="center" src="/images/povray/vapory_white_black.png"></p>
+
+<p>We then get the coordinates of the non-black pixels is this image, and use them to place the bricks in the 3D scene, with small random variations around the depth-axis:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;compmute-the-coordinates-of-the-241-bricks&quot;</span><span class="o">&gt;</span><span class="n">Compmute</span> <span class="n">the</span> <span class="n">coordinates</span> <span class="n">of</span> <span class="n">the</span> <span class="mi">241</span> <span class="n">bricks</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span> <span class="o">=</span> <span class="n">txt_image</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># the non-black pixels</span>
+</span><span class='line'><span class="n">bricks_x</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class='line'><span class="n">bricks_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>  <span class="o">-</span> <span class="n">yy</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class='line'><span class="n">bricks_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;generate--render-the-scene&quot;</span><span class="o">&gt;</span><span class="n">Generate</span> <span class="o">/</span> <span class="n">render</span> <span class="n">the</span> <span class="n">scene</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">bricks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Box</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">z</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">Texture</span><span class="p">(</span><span class="err">“</span><span class="n">Sandalwood</span><span class="err">”</span><span class="p">))</span> <span class="c"># The bricks</span>
+</span><span class='line'>         <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bricks_xx</span><span class="p">,</span> <span class="n">bricks_yy</span><span class="p">,</span> <span class="n">bricks_zz</span><span class="p">)]</span>
+</span><span class='line'><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">([</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">],</span> <span class="err">‘</span><span class="n">color</span><span class="err">’</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span> <span class="err">‘</span><span class="n">location</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">17</span><span class="p">],</span> <span class="err">‘</span><span class="n">look_at</span><span class="err">’</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="p">[</span><span class="n">light</span><span class="p">,</span> <span class="n">Background</span><span class="p">(</span><span class="err">“</span><span class="n">White</span><span class="err">”</span><span class="p">)]</span><span class="o">+</span> <span class="n">boxes</span><span class="p">,</span>
+</span><span class='line'>              <span class="n">included</span><span class="o">=</span><span class="p">[</span><span class="err">“</span><span class="n">colors</span><span class="o">.</span><span class="n">inc</span><span class="err">”</span><span class="p">,</span> <span class="err">“</span><span class="n">textures</span><span class="o">.</span><span class="n">inc</span><span class="err">”</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="err">“</span><span class="n">vapory</span><span class="o">.</span><span class="n">png</span><span class="err">”</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<h2 id="example-4-rendering-a-physics-simulation">Example 4: Rendering a Physics simulation</h2>
+
+<p><img class="center" src="http://i.imgur.com/TdhxwGz.gif"></p>
+
+<p>Python as many nice scientific and engineering libraries that could benefit from a photorealistic rendering engine. Here I simulated the cube trajectories with PyODE (a Python binding of the physics engine ODE), and fed the results to Vapory and MoviePy for rendering and animation, all in <a href="https://gist.github.com/Zulko/f828b38421dfbee59daf">a hundred lines</a>.</p>
+
+<h2 id="example-5-the-ghost-of-jlawrence-cook">Example 5: The ghost of J.Lawrence Cook</h2>
+
+<p>In a <a href="http://zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/">previous post</a> I talked about how piano rolls can be scanned and turned into MIDI files (which are some sort of electronic sheet music). Here is a 1997 student project where they used such a MIDI file to animate a 3D piano programatically:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/lVXmtckavDQ "></iframe></div></p>
+
+<p>Python has now all the libraries for such a project: we can parse the MIDI file with the package <a href="http://mido.readthedocs.org/en/latest/">mido</a>, and render the piano keyboard with Vapory. We can convert the MIDI file to an MP3 audio file by calling FluidSynth externally and finally use MoviePy to animate everything and incorporate the audio.</p>
+
+<p>Here is <em>Let’s Fall in Love</em>, from a 1933 piano roll arranged by J. Lawrence Cook, and animated with just <a href="https://gist.github.com/Zulko/b910c8b22e8e1c01fae6">~100 lines of code</a>:</p>
+
+<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div></p>
+
+<h2 id="final-words">Final words</h2>
+
+<p>I hope to have shown that Python and POV-Ray can do nice things together, all easy-peasy with Vapory. On the longer term, it would be nice if more recent softwares like Blender (which has a huge user community and modern features like GPU acceleration) had proper Python bindings. But apparently <a href="https://developer.blender.org/T22328">this will never happen</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

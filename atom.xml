@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-22T01:32:20+02:00</updated>
+  <updated>2014-11-17T15:12:25+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,348 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Things you can do with Python and POV-Ray]]></title>
+    <link href="http://Zulko.github.io/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/"/>
+    <updated>2014-11-13T17:05:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray</id>
+    <content type="html"><![CDATA[<p><em>This post presents Vapory, a library I wrote to bring POV-Ray’s 3D rendering capabilities to Python.</em></p>
+
+<!-- more -->
+
+<p>POV-ray is a popular 3D rendering software which produces photo-realistic scenes like this one:</p>
+
+<p><img class="center" src="http://hof.povray.org/images/glasses.jpg" width="450" /></p>
+
+<p>It may not be as good as Cinema4D or Pixar’s RenderMan, but POV-Ray is free, open-source, and cross-platform. Rendering is launched from the terminal with <code>povray myscene.pov</code>, where <code>myscene.pov</code> contains the description of a 3D scene:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">/* LET'S DRAW A PURPLE SPHERE ! */
+</span><span class="line">camera { location &lt;0, 2, -3&gt; look_at &lt;0, 1, 2&gt;  }
+</span><span class="line">light_source { &lt;2, 4, -3&gt; color &lt;1, 1, 1&gt; }
+</span><span class="line">sphere { &lt;0, 1, 2&gt;, 2 texture{ pigment{ color &lt;1, 0, 1&gt; } } }</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://Zulko.github.io/images/povray/purple_sphere.png" /></p>
+
+<p>While POV-Ray has a very nice and sophisticated scene description language, I wanted to use it together with libraries from the Python world, so I wrote <a href="https://github.com/Zulko/vapory">Vapory</a>, a library to render POV-Ray scenes directly from Python, like this:
+https://github.com/Zulko/moviepy</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="c"># LET&#39;S DRAW A PURPLE SPHERE !</span>
+</span><span class="line"><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span> <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s">&#39;look_at&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">)</span>
+</span><span class="line"><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">(</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+</span><span class="line"><span class="n">sphere</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">camera</span><span class="p">,</span> <span class="n">objects</span><span class="o">=</span> <span class="p">[</span><span class="n">light</span><span class="p">,</span> <span class="n">sphere</span><span class="p">]</span> <span class="p">)</span>
+</span><span class="line"><span class="n">scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;purple_sphere.png&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This script simply generates a <code>scene.pov</code> file (hat tip <a href="http://code.activestate.com/recipes/205451-povray-for-python/">this script</a> by Simon Burton) and then sends the file to POV-Ray for rendering. Vapory can also pipe the resulting image back to Python, and has a few additional features to make it easy to use in an IPython Notebook.</p>
+
+<h2 id="example-1-basic-animation-with-post-processing">Example 1: Basic animation with post-processing</h2>
+
+<p>We first create a scene where the positions of the objects depend on the time :</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="n">color</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">col</span><span class="p">:</span> <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="n">col</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">scene</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns the scene at time &#39;t&#39; (in seconds) &quot;&quot;&quot;</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">Camera</span><span class="p">(</span> <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="s">&#39;look_at&#39;</span><span class="p">,</span>  <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">),</span>
+</span><span class="line">            <span class="p">[</span> <span class="n">LightSource</span><span class="p">(</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="n">color</span><span class="p">([</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">1.5</span><span class="p">])</span> <span class="p">),</span>
+</span><span class="line">              <span class="n">Background</span><span class="p">(</span> <span class="s">&quot;color&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="p">),</span>
+</span><span class="line">              <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="p">,</span> <span class="mi">2</span><span class="p">,</span>   <span class="n">color</span><span class="p">([</span><span class="o">.</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">])),</span>
+</span><span class="line">              <span class="n">Box</span><span class="p">(</span> <span class="p">[</span><span class="o">-.</span><span class="mi">8</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="n">t</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-.</span><span class="mi">5</span><span class="p">]</span> <span class="p">,</span> <span class="p">[</span><span class="o">-.</span><span class="mi">75</span><span class="o">+.</span><span class="mi">5</span><span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="mf">3.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">],</span> <span class="c"># &lt;= t</span>
+</span><span class="line">                    <span class="n">color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mi">6</span><span class="p">,</span><span class="o">.</span><span class="mi">5</span><span class="p">]),</span> <span class="s">&#39;rotate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="p">),</span>
+</span><span class="line">              <span class="n">Sphere</span><span class="p">(</span> <span class="p">[</span> <span class="mi">3</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">t</span> <span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">]</span> <span class="p">,</span> <span class="o">.</span><span class="mi">75</span><span class="p">,</span>  <span class="n">color</span><span class="p">([</span><span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">9</span><span class="p">]))])</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Then we animate this scene with <a href="http://zulko.github.io/moviepy/">MoviePy</a>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">scene</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;anim.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/IixYOsI.gif" /></p>
+
+<p>Note that one can also make basic animations directly with POV-Ray. But since we use Python we can use its image processing libraries for post-processing. As an example, let us use Scikit-image’s sobel filter to obtain a nice geometry animation</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">skimage.filter</span> <span class="kn">import</span> <span class="n">sobel</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class="line">    <span class="c"># We will use &quot;quality=1&quot; so that shadows won&#39;t be rendered,</span>
+</span><span class="line">    <span class="c"># and double the rendering resolution to avoid pixelization.</span>
+</span><span class="line">    <span class="n">im</span><span class="o">=</span> <span class="n">scene</span><span class="p">(</span><span class="n">t</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">400</span><span class="p">,</span>
+</span><span class="line">                        <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">    <span class="n">sobelized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">sobel</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="n">im</span><span class="p">[:,:,</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="mi">3</span><span class="o">*</span><span class="p">[</span><span class="mi">255</span><span class="o">*</span><span class="p">(</span><span class="n">sobelized</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">)])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;anim_sobel.gif&quot;</span><span class="p">,</span><span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/U7L9O1m.gif" /></p>
+
+<p>The contours look pretty nice because POV-Ray uses exact formulas to render geometrical objects (contrary to libraries like ITK or OpenGL, which rely on triangular meshes). With a few more lines we can mix the two animations to create a cel-shading effect:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span>
+</span><span class="line"><span class="n">normal</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;anim.gif&quot;</span><span class="p">)</span> <span class="c"># The first animation</span>
+</span><span class="line"><span class="n">sobelized</span> <span class="o">=</span> <span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;anim_sobel.gif&quot;</span><span class="p">)</span> <span class="c"># The second animation</span>
+</span><span class="line"><span class="c"># We take the frame-by-frame minimum of the two animations</span>
+</span><span class="line"><span class="n">cel_shade</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">gf</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">gf</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">sobelized</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+</span><span class="line"><span class="n">normal</span><span class="o">.</span><span class="n">fl</span><span class="p">(</span><span class="n">cel_shade</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&quot;cel_shaded.gif&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://i.imgur.com/FwKXr8X.gif" /></p>
+
+<h2 id="example-2-embedding-a-video-in-a-3d-scene">Example 2: Embedding a video in a 3D scene</h2>
+
+<p>Since we are playing around with MoviePy, let’s embed an actual movie in a 3D scene:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/M9R21SquDSk "></iframe></div>
+
+<p>We start with a basic scene:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">([</span><span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">,</span> <span class="mf">1.3</span><span class="p">])</span>
+</span><span class="line"><span class="n">wall</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">20</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span><span class="n">Pigment</span><span class="p">(</span><span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])))</span>
+</span><span class="line"><span class="n">ground</span> <span class="o">=</span> <span class="n">Plane</span><span class="p">(</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span>
+</span><span class="line">                <span class="n">Texture</span><span class="p">(</span> <span class="n">Pigment</span><span class="p">(</span> <span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+</span><span class="line">                         <span class="n">Finish</span><span class="p">(</span> <span class="s">&#39;phong&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
+</span><span class="line">                                 <span class="s">&#39;reflection&#39;</span><span class="p">,</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span class="line">                                 <span class="s">&#39;metallic&#39;</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">)))</span>
+</span><span class="line"><span class="n">sphere1</span> <span class="o">=</span> <span class="n">Sphere</span><span class="p">([</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">Pigment</span><span class="p">(</span><span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+</span><span class="line">                                           <span class="n">Finish</span><span class="p">(</span><span class="s">&#39;phong&#39;</span><span class="p">,</span> <span class="mf">0.8</span><span class="p">,</span>
+</span><span class="line">                                                  <span class="s">&#39;reflection&#39;</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">))</span>
+</span><span class="line"><span class="n">sphere2</span> <span class="o">=</span><span class="n">Sphere</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">Texture</span><span class="p">(</span><span class="s">&#39;T_Ruby_Glass&#39;</span><span class="p">),</span>
+</span><span class="line">                <span class="n">Interior</span><span class="p">(</span><span class="s">&#39;ior&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span> <span class="n">Camera</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">],</span> <span class="s">&quot;look_at&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]),</span>
+</span><span class="line">               <span class="n">objects</span> <span class="o">=</span> <span class="p">[</span> <span class="n">ground</span><span class="p">,</span> <span class="n">wall</span><span class="p">,</span> <span class="n">sphere1</span><span class="p">,</span> <span class="n">sphere2</span><span class="p">,</span> <span class="n">light</span><span class="p">],</span>
+</span><span class="line">               <span class="n">included</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;glass.inc&quot;</span><span class="p">]</span> <span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><img class="center" src="http://Zulko.github.io/images/povray/scene_home_theater.png" width="400" /></p>
+
+<p>To this scene we will add a flat box (our <em>theater screen</em>), and for each frame of the movie we will make a PNG image file that will be used by POV-Ray as the texture of our flat box.</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.video.io.ffmpeg_writer</span> <span class="kn">import</span> <span class="n">ffmpeg_write_image</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">embed_in_scene</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">ffmpeg_write_image</span><span class="p">(</span><span class="s">&quot;__temp__.png&quot;</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+</span><span class="line">    <span class="n">image_ratio</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class="line">    <span class="n">screen</span> <span class="o">=</span> <span class="n">Box</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">Texture</span><span class="p">(</span>
+</span><span class="line">                    <span class="n">Pigment</span><span class="p">(</span> <span class="n">ImageMap</span><span class="p">(</span><span class="s">&#39;png&#39;</span><span class="p">,</span> <span class="s">&#39;&quot;__temp__.png&quot;&#39;</span><span class="p">,</span> <span class="s">&#39;once&#39;</span><span class="p">)),</span>
+</span><span class="line">                    <span class="n">Finish</span><span class="p">(</span><span class="s">&#39;ambient&#39;</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">)</span> <span class="p">),</span>
+</span><span class="line">                 <span class="s">&#39;scale&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="o">/</span><span class="n">image_ratio</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+</span><span class="line">                 <span class="s">&#39;rotate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+</span><span class="line">                 <span class="s">&#39;translate&#39;</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+</span><span class="line">    <span class="n">new_scene</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">add_objects</span><span class="p">([</span><span class="n">screen</span><span class="p">])</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">new_scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="p">(</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;bunny.mp4&quot;</span><span class="p">)</span> <span class="c"># File containing the original video</span>
+</span><span class="line">        <span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">47</span><span class="p">)</span> <span class="c"># cut between t=23 and 47 seconds</span>
+</span><span class="line">        <span class="o">.</span><span class="n">fl_image</span><span class="p">(</span><span class="n">embed_in_scene</span><span class="p">)</span>  <span class="c"># &lt;= The magic happens</span>
+</span><span class="line">        <span class="o">.</span><span class="n">fadein</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fadeout</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span class="line">        <span class="o">.</span><span class="n">audio_fadein</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">audio_fadeout</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="s">&quot;bunny2.mp4&quot;</span><span class="p">,</span><span class="n">bitrate</span><span class="o">=</span><span class="s">&#39;8000k&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>This 25-seconds clip takes 150 minutes to generate (!!!) which may be due to the good resolution settings, numerous light reflexions in the balls and the ground, and the complex texture of the screen.</p>
+
+<h2 id="example-3-a-more-complex-scene">Example 3: A more complex scene</h2>
+
+<p>In this exemple we write “VAPORY” using 240 bricks:</p>
+
+<p><img class="center" src="http://Zulko.github.io/images/povray/vapory.jpeg" width="600" /></p>
+
+<p>First, we generate an image of the white-on-black text “VAPORY”. Many libraries can do that, here we use ImageMagick through MoviePy:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">TextClip</span>
+</span><span class="line">
+</span><span class="line"><span class="n">txtclip</span> <span class="o">=</span> <span class="n">TextClip</span><span class="p">(</span><span class="s">&quot;VAPORY&quot;</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="s">&quot;8BIT-WONDER-Nominal&quot;</span><span class="p">,</span> <span class="n">kerning</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class="line">                   <span class="n">fontsize</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="s">&#39;black&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">&#39;white&#39;</span><span class="p">)</span>
+</span><span class="line"><span class="n">txt_image</span> <span class="o">=</span> <span class="n">txtclip</span><span class="o">.</span><span class="n">get_frame</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Here is the result:
+<img class="center" src="http://Zulko.github.io/images/povray/vapory_white_black.png" /></p>
+
+<p>We then get the coordinates of the non-black pixels is this image, and use them to place the bricks in the 3D scene, with small random variations around the depth-axis:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">vapory</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Compmute the coordinates of the 241 bricks</span>
+</span><span class="line">
+</span><span class="line"><span class="n">xx</span><span class="p">,</span><span class="n">yy</span> <span class="o">=</span> <span class="n">txt_image</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># the non-black pixels</span>
+</span><span class="line"><span class="n">bricks_x</span> <span class="o">=</span> <span class="n">xx</span> <span class="o">-</span> <span class="mf">1.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="n">xx</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">/</span> <span class="mi">2</span>
+</span><span class="line"><span class="n">bricks_y</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yy</span><span class="p">)</span>  <span class="o">-</span> <span class="n">yy</span> <span class="o">+</span> <span class="mi">1</span>
+</span><span class="line"><span class="n">bricks_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.08</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">xx</span><span class="p">))</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Generate / render the scene</span>
+</span><span class="line">
+</span><span class="line"><span class="n">bricks</span> <span class="o">=</span> <span class="p">[</span><span class="n">Box</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">],</span> <span class="p">[</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">y</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">z</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">Texture</span><span class="p">(</span><span class="s">&quot;Sandalwood&quot;</span><span class="p">))</span> <span class="c"># The bricks</span>
+</span><span class="line">         <span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">bricks_xx</span><span class="p">,</span> <span class="n">bricks_yy</span><span class="p">,</span> <span class="n">bricks_zz</span><span class="p">)]</span>
+</span><span class="line"><span class="n">light</span> <span class="o">=</span> <span class="n">LightSource</span><span class="p">([</span><span class="o">-</span><span class="mi">0</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="o">-</span><span class="mi">50</span><span class="p">],</span> <span class="s">&#39;color&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class="line"><span class="n">camera</span> <span class="o">=</span> <span class="n">Camera</span><span class="p">(</span> <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="o">-</span><span class="mi">17</span><span class="p">],</span> <span class="s">&#39;look_at&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scene</span> <span class="o">=</span> <span class="n">Scene</span><span class="p">(</span><span class="n">camera</span><span class="p">,</span> <span class="p">[</span><span class="n">light</span><span class="p">,</span> <span class="n">Background</span><span class="p">(</span><span class="s">&quot;White&quot;</span><span class="p">)]</span><span class="o">+</span> <span class="n">boxes</span><span class="p">,</span>
+</span><span class="line">              <span class="n">included</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;colors.inc&quot;</span><span class="p">,</span> <span class="s">&quot;textures.inc&quot;</span><span class="p">])</span>
+</span><span class="line">
+</span><span class="line"><span class="n">scene</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s">&quot;vapory.png&quot;</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">240</span><span class="p">,</span> <span class="n">antialiasing</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="example-4-rendering-a-physics-simulation">Example 4: Rendering a Physics simulation</h2>
+
+<p><img class="center" src="http://i.imgur.com/TdhxwGz.gif" /></p>
+
+<p>Python as many nice scientific and engineering libraries that could benefit from a photorealistic rendering engine. Here I simulated the cube trajectories with PyODE (a Python binding of the physics engine ODE), and fed the results to Vapory and MoviePy for rendering and animation, all in <a href="https://gist.github.com/Zulko/f828b38421dfbee59daf">a hundred lines</a>.</p>
+
+<h2 id="example-5-the-ghost-of-jlawrence-cook">Example 5: The ghost of J.Lawrence Cook</h2>
+
+<p>In a <a href="http://zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/">previous post</a> I talked about how piano rolls can be scanned and turned into MIDI files (which are some sort of electronic sheet music). Here is a 1997 student project where they used such a MIDI file to animate a 3D piano programatically:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/lVXmtckavDQ "></iframe></div>
+
+<p>Python has now all the libraries for such a project: we can parse the MIDI file with the package <a href="http://mido.readthedocs.org/en/latest/">mido</a>, and render the piano keyboard with Vapory. We can convert the MIDI file to an MP3 audio file by calling FluidSynth externally and finally use MoviePy to animate everything and incorporate the audio.</p>
+
+<p>Here is <em>Let’s Fall in Love</em>, from a 1933 piano roll arranged by J. Lawrence Cook, and animated with just <a href="https://gist.github.com/Zulko/b910c8b22e8e1c01fae6">~100 lines of code</a>:</p>
+
+<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div>
+
+<h2 id="final-words">Final words</h2>
+
+<p>I hope to have shown that Python and POV-Ray can do nice things together, all easy-peasy with Vapory. On the longer term, it would be nice if more recent softwares like Blender (which has a huge user community and modern features like GPU acceleration) had proper Python bindings. But apparently <a href="https://developer.blender.org/T22328">this will never happen</a>.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Vector animations with Python]]></title>
@@ -379,7 +721,7 @@
 
 <p><img class="center" src="http://i.imgur.com/JAJvFdT.gif" /></p>
 
-<p>You can draw more than circles ! You can also group different elements so that they will move together.</p>
+<p>You can draw more than circles ! And you can group different elements so that they will move together (here, a letter and a pentagon).</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -643,7 +985,7 @@
 
 <p>A pentagon made of rotating squares ! Interestingly, making the squares rotate the other direction creates a very different-looking <a href="http://i.imgur.com/C8IKy28.gif">animation</a>. The squares are placed according to <a href="http://math.stackexchange.com/a/41954/43338">this polar equation</a>.</p>
 
-<p>The difficulty in this animation is that the last square drawn will necessarily be on top of all the others, and not, as it should be, below the first square ! The solution is to draw each frame twice. The first time, we draw the squares starting from the right, so that the faulty square will also be on the right, and we only keep the left part of that picture. The second time we start drawing the squares from the left, so that the faulty square is on the left, and we keep the right part. By assembling the two valid parts we reconstitute a valid drawing.</p>
+<p>The difficulty in this animation is that the last square drawn will necessarily be on top of all the others, and not, as it should be, below the first square ! The solution is to draw each frame twice. The first time, we draw the squares starting from the right, so that the faulty square will also be on the right, and we only keep the left part of that picture. The second time we start drawing the squares from the left, so that the faulty square is on the left, and we keep the right part. By assembling the two valid parts we reconstitute a valid picture.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -709,7 +1051,7 @@
 
 <h2 id="mixing-videos-and-vector-graphics">Mixing videos and vector graphics</h2>
 
-<p>A nice advantage of using Gizeh with MoviePy is that you can read actual video files (or gifs) and uise them to fill shapes drawn with Gizeh. </p>
+<p>A nice advantage of combining Gizeh with MoviePy is that you can read actual video files (or gifs) and use the frames to fill shapes drawn with Gizeh.</p>
 
 <p>We will use this <a href="https://www.youtube.com/watch?v=t4gjl-uwUHc">video</a> from the Blender Foundation (it’s under a Creative Common licence). Since you have read until there I’ll show you a little unrelated trick: at <em>4:32</em> the rabbit is jumping rope, so there is a potential for a well-looping GIF. We open the video around <em>4:32</em>, and let MoviePy automatically decide where to cut to have the best-looping GIF possible:</p>
 
@@ -723,13 +1065,13 @@
 </span><span class="line"><span class="kn">import</span> <span class="nn">moviepy.video.tools.cuts</span> <span class="kn">as</span> <span class="nn">cuts</span>
 </span><span class="line">
 </span><span class="line"><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="s">&quot;bunny.mp4&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.2</span><span class="p">)</span><span class="o">.</span><span class="n">subclip</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">32</span><span class="p">),(</span><span class="mi">4</span><span class="p">,</span><span class="mi">33</span><span class="p">))</span>
-</span><span class="line"><span class="n">t_loop</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">find_period</span><span class="p">(</span><span class="n">clip</span><span class="p">)</span> <span class="c"># gives t=0.56</span>
+</span><span class="line"><span class="n">t_loop</span> <span class="o">=</span> <span class="n">cuts</span><span class="o">.</span><span class="n">find_video_period</span><span class="p">(</span><span class="n">clip</span><span class="p">)</span> <span class="c"># gives t=0.56</span>
 </span><span class="line"><span class="n">clip</span><span class="o">.</span><span class="n">subclip</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">t_loop</span><span class="p">)</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="s">&#39;jumping_bunny.gif&#39;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 <p><img class="center" src="http://i.imgur.com/MVp4TSx.gif" /></p>
 
-<p>Now we can feed the frames of this GIF to Gizeh. This can be simply done using MoviePy’s <code>clip.fl(some_filter)</code>, which says <em>“I want a new clip made by transforming the frames of the current clip with some_filter”</em>.</p>
+<p>Now we can feed the frames of this GIF to Gizeh, using MoviePy’s <code>clip.fl(some_filter)</code>, which means <em>“I want a new clip made by transforming the frames of the current clip with some_filter”</em>.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -869,7 +1211,7 @@
     <content type="html"><![CDATA[<p><em>Let us watch and react to the lattest tweets with Python, the dirty way.</em>
 <!-- more --></p>
 
-<p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API. To use them, you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
+<p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API, which makes them a little complicated to use: you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
 
 <p>If you just want to read the lattest tweets of some Twitter user, it is simpler to parse the HTML of that user’s Twitter page: </p>
 
@@ -1893,7 +2235,7 @@ mean that a periodic pattern is present in the curve:</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/rolls_transcription/lum_plus_keycolumns.jpeg" /></p>
 
-<p>We can now reduce our image the piano roll to keep only one pixel per hole column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
+<p>We can now reduce our image the piano roll to keep only one pixel per hole-column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -2012,7 +2354,7 @@ the beat. Therefore, computing the main period in the graph above will give us t
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">tempo</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">video</span><span class="o">.</span><span class="n">fps</span> <span class="o">*</span> <span class="mf">60.0</span><span class="o">/</span><span class="n">quarter_duration</span><span class="p">)</span> <span class="c"># we find 252.</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We will now separate the hands. Let’s keep things simple and say that the left hand takes all the notes below the middle C.</p>
+<p>We will now separate the hands. Let us keep things simple and say that the left hand takes all the notes below the middle C.</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -2100,7 +2442,7 @@ was a quarter</li>
 </span><span class="line"><span class="n">right_hand__quantized</span> <span class="o">=</span> <span class="n">quantize</span><span class="p">(</span><span class="n">right_hand</span><span class="p">,</span> <span class="n">quarter_duration</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Here is what the final data looks like:</p>
+<p>The final data looks like this:</p>
 
 <pre><code>&gt;&gt;&gt; right_hand_q[:4]
 #&gt; [{'duration': 1.0, 'notes': [70, 72, 76, 80], 't_strike': 20},
@@ -2179,7 +2521,7 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class="line"><span class="n">right_hand_lily</span> <span class="o">=</span> <span class="n">lilyscore</span><span class="p">(</span><span class="n">right_hand_quantized</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Then we just write this lilyfied sheet music in a file and render the sheet music by calling lilypond.</p>
+<p>Then we write this lilyfied sheet music in a file and render the sheet music by calling lilypond as an external program:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -2201,25 +2543,22 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class="line"><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s">&#39;lilypond </span><span class="si">%s</span><span class="s">&#39;</span><span class="o">%</span><span class="n">filename</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>Here are the first lines of the resulting PDF file, showing the right 
-hand’s part.</p>
+<p>The resulting PDF file starts like this (we only aksed for the right-hand part):</p>
 
 <p><img class="center" src="http://Zulko.github.io/images/rolls_transcription/right_hand_ly.jpg" /></p>
 
-<p>The script has made a pretty good work here, all the notes are there 
-with the right pitch and the right duration. If we now transcribe the 
+<p>The script has made a pretty good work, all the notes are there 
+with the right pitch and the right duration. If we transcribe the 
 whole piece we will see some mistakes (mostly notes attributed to the 
 wrong hand, and more rarely notes with a wrong duration, wrong pitch, etc.), 
 which have to be corrected, but still it is pretty cool to have these 
-1500 notes crunched in just a few seconds.
-The Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a> is perfect 
-to finish the editing.</p>
+1500 notes crunched in just a few seconds.</p>
 
 <p><a name="final_result"></a></p>
 
 <h2 id="final-result">Final result</h2>
 
-<p>After 3 hours of editing we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
+<p>After 3 hours of editing (with the Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a>, which I recommend) we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
 
 <div class="embed-video-container"><iframe src="http://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div>
 
@@ -2263,11 +2602,9 @@ scans (starting from MIDI files is equivalent to starting directly to
 Step 3, quantization and hands separation). Thousands of MIDI files 
 from rolls scans are available on the internet (like 
 <a href="http://www.iammp.org">here</a> or <a href="http://www.pianola.co.nz">here</a>) but 
-not all mechanical piano owners have the appropriate scanner, so 
+not all mechanical piano owners have an appropriate scanner, so 
 there must be thousands of other rolls in private collections which 
-have never been scanned and pushed on the Internet.</p>
-
-<p>I wrote this post to show that just filming piano rolls in action is enough for transcriptions purposes.</p>
+have never been scanned and pushed on the Internet. With this post I wanted to show that just filming piano rolls in action is enough for transcriptions purposes.</p>
 ]]></content>
   </entry>
   
@@ -3279,7 +3616,7 @@ y'(t) = - y\big(t-3\cos(y(t))^2 \big),\,\,\,\,
     <link href="http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg/"/>
     <updated>2013-10-04T21:28:00+02:00</updated>
     <id>http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg</id>
-    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write audio files in Python, by calling the external software FFMPEG through pipes. Check also <a href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">that other article</a> for the same with video files.</em></p>
+    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write audio files in a few lines Python, by calling the external software FFMPEG through pipes. If you want a battle-tested  and more sophisticated version, check out my module <a href="https://github.com/Zulko/moviepy/">MoviePy</a>. Check also <a href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/">that other article</a> for the same with video files.</em></p>
 
 <!-- more -->
 
@@ -3415,15 +3752,15 @@ y'(t) = - y\big(t-3\cos(y(t))^2 \big),\,\,\,\,
     <link href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/"/>
     <updated>2013-09-27T23:53:00+02:00</updated>
     <id>http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg</id>
-    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write video frames with Python, by calling the external software FFMPEG through pipes. Check also <a href="http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
+    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write video frames with a few lines of Python, by calling the external software FFMPEG through pipes. If you want a battle-tested  and more sophisticated version, check out my module <a href="https://github.com/Zulko/moviepy/">MoviePy</a>. See also <a href="http://Zulko.github.io/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">this other article</a> for the same with audio files.</em></p>
 
 <!-- more -->
 
-<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:</p>
+<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary. It should be one of the following:</p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
-</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg&quot;</span> <span class="c"># on Linux ans Mac OS</span>
 </span><span class="line"><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="s">&quot;ffmpeg.exe&quot;</span> <span class="c"># on Windows</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 

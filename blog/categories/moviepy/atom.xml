@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MoviePy, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/moviepy/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-09-22T01:32:20+02:00</updated>
+  <updated>2014-11-17T15:12:25+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -18,14 +18,14 @@
     <link href="http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg/"/>
     <updated>2013-09-27T23:53:00+02:00</updated>
     <id>http://Zulko.github.io/blog/2013/09/27/read-and-write-video-frames-in-python-using-ffmpeg</id>
-    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write video frames with Python, by calling the external software FFMPEG through pipes. Check also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">that other article</a> for the same with audio files.</em></p>
+    <content type="html"><![CDATA[<p><em>This article shows how easy it is to read or write video frames with a few lines of Python, by calling the external software FFMPEG through pipes. If you want a battle-tested  and more sophisticated version, check out my module <a href="https://github.com/Zulko/moviepy/">MoviePy</a>. See also <a href="/blog/2013/10/04/read-and-write-audio-files-in-python-using-ffmpeg">this other article</a> for the same with audio files.</em></p>
 
 <!-- more -->
 
-<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary on your computer. It should be one of the following:
+<p>Before we start, you must have FFMPEG installed on your computer and you must know the name (or path) of the FFMPEG binary. It should be one of the following:
 <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="err">“</span><span class="n">ffmpeg</span><span class="err">”</span> <span class="c"># on Linux</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="err">“</span><span class="n">ffmpeg</span><span class="err">”</span> <span class="c"># on Linux ans Mac OS</span>
 </span><span class='line'><span class="n">FFMPEG_BIN</span> <span class="o">=</span> <span class="err">“</span><span class="n">ffmpeg</span><span class="o">.</span><span class="n">exe</span><span class="err">”</span> <span class="c"># on Windows</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
