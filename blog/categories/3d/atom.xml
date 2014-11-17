@@ -4,7 +4,7 @@
   <title><![CDATA[Category: 3D | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/3d/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-11-17T15:12:25+01:00</updated>
+  <updated>2014-11-17T17:34:57+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -39,7 +39,6 @@
 <img class="center" src="/images/povray/purple_sphere.png"></p>
 
 <p>While POV-Ray has a very nice and sophisticated scene description language, I wanted to use it together with libraries from the Python world, so I wrote <a href="https://github.com/Zulko/vapory">Vapory</a>, a library to render POV-Ray scenes directly from Python, like this:
-https://github.com/Zulko/moviepy
 <div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
