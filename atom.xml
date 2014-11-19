@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-11-20T00:17:24+01:00</updated>
+  <updated>2014-11-20T00:27:00+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -351,6 +351,480 @@
 <h2 id="final-words">Final words</h2>
 
 <p>I hope to have shown that Python and POV-Ray can do nice things together, all easy-peasy with Vapory. On the longer term, it would be nice if more recent softwares like Blender (which has a huge user community and modern features like GPU acceleration) had proper Python bindings. But apparently <a href="https://developer.blender.org/T22328">this will never happen</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[How to write an autocompletion-friendly Python library]]></title>
+    <link href="http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/"/>
+    <updated>2014-10-14T18:40:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library</id>
+    <content type="html"><![CDATA[<ul>
+  <li>My first opinion post ! I give some guidelines on how to make your Python library user-friendly now that most IDEs and terminals have auto-completion and show-the-docs features.*</li>
+</ul>
+
+<p>When I want to do a task for which there are 10 python libraries available, I generally choose the one which will get me started faster. 
+A few years back, <em>getting started</em> meant to head to the html documentation, find some examples, and adapt them with the help of the reference manual. Today when I find a potentially interesting library I install it, head straight to an IPython Notebook and start playing around.</p>
+
+<p>First strike on tab, I get the signature and a short description of the function</p>
+
+<p>Second strike on tab, I get the whole docstring</p>
+
+<p>In no time, I know how the lib is organized, how to use it, and I have written my first script. If your favorite editor hasn’t autocompletion, you are really missing something. </p>
+
+<p>But some libraries are not autocompletion-friendly, and I generally abandomn them rapidly. So here are a few rules to make the life of completion-addicts easier. I’m not giving any lessons, my own libs do not respect everything I will say here. You will find that some of these rules are already common good practice anyway, and autocompletion is just one more reason to apply them.</p>
+
+<h2 id="use-expressive-function-names">Use expressive function names</h2>
+
+<p>In MATLAB they have many functions to solve differential equations and they named them <code>odeint1</code>, <code>odeint2</code>, <code>odeint101</code>. They are cool with that because they expect that the beginner who wants to use these functions will go through the documentation, where he will be redirected :<em>“For the Euler method, use odeint1, but be careful: if you have a stiff system, use odeint42 instead, etc.”</em>.</p>
+
+<p>Now, with autocompletion, the first thing that the user will see is a list of function names. When I am in front of twenty names <code>odeintXX</code>, what do I do ? So, as a library writer, try to give the functions explicit names like <code>odeint_euler</code>, <code>odeint_stiff</code>, etc. Or when your functions have many arguments in common, regroup them in a single function:</p>
+
+<pre><code>def odeint(arg1, arg2, method='euler'):
+</code></pre>
+
+<p>The documentation for this function will certainly be very long, but at least as a new user I will know where to look.</p>
+
+<h2 id="use-expressive-function-argument-names">Use expressive function argument names</h2>
+
+<p>The <code>**kwargs</code> here means tht you can provide the function with any other named arguments. that wasn’t listed Another thing in a flexible way and with very little code.</p>
+
+<p>While <code>**kwargs</code> are extremely handy for the developer, they can be an inconvenience for the user of the library. What do I do when I just want to plot a curve and my autocompletion gives me this :</p>
+
+<p>Then I have to scroll the (750-word long) documentation of the function, just to find that the use is simply <code>plot(x,y, ...)</code> and that the parameter setting the line width is <code>linewidth</code>. I could have had all this if the function had been implemented with an explicit signature:</p>
+
+<pre><code>def plot(x=None, y=None, linewidth=1, color=None, marker=None, markersize=3,... )
+</code></pre>
+
+<p>Notice that this implementation also makes clear what the default values of some variables are, which is practical when you want to change them. I am sure the Matplotlib people had a good reason to use <code>**kwargs</code> (it enables stylesheets and stuff), but if you can avoid, just don’t use <code>**kwargs</code> !</p>
+
+<h2 id="the-docstrings-have-never-been-so-important">The docstrings have never been so important</h2>
+
+<p>Paradoxically, it’s in the core Python modules (the ones that ship with Python) that you find the worst docstrings, like this function <code>subprocess.Popen</code>, which has 15 exotic parameters and a not-so-helpful four-word docstring, <em>“Create new Popen instance.”</em>.</p>
+
+<p>But she will always have access, in a blink, to the docstrings of the function, so you must absolutely polish these.</p>
+
+<p>Here are a few tips for a self-contained docstring:</p>
+
+<ul>
+  <li>The first two lines of the docstring must convey as much information as they can, because they will be displayed at the first press of <code>tab</code> (the rest of the docstring is only displayed if you ask for more). </li>
+  <li>Then you can add a few lines to complete the description, but very fast come to the description of the parameters, that’s what the user is looking for.</li>
+  <li>If there is an obious, short way to use the function, provide an example. I like it when the autocompletion gives me a few lines that I can just copy-paste in a cell of the Notebook and it will work.</li>
+  <li>When possible, avoid “see this other for function for more documentation”. That works well for online documentation where you have hyperlinks, but not in the Notebook. Sometimes it’s better to repeat something at several places in te docs if it makes it easier for the user to find it.</li>
+  <li>Don’t use the syntax recommended by Sphinx (where parameters are announced with <code>:param:</code>) because it’s difficult to read. Instead you can use the numpy syntax (see below) which reads nicely and can also be parsed by Sphinx as long as you use the include sphinx package <code>numpydocs</code> in your sphinx configuration (very easy to do).</li>
+  <li>Make short lines in your docstring (60 characters) otherwise they may break in the IPython notebook’s popping window, and it will be difficult to read.s</li>
+</ul>
+
+<p>Here is an example of such docstring:</p>
+
+<pre><code>def crash_my_computer(root_password, delay=5, ask_confirmation=False):
+    """ Crash the computer after some delay.
+
+    Parameters
+    ===========
+    
+    root_password
+      Root password, generally the name of the admin's dog.
+    
+    delay
+      Delay before the crash, in minutes.
+    
+    ask_confirmation
+      If True, will open a window asking "Are you sure ?" but will
+      crash the computer anyway.
+
+    Examples
+    =========
+
+    &gt;&gt;&gt; print( "Bye everyone !" )
+    &gt;&gt;&gt; crash_my_computer( root_password="eisenberg#9", delay=0 )
+
+    Notes
+    ======
+
+    Do not try this on your computer ! Try it on someone else's.
+    """
+</code></pre>
+
+<h2 id="make-objects-and-submodules">Make objects and submodules</h2>
+
+<p>Make objects, everywhere, for everything !</p>
+
+<p>If you want to see what happens when you don’t use objects, have a look at the iJulia Notebook, which is an IPython Notebook equivalent for the language Julia. This a very nice language (modern, very fast, etc.), but it is not object-oriented. So for instance when you want to define how to feed different animals, instead of defining classes methods like <code>Cat.feed()</code>, <code>Dog.feed()</code>, <code>Cow.feed()</code> etc. you define several times the function </p>
+
+<p>Also organize your library in a coherent way and make submodules if it can help the user find what it is ooking for faster. Again the modules should have explicit names, to facilitate the exploration of the lib.</p>
+
+<h2 id="use-private-methods">Use private methods</h2>
+
+<p>In languages like C++ you can declare that a class method is private, which means that the user cannot use it and doesn’t need to use it anyway.</p>
+
+<p>In Python it’s more ambiguous, because if a function or method exists, it can always be used by anybody, so generally the authors write pseudo-private methods with names like <code>_myfun()</code>, where the underscore means <em>user please don’t use this function even though you can</em>.</p>
+
+<p>(unless )</p>
+
+<h2 id="avoid-polluting-the-namespace">Avoid polluting the namespace</h2>
+
+<h2 id="thats-all">That’s all</h2>
+
+<p>I think I have given all I have to make a library that the user can smoothly navigate directly from an IDE, without needing to refer to the online documentation. If you have any suggestions, corrections or criticism, I’ll be happy to hear it !</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[A simple configuration system for your Python library]]></title>
+    <link href="http://Zulko.github.io/blog/2014/09/25/a-simple-configuration-system-for-your-python-library/"/>
+    <updated>2014-09-25T00:48:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/09/25/a-simple-configuration-system-for-your-python-library</id>
+    <content type="html"><![CDATA[<p><em>This post shows how easy it is to handle global configuration variables for a Python library.</em></p>
+
+<p>Suppose that you wrote a graph plotting library (let’s call it <code>myplotlib</code>) with dozens of functions to plot all sorts of graph. You want all these functions to share some default values and settings (like the plot’s default size, the default font used for the texts, or which program to use to save to convert the plot to JPEG). And you want these global settings to be easily modifiable, at least for the duration of a session, by the people using your library.</p>
+
+<p>This seems to be a very general problem and I had expected to find a <em>standard</em> or <em>preferred</em> to implement that in Python, but I couldn’t find anything.  In this post I propose a simple system (feel free to criticize). I first explain how it it used (so that you can see if it fits your needs) and then how you implement it.</p>
+
+<h2 id="how-you-use-it">How you use it</h2>
+
+<p><strong>Default settings</strong></p>
+
+<p>Your library contains a file <code>conf_defaults.py</code> in which you, the author, define the library’s default configuration:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="sd">&quot;&quot;&quot; File conf_defaults.py: stores myplotlib&#39;s global settings. &quot;&quot;&quot;</span>
+</span><span class="line"><span class="n">DEFAULT_FONT</span> <span class="o">=</span> <span class="s">&quot;Georgia&quot;</span>
+</span><span class="line"><span class="n">DEFAULT_FONTSIZE</span> <span class="o">=</span> <span class="mi">14</span>
+</span><span class="line"><span class="n">DEFAULT_FIGURE_HEIGHT</span> <span class="o">=</span> <span class="mi">800</span> <span class="c"># in pixels</span>
+</span><span class="line"><span class="n">USE_ANTIALIASING</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class="line"><span class="c"># etc...</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p><strong>Custom settings</strong></p>
+
+<p>In any python script using the library it will be possible to override the default configuration, with immediate effect throughout the library, as follows:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">myplotlib.conf</span>
+</span><span class="line"><span class="n">myplotlib</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">change_settings</span><span class="p">({</span><span class="s">&#39;DEFAULT_FONTSIZE&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+</span><span class="line">                                <span class="s">&#39;USE_ANTIALIASING&#39;</span><span class="p">:</span> <span class="bp">False</span><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Alternatively it will also be possible provide a custom configuration file:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">myplotlib.conf</span>
+</span><span class="line"><span class="n">myplotlib</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">change_settings</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s">&#39;path/to/my_custom_conf.py&#39;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>The <code>my_custom_conf.py</code> in this example must be organized as <code>conf_defaults.py</code> above and overwrites some or all of the configuration variables.</p>
+
+<p><strong>Accessing the settings</strong></p>
+
+<p>In any file of your library you will have access the configuration parameters through <code>myplotlib.conf.get_setting</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">myplotlib.conf</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">draw_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s">&#39;default&#39;</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">if</span> <span class="n">fontsize</span> <span class="o">==</span> <span class="s">&#39;default&#39;</span><span class="p">:</span>
+</span><span class="line">        <span class="n">fontsize</span> <span class="o">=</span> <span class="n">myplotlib</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get_setting</span><span class="p">(</span><span class="s">&#39;DEFAULT_FONTSIZE&#39;</span><span class="p">)</span>
+</span><span class="line">    <span class="c"># now draw the text...</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>A more elegant use of <code>get_setting</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">myplotlib.conf</span>
+</span><span class="line"><span class="n">conf</span> <span class="o">=</span> <span class="n">myplotlib</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">get_settings</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">draw_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
+</span><span class="line">    <span class="c"># We use dictionnary.get(key, default=...)</span>
+</span><span class="line">    <span class="n">fontsize</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;fontsize&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="p">(</span><span class="s">&quot;DEFAULT_FONTSIZE&quot;</span><span class="p">)</span>
+</span><span class="line">    <span class="n">height</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;height&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="p">(</span><span class="s">&quot;DEFAULT_FIGURE_HEIGHT&quot;</span><span class="p">))</span>
+</span><span class="line">    <span class="n">width</span> <span class="o">=</span> <span class="n">parameters</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;width&#39;</span><span class="p">,</span> <span class="n">conf</span><span class="p">(</span><span class="s">&quot;DEFAULT_FIGURE_WIDTH&quot;</span><span class="p">))</span>
+</span><span class="line">    <span class="c"># now draw the text...</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>Note that <code>get_setting</code> must always be called from inside a function, otherwise <code>change_settings</code> won’t have any effect. </p>
+
+<p>In case the user attempts to get or set a configuration variable that is not in the setting, a proper error message is returned.</p>
+
+<h2 id="how-you-implement-it">How you implement it</h2>
+
+<p>In the main folder of your librairy (the one with the file <code>__init__.py</code>), add a file <code>conf_defaults.py</code> (as presented above) and another file called <code>conf.py</code>:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+</pre></td><td class="code"><pre><code class=""><span class="line">my_package/
+</span><span class="line">  __init__.py
+</span><span class="line">  conf.py             &lt;=
+</span><span class="line">  conf_defaults.py    &lt;=
+</span><span class="line">  README.rst
+</span><span class="line">  some_file.py
+</span><span class="line">  some_other_file.py
+</span><span class="line">  #etc.</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<p>In <code>conf.py</code> write the following:</p>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="sd">&quot;&quot;&quot; Module to handle default and custom configuration variables &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line"><span class="kn">from</span> <span class="nn">conf_defaults</span> <span class="kn">import</span> <span class="o">*</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">get_setting</span><span class="p">(</span><span class="n">varname</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Returns the value of a configuration variable. &quot;&quot;&quot;</span>
+</span><span class="line">    <span class="n">gl</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">varname</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">gl</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class="line">        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&quot;Unknown setting </span><span class="si">%s</span><span class="s">&quot;</span><span class="o">%</span><span class="n">varname</span><span class="p">)</span>
+</span><span class="line">    <span class="c"># Here, possibly add some code to raise exceptions if some</span>
+</span><span class="line">    <span class="c"># parameter isn&#39;t set set properly, explaining on how to set it.</span>
+</span><span class="line">    <span class="k">return</span> <span class="n">gl</span><span class="p">[</span><span class="n">varname</span><span class="p">]</span>
+</span><span class="line">
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">change_settings</span><span class="p">(</span><span class="n">new_settings</span><span class="o">=</span><span class="p">{},</span> <span class="nb">file</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot; Changes the value of configuration variables.&quot;&quot;&quot;</span>
+</span><span class="line">    <span class="n">gl</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span>
+</span><span class="line">    <span class="k">if</span> <span class="nb">file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class="line">        <span class="nb">execfile</span><span class="p">(</span><span class="nb">file</span><span class="p">)</span>
+</span><span class="line">        <span class="n">gl</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="nb">locals</span><span class="p">())</span>
+</span><span class="line">    <span class="n">gl</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_settings</span><span class="p">)</span>
+</span><span class="line">    <span class="c"># Here you can add some code  to check that the new configuration</span>
+</span><span class="line">    <span class="c"># values are valid.</span>
+</span><span class="line">
+</span><span class="line"><span class="c"># Here you can add some code, for instance to automatically set</span>
+</span><span class="line"><span class="c"># the configuration values for some variables.</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+<h2 id="thats-all-folks">That’s all folks</h2>
+
+<p>If you want to test it I made this <a href="">demonstration package</a></p>
+
+<p>I hope this helped. I wrote this post because I couldn’t find any clear explanation of how configurations should work in Python, until @bobastar on Github hinted the <code>conf.py</code> trick.</p>
+
+<p>Any feedback would be appreciated, I think we definitely need do discuss a standard way to do configuration management in Python.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Finding video loops with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python/"/>
+    <updated>2014-09-24T08:10:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python</id>
+    <content type="html"><![CDATA[<p><em>It’s always fun to find the excerpts of a video that you can turn into a perfectly looping GIF. Let’s kill that game with a script.</em></p>
+
+<p>We want to find (possibly) all the small cuts of a video that produce a well-looping animation, like this one:</p>
+
+<p>The naive way to do is to compare each frame of the movie to each frame in the 5 seconds before: if two frames look alike, we make a gif from the frames between these two”*. The problem here is that with this method we will have to make a lot of frames comparisons (around one million for a two-hour movie) and many of the gifs will be very short (only 2-3 frames long)</p>
+
+<p>I this post we will see how to speed up frames comparisons, and how to select interesting sequences.</p>
+
+<h2 id="distance-between-two-frames">Distance between two frames</h2>
+
+<p>The frames are represented by a RGB array where the red, green and blue composants are between 0 and 255, and the difference (or distance) between two frames, denoted $d(F<em>1,F</em>2)$, will be represented by the sum of the differences between each composant of each pixels:</p>
+
+<p>$d(F<em>1,F</em>2) = $\sqrt{\sum }</p>
+
+<p>We will say that </p>
+
+<p>1- 
+2- 
+3- </p>
+
+<h2 id="with-all-these-optimizations-we-can-find-matched-frames-in-a-standard-video-at-a-rate-of-30-40-frames-per-second-the-theoretical-limit-would-be-70-frames-per-second-speed-at-which-moviepy-can-decode-video-frames">With all these optimizations, we can find matched frames in a standard video at a rate of 30-40 frames per second. The theoretical limit would be 70 frames per second (speed at which MoviePy can decode video frames).</h2>
+
+<div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
+<span class="line-number">2</span>
+<span class="line-number">3</span>
+<span class="line-number">4</span>
+<span class="line-number">5</span>
+<span class="line-number">6</span>
+<span class="line-number">7</span>
+<span class="line-number">8</span>
+<span class="line-number">9</span>
+<span class="line-number">10</span>
+<span class="line-number">11</span>
+<span class="line-number">12</span>
+<span class="line-number">13</span>
+<span class="line-number">14</span>
+<span class="line-number">15</span>
+<span class="line-number">16</span>
+<span class="line-number">17</span>
+<span class="line-number">18</span>
+<span class="line-number">19</span>
+<span class="line-number">20</span>
+<span class="line-number">21</span>
+<span class="line-number">22</span>
+<span class="line-number">23</span>
+<span class="line-number">24</span>
+<span class="line-number">25</span>
+<span class="line-number">26</span>
+<span class="line-number">27</span>
+<span class="line-number">28</span>
+<span class="line-number">29</span>
+<span class="line-number">30</span>
+<span class="line-number">31</span>
+<span class="line-number">32</span>
+<span class="line-number">33</span>
+<span class="line-number">34</span>
+<span class="line-number">35</span>
+<span class="line-number">36</span>
+<span class="line-number">37</span>
+<span class="line-number">38</span>
+<span class="line-number">39</span>
+<span class="line-number">40</span>
+<span class="line-number">41</span>
+<span class="line-number">42</span>
+<span class="line-number">43</span>
+<span class="line-number">44</span>
+<span class="line-number">45</span>
+<span class="line-number">46</span>
+<span class="line-number">47</span>
+<span class="line-number">48</span>
+<span class="line-number">49</span>
+<span class="line-number">50</span>
+<span class="line-number">51</span>
+<span class="line-number">52</span>
+<span class="line-number">53</span>
+<span class="line-number">54</span>
+<span class="line-number">55</span>
+<span class="line-number">56</span>
+<span class="line-number">57</span>
+<span class="line-number">58</span>
+<span class="line-number">59</span>
+<span class="line-number">60</span>
+<span class="line-number">61</span>
+<span class="line-number">62</span>
+<span class="line-number">63</span>
+<span class="line-number">64</span>
+<span class="line-number">65</span>
+<span class="line-number">66</span>
+<span class="line-number">67</span>
+<span class="line-number">68</span>
+<span class="line-number">69</span>
+<span class="line-number">70</span>
+</pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class="line">
+</span><span class="line"><span class="k">def</span> <span class="nf">find_matching_frames</span><span class="p">(</span><span class="n">clip</span><span class="p">,</span> <span class="n">dist_thr</span><span class="p">,</span> <span class="n">max_d</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class="line">    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class="line"><span class="sd">    clip : a MoviePy video clip, possibly transformed/resized</span>
+</span><span class="line"><span class="sd">    dist_thr: distance above which a match is rejected</span>
+</span><span class="line"><span class="sd">    max_d: maximal duration (in seconds) between two matching frames</span>
+</span><span class="line"><span class="sd">    fps: frames per second (default will be clip.fps)</span>
+</span><span class="line"><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">matching_frames</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># the final result.</span>
+</span><span class="line">    <span class="n">N_pixels</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="n">clip</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class="line">    <span class="n">dot_product</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">F1</span><span class="p">,</span> <span class="n">F2</span><span class="p">:</span> <span class="p">(</span><span class="n">F1</span><span class="o">*</span><span class="n">F2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">N_pixels</span>
+</span><span class="line">    <span class="n">F</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># will store the frames and their mutual distances</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">):</span>
+</span><span class="line">        <span class="n">uv</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">])</span>
+</span><span class="line">        <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">]</span>
+</span><span class="line">        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">+</span><span class="n">v</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">uv</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">frame</span><span class="p">)</span> <span class="ow">in</span> <span class="n">clip</span><span class="o">.</span><span class="n">iter_frames</span><span class="p">(</span><span class="n">with_times</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">flat_frame</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</span><span class="line">        <span class="n">F_norm_sq</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">flat_frame</span><span class="p">,</span> <span class="n">flat_frame</span><span class="p">)</span>
+</span><span class="line">        <span class="n">F_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">F_norm_sq</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class="line">            <span class="c"># forget old frames, add &#39;t&#39; to the others frames</span>
+</span><span class="line">            <span class="c"># check for early rejections based on differing norms</span>
+</span><span class="line">            <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">max_d</span><span class="p">:</span>
+</span><span class="line">                <span class="n">F</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+</span><span class="line">            <span class="k">else</span><span class="p">:</span>
+</span><span class="line">                <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;min&#39;</span><span class="p">:</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">F_norm</span><span class="p">),</span>
+</span><span class="line">                            <span class="s">&#39;max&#39;</span><span class="p">:</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">F_norm</span><span class="p">}</span>
+</span><span class="line">                <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dist_thr</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">t_F</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span class="line">
+</span><span class="line">        <span class="n">F</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;frame&#39;</span><span class="p">:</span> <span class="n">flat_frame</span><span class="p">,</span> <span class="s">&#39;|F|sq&#39;</span><span class="p">:</span> <span class="n">F_norm_sq</span><span class="p">,</span> <span class="s">&#39;|F|&#39;</span><span class="p">:</span> <span class="n">F_norm</span><span class="p">}</span>
+</span><span class="line">
+</span><span class="line">        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">t2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t_F</span><span class="p">):</span>
+</span><span class="line">            <span class="c"># Compare F(t) to all the previous frames</span>
+</span><span class="line">
+</span><span class="line">            <span class="k">if</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]:</span>
+</span><span class="line">                <span class="k">continue</span>
+</span><span class="line">
+</span><span class="line">            <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+</span><span class="line">            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
+</span><span class="line">            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">dist</span> <span class="o">&gt;=</span> <span class="n">dist_thr</span><span class="p">)</span>
+</span><span class="line">            <span class="k">for</span> <span class="n">t3</span> <span class="ow">in</span> <span class="n">t_F</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span class="line">                <span class="c"># For all the next times t3, use d(F(t), F(t2)) to</span>
+</span><span class="line">                <span class="c"># update the bounds on d(F(t), F(t3)). See if you can</span>
+</span><span class="line">                <span class="c"># conclude on wether F(t) and F(t3) match.</span>
+</span><span class="line">                <span class="n">t3t</span><span class="p">,</span> <span class="n">t2t3</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t3</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t3</span><span class="p">]</span>
+</span><span class="line">                <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span> <span class="n">dist</span><span class="o">+</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">])</span>
+</span><span class="line">                <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">],</span> <span class="n">dist</span> <span class="o">-</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span>
+</span><span class="line">                                 <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dist</span><span class="p">)</span>
+</span><span class="line">                <span class="k">if</span> <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">dist_thr</span><span class="p">:</span>
+</span><span class="line">                    <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class="line">
+</span><span class="line">        <span class="c"># Store all the good matches (t2,t)</span>
+</span><span class="line">        <span class="n">matching_frames</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">F</span>
+</span><span class="line">                            <span class="k">if</span> <span class="p">(</span><span class="n">t1</span><span class="o">!=</span><span class="n">t</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]]</span>
+</span><span class="line">
+</span><span class="line">    <span class="n">matching_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matching_frames</span><span class="p">,</span>
+</span><span class="line">                                    <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span> <span class="p">:</span> <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+</span><span class="line">    <span class="k">if</span> <span class="n">savefile</span><span class="p">:</span>
+</span><span class="line">        <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">savefile</span><span class="p">,</span> <span class="n">matching_frames</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%.03f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class="line">
+</span><span class="line">    <span class="k">return</span> <span class="n">matching_frames</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
 ]]></content>
   </entry>
   

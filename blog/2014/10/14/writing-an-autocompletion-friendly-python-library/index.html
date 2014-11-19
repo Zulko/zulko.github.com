@@ -1,0 +1,399 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>How to write an autocompletion-friendly Python library - __del__( self )</title>
+  <meta name="author" content="Zulko">
+
+  
+  <meta name="description" content="My first opinion post ! I give some guidelines on how to make your Python library user-friendly now that most IDEs and terminals have auto- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="__del__( self )" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner">
+            <!-- mathjax config similar to math.stackexchange -->
+            <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+              jax: ["input/TeX", "output/HTML-CSS"],
+              tex2jax: {
+                inlineMath: [ ['$', '$'] ],
+                displayMath: [ ['$$', '$$']],
+                processEscapes: true,
+                skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+              },
+              messageStyle: "none",
+              "HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"] }
+            });
+            </script>
+            <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML" type="text/javascript"></script>
+      <hgroup>
+  <h1><a href="/">__del__( self )</a></h1>
+  
+    <h2>Eaten by the Python.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:Zulko.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">How to Write an Autocompletion-friendly Python Library</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-14T18:40:00+02:00" pubdate data-updated="true">Oct 14<span>th</span>, 2014</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><ul>
+  <li>My first opinion post ! I give some guidelines on how to make your Python library user-friendly now that most IDEs and terminals have auto-completion and show-the-docs features.*</li>
+</ul>
+
+<p>When I want to do a task for which there are 10 python libraries available, I generally choose the one which will get me started faster. 
+A few years back, <em>getting started</em> meant to head to the html documentation, find some examples, and adapt them with the help of the reference manual. Today when I find a potentially interesting library I install it, head straight to an IPython Notebook and start playing around.</p>
+
+<p>First strike on tab, I get the signature and a short description of the function</p>
+
+<p>Second strike on tab, I get the whole docstring</p>
+
+<p>In no time, I know how the lib is organized, how to use it, and I have written my first script. If your favorite editor hasn’t autocompletion, you are really missing something. </p>
+
+<p>But some libraries are not autocompletion-friendly, and I generally abandomn them rapidly. So here are a few rules to make the life of completion-addicts easier. I’m not giving any lessons, my own libs do not respect everything I will say here. You will find that some of these rules are already common good practice anyway, and autocompletion is just one more reason to apply them.</p>
+
+<h2 id="use-expressive-function-names">Use expressive function names</h2>
+
+<p>In MATLAB they have many functions to solve differential equations and they named them <code>odeint1</code>, <code>odeint2</code>, <code>odeint101</code>. They are cool with that because they expect that the beginner who wants to use these functions will go through the documentation, where he will be redirected :<em>“For the Euler method, use odeint1, but be careful: if you have a stiff system, use odeint42 instead, etc.”</em>.</p>
+
+<p>Now, with autocompletion, the first thing that the user will see is a list of function names. When I am in front of twenty names <code>odeintXX</code>, what do I do ? So, as a library writer, try to give the functions explicit names like <code>odeint_euler</code>, <code>odeint_stiff</code>, etc. Or when your functions have many arguments in common, regroup them in a single function:</p>
+
+<pre><code>def odeint(arg1, arg2, method='euler'):
+</code></pre>
+
+<p>The documentation for this function will certainly be very long, but at least as a new user I will know where to look.</p>
+
+<h2 id="use-expressive-function-argument-names">Use expressive function argument names</h2>
+
+<p>The <code>**kwargs</code> here means tht you can provide the function with any other named arguments. that wasn’t listed Another thing in a flexible way and with very little code.</p>
+
+<p>While <code>**kwargs</code> are extremely handy for the developer, they can be an inconvenience for the user of the library. What do I do when I just want to plot a curve and my autocompletion gives me this :</p>
+
+<p>Then I have to scroll the (750-word long) documentation of the function, just to find that the use is simply <code>plot(x,y, ...)</code> and that the parameter setting the line width is <code>linewidth</code>. I could have had all this if the function had been implemented with an explicit signature:</p>
+
+<pre><code>def plot(x=None, y=None, linewidth=1, color=None, marker=None, markersize=3,... )
+</code></pre>
+
+<p>Notice that this implementation also makes clear what the default values of some variables are, which is practical when you want to change them. I am sure the Matplotlib people had a good reason to use <code>**kwargs</code> (it enables stylesheets and stuff), but if you can avoid, just don’t use <code>**kwargs</code> !</p>
+
+<h2 id="the-docstrings-have-never-been-so-important">The docstrings have never been so important</h2>
+
+<p>Paradoxically, it’s in the core Python modules (the ones that ship with Python) that you find the worst docstrings, like this function <code>subprocess.Popen</code>, which has 15 exotic parameters and a not-so-helpful four-word docstring, <em>“Create new Popen instance.”</em>.</p>
+
+<p>But she will always have access, in a blink, to the docstrings of the function, so you must absolutely polish these.</p>
+
+<p>Here are a few tips for a self-contained docstring:</p>
+
+<ul>
+  <li>The first two lines of the docstring must convey as much information as they can, because they will be displayed at the first press of <code>tab</code> (the rest of the docstring is only displayed if you ask for more). </li>
+  <li>Then you can add a few lines to complete the description, but very fast come to the description of the parameters, that’s what the user is looking for.</li>
+  <li>If there is an obious, short way to use the function, provide an example. I like it when the autocompletion gives me a few lines that I can just copy-paste in a cell of the Notebook and it will work.</li>
+  <li>When possible, avoid “see this other for function for more documentation”. That works well for online documentation where you have hyperlinks, but not in the Notebook. Sometimes it’s better to repeat something at several places in te docs if it makes it easier for the user to find it.</li>
+  <li>Don’t use the syntax recommended by Sphinx (where parameters are announced with <code>:param:</code>) because it’s difficult to read. Instead you can use the numpy syntax (see below) which reads nicely and can also be parsed by Sphinx as long as you use the include sphinx package <code>numpydocs</code> in your sphinx configuration (very easy to do).</li>
+  <li>Make short lines in your docstring (60 characters) otherwise they may break in the IPython notebook’s popping window, and it will be difficult to read.s</li>
+</ul>
+
+<p>Here is an example of such docstring:</p>
+
+<pre><code>def crash_my_computer(root_password, delay=5, ask_confirmation=False):
+    """ Crash the computer after some delay.
+
+    Parameters
+    ===========
+    
+    root_password
+      Root password, generally the name of the admin's dog.
+    
+    delay
+      Delay before the crash, in minutes.
+    
+    ask_confirmation
+      If True, will open a window asking "Are you sure ?" but will
+      crash the computer anyway.
+
+    Examples
+    =========
+
+    &gt;&gt;&gt; print( "Bye everyone !" )
+    &gt;&gt;&gt; crash_my_computer( root_password="eisenberg#9", delay=0 )
+
+    Notes
+    ======
+
+    Do not try this on your computer ! Try it on someone else's.
+    """
+</code></pre>
+
+<h2 id="make-objects-and-submodules">Make objects and submodules</h2>
+
+<p>Make objects, everywhere, for everything !</p>
+
+<p>If you want to see what happens when you don’t use objects, have a look at the iJulia Notebook, which is an IPython Notebook equivalent for the language Julia. This a very nice language (modern, very fast, etc.), but it is not object-oriented. So for instance when you want to define how to feed different animals, instead of defining classes methods like <code>Cat.feed()</code>, <code>Dog.feed()</code>, <code>Cow.feed()</code> etc. you define several times the function </p>
+
+<p>Also organize your library in a coherent way and make submodules if it can help the user find what it is ooking for faster. Again the modules should have explicit names, to facilitate the exploration of the lib.</p>
+
+<h2 id="use-private-methods">Use private methods</h2>
+
+<p>In languages like C++ you can declare that a class method is private, which means that the user cannot use it and doesn’t need to use it anyway.</p>
+
+<p>In Python it’s more ambiguous, because if a function or method exists, it can always be used by anybody, so generally the authors write pseudo-private methods with names like <code>_myfun()</code>, where the underscore means <em>user please don’t use this function even though you can</em>.</p>
+
+<p>(unless )</p>
+
+<h2 id="avoid-polluting-the-namespace">Avoid polluting the namespace</h2>
+
+<h2 id="thats-all">That’s all</h2>
+
+<p>I think I have given all I have to make a library that the user can smoothly navigate directly from an IDE, without needing to refer to the online documentation. If you have any suggestions, corrections or criticism, I’ll be happy to hear it !</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Zulko</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-14T18:40:00+02:00" pubdate data-updated="true">Oct 14<span>th</span>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/" data-via="" data-counturl="http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/09/25/a-simple-configuration-system-for-your-python-library/" title="Previous Post: A simple configuration system for your Python library">&laquo; A simple configuration system for your Python library</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/" title="Next Post: Things you can do with Python and POV-Ray">Things you can do with Python and POV-Ray &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/">Things You Can Do With Python and POV-Ray</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/">How to Write an Autocompletion-friendly Python Library</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/25/a-simple-configuration-system-for-your-python-library/">A Simple Configuration System for Your Python Library</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/finding-video-loops-with-python/">Finding Video Loops With Python</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/20/vector-animations-with-python/">Vector Animations With Python</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/Zulko">@Zulko</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'Zulko',
+            count: 3,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Zulko -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'zulkoghio';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/';
+        var disqus_url = 'http://Zulko.github.io/blog/2014/10/14/writing-an-autocompletion-friendly-python-library/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

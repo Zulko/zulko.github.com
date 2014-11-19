@@ -4,7 +4,7 @@
   <title><![CDATA[Category: MoviePy, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/moviepy/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-11-20T00:17:24+01:00</updated>
+  <updated>2014-11-20T00:27:00+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -12,6 +12,179 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Finding video loops with Python]]></title>
+    <link href="http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python/"/>
+    <updated>2014-09-24T08:10:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python</id>
+    <content type="html"><![CDATA[<p><em>It’s always fun to find the excerpts of a video that you can turn into a perfectly looping GIF. Let’s kill that game with a script.</em></p>
+
+<p>We want to find (possibly) all the small cuts of a video that produce a well-looping animation, like this one:</p>
+
+<p>The naive way to do is to compare each frame of the movie to each frame in the 5 seconds before: if two frames look alike, we make a gif from the frames between these two”*. The problem here is that with this method we will have to make a lot of frames comparisons (around one million for a two-hour movie) and many of the gifs will be very short (only 2-3 frames long)</p>
+
+<p>I this post we will see how to speed up frames comparisons, and how to select interesting sequences.</p>
+
+<h2 id="distance-between-two-frames">Distance between two frames</h2>
+
+<p>The frames are represented by a RGB array where the red, green and blue composants are between 0 and 255, and the difference (or distance) between two frames, denoted $d(F<em>1,F</em>2)$, will be represented by the sum of the differences between each composant of each pixels:</p>
+
+<p>$d(F<em>1,F</em>2) = $\sqrt{\sum }</p>
+
+<p>We will say that </p>
+
+<p>1- 
+2- 
+3- </p>
+
+<h2 id="with-all-these-optimizations-we-can-find-matched-frames-in-a-standard-video-at-a-rate-of-30-40-frames-per-second-the-theoretical-limit-would-be-70-frames-per-second-speed-at-which-moviepy-can-decode-video-frames">With all these optimizations, we can find matched frames in a standard video at a rate of 30-40 frames per second. The theoretical limit would be 70 frames per second (speed at which MoviePy can decode video frames).</h2>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">find_matching_frames</span><span class="p">(</span><span class="n">clip</span><span class="p">,</span> <span class="n">dist_thr</span><span class="p">,</span> <span class="n">max_d</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span>
+</span><span class='line'>    <span class="n">clip</span> <span class="p">:</span> <span class="n">a</span> <span class="n">MoviePy</span> <span class="n">video</span> <span class="n">clip</span><span class="p">,</span> <span class="n">possibly</span> <span class="n">transformed</span><span class="o">/</span><span class="n">resized</span>
+</span><span class='line'>    <span class="n">dist_thr</span><span class="p">:</span> <span class="n">distance</span> <span class="n">above</span> <span class="n">which</span> <span class="n">a</span> <span class="n">match</span> <span class="ow">is</span> <span class="n">rejected</span>
+</span><span class='line'>    <span class="n">max_d</span><span class="p">:</span> <span class="n">maximal</span> <span class="n">duration</span> <span class="p">(</span><span class="ow">in</span> <span class="n">seconds</span><span class="p">)</span> <span class="n">between</span> <span class="n">two</span> <span class="n">matching</span> <span class="n">frames</span>
+</span><span class='line'>    <span class="n">fps</span><span class="p">:</span> <span class="n">frames</span> <span class="n">per</span> <span class="n">second</span> <span class="p">(</span><span class="n">default</span> <span class="n">will</span> <span class="n">be</span> <span class="n">clip</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">matching_frames</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># the final result.</span>
+</span><span class='line'><span class="n">N_pixels</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="n">clip</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">3</span>
+</span><span class='line'><span class="n">dot_product</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">F1</span><span class="p">,</span> <span class="n">F2</span><span class="p">:</span> <span class="p">(</span><span class="n">F1</span><span class="o">*</span><span class="n">F2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">N_pixels</span>
+</span><span class='line'><span class="n">F</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># will store the frames and their mutual distances</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">uv</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">])</span>
+</span><span class='line'>    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">]</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">+</span><span class="n">v</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">uv</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">frame</span><span class="p">)</span> <span class="ow">in</span> <span class="n">clip</span><span class="o">.</span><span class="n">iter_frames</span><span class="p">(</span><span class="n">with_times</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">flat_frame</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">F_norm_sq</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">flat_frame</span><span class="p">,</span> <span class="n">flat_frame</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">F_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">F_norm_sq</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+</span><span class='line'>        <span class="c"># forget old frames, add &#39;t&#39; to the others frames</span>
+</span><span class='line'>        <span class="c"># check for early rejections based on differing norms</span>
+</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">max_d</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">F</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;min&#39;</span><span class="p">:</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">F_norm</span><span class="p">),</span>
+</span><span class='line'>                        <span class="s">&#39;max&#39;</span><span class="p">:</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">F_norm</span><span class="p">}</span>
+</span><span class='line'>            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">dist_thr</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">t_F</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">F</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;frame&#39;</span><span class="p">:</span> <span class="n">flat_frame</span><span class="p">,</span> <span class="s">&#39;|F|sq&#39;</span><span class="p">:</span> <span class="n">F_norm_sq</span><span class="p">,</span> <span class="s">&#39;|F|&#39;</span><span class="p">:</span> <span class="n">F_norm</span><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">t2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t_F</span><span class="p">):</span>
+</span><span class='line'>        <span class="c"># Compare F(t) to all the previous frames</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]:</span>
+</span><span class='line'>            <span class="k">continue</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
+</span><span class='line'>        <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">dist</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">=</span> <span class="n">dist_thr</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">t3</span> <span class="ow">in</span> <span class="n">t_F</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
+</span><span class='line'>            <span class="c"># For all the next times t3, use d(F(t), F(t2)) to</span>
+</span><span class='line'>            <span class="c"># update the bounds on d(F(t), F(t3)). See if you can</span>
+</span><span class='line'>            <span class="c"># conclude on wether F(t) and F(t3) match.</span>
+</span><span class='line'>            <span class="n">t3t</span><span class="p">,</span> <span class="n">t2t3</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t3</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t3</span><span class="p">]</span>
+</span><span class='line'>            <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span> <span class="n">dist</span><span class="o">+</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">])</span>
+</span><span class='line'>            <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">],</span> <span class="n">dist</span> <span class="o">-</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span>
+</span><span class='line'>                             <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dist</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">dist_thr</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># Store all the good matches (t2,t)</span>
+</span><span class='line'>    <span class="n">matching_frames</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">F</span>
+</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">t1</span><span class="o">!=</span><span class="n">t</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]]</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">matching_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matching_frames</span><span class="p">,</span>
+</span><span class='line'>                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span> <span class="p">:</span> <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+</span><span class='line'><span class="k">if</span> <span class="n">savefile</span><span class="p">:</span>
+</span><span class='line'>    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">savefile</span><span class="p">,</span> <span class="n">matching_frames</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%.03f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">matching_frames</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+</code></pre>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Read and write video frames in Python using FFMPEG]]></title>
