@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Python | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-11-20T00:29:34+01:00</updated>
+  <updated>2014-11-20T12:15:12+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -346,179 +346,6 @@ Here is the result:
 <h2 id="final-words">Final words</h2>
 
 <p>I hope to have shown that Python and POV-Ray can do nice things together, all easy-peasy with Vapory. On the longer term, it would be nice if more recent softwares like Blender (which has a huge user community and modern features like GPU acceleration) had proper Python bindings. But apparently <a href="https://developer.blender.org/T22328">this will never happen</a>.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Finding video loops with Python]]></title>
-    <link href="http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python/"/>
-    <updated>2014-09-24T08:10:00+02:00</updated>
-    <id>http://Zulko.github.io/blog/2014/09/24/finding-video-loops-with-python</id>
-    <content type="html"><![CDATA[<p><em>It’s always fun to find the excerpts of a video that you can turn into a perfectly looping GIF. Let’s kill that game with a script.</em></p>
-
-<p>We want to find (possibly) all the small cuts of a video that produce a well-looping animation, like this one:</p>
-
-<p>The naive way to do is to compare each frame of the movie to each frame in the 5 seconds before: if two frames look alike, we make a gif from the frames between these two”*. The problem here is that with this method we will have to make a lot of frames comparisons (around one million for a two-hour movie) and many of the gifs will be very short (only 2-3 frames long)</p>
-
-<p>I this post we will see how to speed up frames comparisons, and how to select interesting sequences.</p>
-
-<h2 id="distance-between-two-frames">Distance between two frames</h2>
-
-<p>The frames are represented by a RGB array where the red, green and blue composants are between 0 and 255, and the difference (or distance) between two frames, denoted $d(F<em>1,F</em>2)$, will be represented by the sum of the differences between each composant of each pixels:</p>
-
-<p>$d(F<em>1,F</em>2) = $\sqrt{\sum }</p>
-
-<p>We will say that </p>
-
-<p>1- 
-2- 
-3- </p>
-
-<h2 id="with-all-these-optimizations-we-can-find-matched-frames-in-a-standard-video-at-a-rate-of-30-40-frames-per-second-the-theoretical-limit-would-be-70-frames-per-second-speed-at-which-moviepy-can-decode-video-frames">With all these optimizations, we can find matched frames in a standard video at a rate of 30-40 frames per second. The theoretical limit would be 70 frames per second (speed at which MoviePy can decode video frames).</h2>
-
-<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">find_matching_frames</span><span class="p">(</span><span class="n">clip</span><span class="p">,</span> <span class="n">dist_thr</span><span class="p">,</span> <span class="n">max_d</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">savefile</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-</span><span class='line'>    <span class="err">“””</span>
-</span><span class='line'>    <span class="n">clip</span> <span class="p">:</span> <span class="n">a</span> <span class="n">MoviePy</span> <span class="n">video</span> <span class="n">clip</span><span class="p">,</span> <span class="n">possibly</span> <span class="n">transformed</span><span class="o">/</span><span class="n">resized</span>
-</span><span class='line'>    <span class="n">dist_thr</span><span class="p">:</span> <span class="n">distance</span> <span class="n">above</span> <span class="n">which</span> <span class="n">a</span> <span class="n">match</span> <span class="ow">is</span> <span class="n">rejected</span>
-</span><span class='line'>    <span class="n">max_d</span><span class="p">:</span> <span class="n">maximal</span> <span class="n">duration</span> <span class="p">(</span><span class="ow">in</span> <span class="n">seconds</span><span class="p">)</span> <span class="n">between</span> <span class="n">two</span> <span class="n">matching</span> <span class="n">frames</span>
-</span><span class='line'>    <span class="n">fps</span><span class="p">:</span> <span class="n">frames</span> <span class="n">per</span> <span class="n">second</span> <span class="p">(</span><span class="n">default</span> <span class="n">will</span> <span class="n">be</span> <span class="n">clip</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span>
-</span><span class='line'>    <span class="err">“””</span> <span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">matching_frames</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># the final result.</span>
-</span><span class='line'><span class="n">N_pixels</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">w</span> <span class="o">*</span> <span class="n">clip</span><span class="o">.</span><span class="n">h</span> <span class="o">*</span> <span class="mi">3</span>
-</span><span class='line'><span class="n">dot_product</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">F1</span><span class="p">,</span> <span class="n">F2</span><span class="p">:</span> <span class="p">(</span><span class="n">F1</span><span class="o">*</span><span class="n">F2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">N_pixels</span>
-</span><span class='line'><span class="n">F</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># will store the frames and their mutual distances</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">def</span> <span class="nf">distance</span><span class="p">(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t2</span><span class="p">):</span>
-</span><span class='line'>    <span class="n">uv</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;frame&#39;</span><span class="p">])</span>
-</span><span class='line'>    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|sq&#39;</span><span class="p">]</span>
-</span><span class='line'>    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">u</span><span class="o">+</span><span class="n">v</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="n">uv</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">for</span> <span class="p">(</span><span class="n">t</span><span class="p">,</span><span class="n">frame</span><span class="p">)</span> <span class="ow">in</span> <span class="n">clip</span><span class="o">.</span><span class="n">iter_frames</span><span class="p">(</span><span class="n">with_times</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">flat_frame</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">*</span><span class="n">frame</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-</span><span class='line'>    <span class="n">F_norm_sq</span> <span class="o">=</span> <span class="n">dot_product</span><span class="p">(</span><span class="n">flat_frame</span><span class="p">,</span> <span class="n">flat_frame</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">F_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">F_norm_sq</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-</span><span class='line'>        <span class="c"># forget old frames, add &#39;t&#39; to the others frames</span>
-</span><span class='line'>        <span class="c"># check for early rejections based on differing norms</span>
-</span><span class='line'>        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">-</span><span class="n">t2</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">max_d</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">F</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">t2</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;min&#39;</span><span class="p">:</span><span class="nb">abs</span><span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">F_norm</span><span class="p">),</span>
-</span><span class='line'>                        <span class="s">&#39;max&#39;</span><span class="p">:</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="s">&#39;|F|&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">F_norm</span><span class="p">}</span>
-</span><span class='line'>            <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span><span class="o">=</span> <span class="p">(</span><span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">dist_thr</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">t_F</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">F</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">F</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;frame&#39;</span><span class="p">:</span> <span class="n">flat_frame</span><span class="p">,</span> <span class="s">&#39;|F|sq&#39;</span><span class="p">:</span> <span class="n">F_norm_sq</span><span class="p">,</span> <span class="s">&#39;|F|&#39;</span><span class="p">:</span> <span class="n">F_norm</span><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">t2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">t_F</span><span class="p">):</span>
-</span><span class='line'>        <span class="c"># Compare F(t) to all the previous frames</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="k">if</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]:</span>
-</span><span class='line'>            <span class="k">continue</span>
-</span><span class='line'>
-</span><span class='line'>        <span class="n">dist</span> <span class="o">=</span> <span class="n">distance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dist</span>
-</span><span class='line'>        <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span>  <span class="o">=</span> <span class="p">(</span><span class="n">dist</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span><span class="o">=</span> <span class="n">dist_thr</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">for</span> <span class="n">t3</span> <span class="ow">in</span> <span class="n">t_F</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">:]:</span>
-</span><span class='line'>            <span class="c"># For all the next times t3, use d(F(t), F(t2)) to</span>
-</span><span class='line'>            <span class="c"># update the bounds on d(F(t), F(t3)). See if you can</span>
-</span><span class='line'>            <span class="c"># conclude on wether F(t) and F(t3) match.</span>
-</span><span class='line'>            <span class="n">t3t</span><span class="p">,</span> <span class="n">t2t3</span> <span class="o">=</span> <span class="n">F</span><span class="p">[</span><span class="n">t3</span><span class="p">][</span><span class="n">t</span><span class="p">],</span> <span class="n">F</span><span class="p">[</span><span class="n">t2</span><span class="p">][</span><span class="n">t3</span><span class="p">]</span>
-</span><span class='line'>            <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span> <span class="n">dist</span><span class="o">+</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">])</span>
-</span><span class='line'>            <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">],</span> <span class="n">dist</span> <span class="o">-</span> <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">],</span>
-</span><span class='line'>                             <span class="n">t2t3</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">dist</span><span class="p">)</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;min&#39;</span><span class="p">]</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">dist_thr</span><span class="p">:</span>
-</span><span class='line'>                <span class="n">t3t</span><span class="p">[</span><span class="s">&#39;rejected&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="c"># Store all the good matches (t2,t)</span>
-</span><span class='line'>    <span class="n">matching_frames</span> <span class="o">+=</span> <span class="p">[(</span><span class="n">t1</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;min&#39;</span><span class="p">])</span> <span class="k">for</span> <span class="n">t1</span> <span class="ow">in</span> <span class="n">F</span>
-</span><span class='line'>                        <span class="k">if</span> <span class="p">(</span><span class="n">t1</span><span class="o">!=</span><span class="n">t</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">F</span><span class="p">[</span><span class="n">t1</span><span class="p">][</span><span class="n">t</span><span class="p">][</span><span class="s">&#39;rejected&#39;</span><span class="p">]]</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">matching_frames</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matching_frames</span><span class="p">,</span>
-</span><span class='line'>                                <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">e</span> <span class="p">:</span> <span class="p">(</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
-</span><span class='line'><span class="k">if</span> <span class="n">savefile</span><span class="p">:</span>
-</span><span class='line'>    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">savefile</span><span class="p">,</span> <span class="n">matching_frames</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%.03f</span><span class="s">&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">return</span> <span class="n">matching_frames</span>
-</span></code></pre></td></tr></table></div></figure></notextile></div>
-</code></pre>
-
 ]]></content>
   </entry>
   
@@ -1593,6 +1420,124 @@ Here is the result:
 <p>Nicely enough, the same 25 lines of code can be used to cut <a href="http://youtu.be/T2zTZ4bEVmQ">this other summary</a> of <a href="https://www.youtube.com/watch?v=neYtV3nY7jE">this other match</a>. The limitations of the method appear in <a href="http://youtu.be/zAIFwa9e0Ww">yet another summary</a> which only captured 8 out of the 9 goals of the match, one or two being badly cut. The algorithm can be confused by broadcasters which make lots of replays or lower the sound of the crowd after goals, and it may miscut some goals on penalties, because the crowd starts whistling long before the shoot. So large-scale applications would require a less naive model.</p>
 
 <p>If you want to try it at home, here is <a href="https://gist.github.com/Zulko/5cb8f880ef79b2db3c63">the whole script</a>. It would be interesting to see how the method works on other sports, or how it could be generalized to other uses, like spotting action scenes in movies.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Viennese Mazes: what they are, and how to make one]]></title>
+    <link href="http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are/"/>
+    <updated>2014-04-27T23:34:00+02:00</updated>
+    <id>http://Zulko.github.io/blog/2014/04/27/viennese-mazes-what-they-are</id>
+    <content type="html"><![CDATA[<p><em>In this post I present an original concept of labyrinths and explain how they can be programmatically generated.</em></p>
+
+<!-- more -->
+
+<p>For some time now I have been designing labyrinths based on traffic lights, like this one:</p>
+
+<p><img class="center" src="/images/vmazes/viennese_maze.jpeg" width="550"></p>
+
+<p>I call these <em>Viennese mazes</em> (long story) and since I couldn’t find anything similar on the Web, I assume that this is something new. Here are <a href="https://i.imgur.com/j2gWurM.jpg">some more</a> with other shapes, and <a href="https://i.imgur.com/bReTSfN.png">their solutions</a>.</p>
+
+<p>These mazes are very difficult to design by hand, and this post is about how to ask your computer to do the work for you. We will see what a <em>good</em> Viennese maze is made of, and how to generate one using a simple evolutionary algorithm.</p>
+
+<h2 id="viennese-mazes-are-a-special-kind-of-normal-mazes">Viennese mazes are (a special kind of) normal mazes</h2>
+
+<p>My first intention with Viennese mazes was to make dynamic mazes, with <em>moving walls</em>. But under each Viennese maze there is actually a standard, old-school labyrinth.</p>
+
+<p>To see this we must think in terms of <em>states</em>. A state describes where you are in the maze, and determines where you can go from there. In the maze above, state (c,1,a) means “I am in (c), I have passed 1 traffic light until then, and just before that I was in (a)”. From this state you cannot reach (d) as the light in this street has turned red, and you cannot reach (a) because you just came from here. But you can move to (b) or (g), that is, to state (b,2,c) or state (g,2,c). Note that states such as (c,1,a), (c,4,a), and (c,7,a) are actually the same state, because afer three moves all traffic lights come back to their original position. So there will always be a finite number of states in a Viennese maze.</p>
+
+<p>If we draw a map of all (reachable) states and their connexions we obtain the following <em>states graph</em> :</p>
+
+<p><img class="center" src="/images/vmazes/graph.jpeg"></p>
+
+<p>The green node marks the starting point, while the blue node is a reunion of all states corresponding to the goal (m). The nodes on the $i$-th line from the top can be reached in $i$ moves but no less, thick lines go downwards and thin lines go upwards.</p>
+
+<p>This graph looks like a classical labyrinth, with crossroads, dead ends, loops… at one glance it gives an idea of the complexity and interestingness of the original Viennese maze. Therefore, we will consider that a good Viennese maze is a maze whose states graph makes a good labyrinth.</p>
+
+<h2 id="what-makes-a-good-labyrinth-">What makes a good labyrinth ?</h2>
+
+<p>Here is an illustration of a few criteria which make a labyrinth insteresting :</p>
+
+<p><img class="center" src="/images/vmazes/classical_maze.jpeg" width="450"></p>
+
+<ol>
+  <li><strong>There must be a unique solution, the longer the better.</strong> In Viennese mazes It will be difficult to avoid loops like the one in <em>a</em>, where you leave the right track at some point and join it back later at exactly the same position. But there should be a unique mandatory path to the goal (in red in the drawing).</li>
+  <li><strong>There must be plenty of loops and dead ends</strong>, like in <em>b</em> and <em>c</em>, and also links between false paths (like <em>d</em>), all of these preferally early on the path.</li>
+  <li><strong>The maze should be difficult to solve backwards</strong>, by having false ending paths (like <em>e</em>). This criterion also tends to produce nicer-looking Viennese mazes, with a better balance of the different colors.</li>
+</ol>
+
+<p>For the computer to be able to compare mazes and identify the most interesting ones we define scores <script type="math/tex"> S_1, S_2, S_3 </script> which will quantify how well each of the criteria 1,2,3, are fullfilled by a given maze. For instance</p>
+
+<script type="math/tex; mode=display">
+S_1(maze) =
+\begin{cases}
+0, \,\, \mbox{if there is no solution,} \\
+1, \,\, \mbox{if there are multiple solutions,} \\
+L, \,\, \mbox{if there is a unique solution, of length $L$.}
+\end{cases}
+</script>
+
+<p>The final score of a Viennese maze is given by the product</p>
+
+<script type="math/tex; mode=display"> S = S_1^{c_1} \cdot S_2^{c_2} \cdot S_3^{c_3} </script>
+
+<p>where the exponents <script type="math/tex"> c_1, c_2, c_3 </script> reflect the relative importance that we decide to attach to each criterion.</p>
+
+<p>Evaluating this score on the states graph of a Viennese maze is easy: the existence and uniqueness of a solution can be checked using a simple-path-finding algorithm. Dead-ends are simply the nodes of the states graph with no descendents, and the loops of the maze correspond to the thin edges. The states graph itself and its different lines of nodes can be easily computed using Dijkstra’s efficient algorithm to find minimal paths between the start and the different states. The current Python implementation, relying on the Networkx package, enable to evaluate on the order of 1000 mazes per second (depending on their complexity).</p>
+
+<h2 id="lets-grow-mazes-">Let’s grow mazes !</h2>
+
+<p>Now that we have defined how to score a Viennese maze, we will provide the computer with an uncolored canvas, and we will ask for a <em>coloring</em> (initial color of each traffic light) of this canvas that produces the best score possible :</p>
+
+<p><img class="center" src="/images/vmazes/canvas.jpeg" width="250"></p>
+
+<p>There are $3^{24}$ (almost three hundred billion) ways of coloring the 24 streets on this canvas, and considering all of them would be too long. But a great many of these colorings make interesting mazes, so we can just look semi-randomly for some of these.</p>
+
+<p>An effective way to do so is to first colorize the canvas in a completely random way, then improve the coloring by repeating the following steps:</p>
+
+<ol>
+  <li>Create a new maze by randomly changing just a few colors of the current maze.</li>
+  <li>Compute the score of this new maze.</li>
+  <li>If the new maze scores lower than the current maze, dump it, otherwise it replaces the current maze. Go back to step 1.</li>
+</ol>
+
+<p>Here is a maze being optimized following this mutation/selection procedure (over 24000 mazes were generated, only the successive improvements are shown):</p>
+
+<p><img class="center" src="http://i.imgur.com/yc1lwgh.gif" title="‘hosted on imgur’" ></p>
+
+<p>This algorithm can be refined using annealing (in which you first evaluate many different mazes before refining the search around the best one), or any fancier search strategy such as genetic algorithms, ant colonies… What works best is still an open question.</p>
+
+<h2 id="try-it-at-home">Try it at home</h2>
+
+<p>If you want to try and make your own Viennese mazes (using for instance you district as a canvas), I wrote a Python package called <a href="http://zulko.github.io/vmfactory/">vmfactory</a> which implements all the steps discussed above. It can generate two variants of Viennese mazes: one where passing through the same light twice in a row is forbidden, and one where it isn’t (algorithmically, the only difference is the way the states graph is computed).</p>
+
+<p>In the following example, we generate a squared canvas, we initialize a maze with random colors, optimize it, and generate a report (maze/graph/solution): </p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">vmfactory</span> <span class="kn">import</span> <span class="n">Vmaze_NHT</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">vmfactory.canvas</span> <span class="kn">import</span> <span class="n">squares_grid</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">squares_grid</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)</span> <span class="c"># nodes will be numbered 0..15</span>
+</span><span class='line'><span class="c"># NHT means no half-turns (can’t pass a light twice in a row) </span>
+</span><span class='line'><span class="n">maze</span> <span class="o">=</span> <span class="n">Vmaze_NHT</span><span class="p">(</span><span class="n">canvas</span><span class="p">,</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">goal</span> <span class="o">=</span> <span class="mi">15</span><span class="p">)</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">colorize</span><span class="p">(</span> <span class="n">maze</span><span class="o">.</span><span class="n">random_colors</span><span class="p">()</span> <span class="p">)</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">anneal</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="mi">20</span><span class="p">)</span> <span class="c"># optimize the maze</span>
+</span><span class='line'><span class="n">maze</span><span class="o">.</span><span class="n">make_report</span><span class="p">()</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="err">‘</span><span class="n">myreport</span><span class="o">.</span><span class="n">png</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><img class="center" src="/images/vmazes/report.jpeg" width="550"></p>
+
+<p>The package is based on Networkx, Numpy and Matplotlib. The code is rather short (most of it serves to draw fancy graphs !), and modular : you can easily change the rules, change the way the score is computed, change the optimization procedure, or the way the reports are drawn.</p>
+
+<p>Thank you for reading until there, and happy mazing !</p>
 ]]></content>
   </entry>
   
