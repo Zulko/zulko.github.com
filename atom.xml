@@ -4,7 +4,7 @@
   <title><![CDATA[__del__( self )]]></title>
   <link href="http://Zulko.github.io/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-12-08T15:03:07+01:00</updated>
+  <updated>2014-12-08T16:01:27+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -375,7 +375,7 @@
 
 <p>If you are working with Numpy arrays (<a href="http://www.numpy.org/">Numpy</a> is the central numerical library in Python), you don’t need any external plotting library, you can feed the arrays directly to MoviePy.</p>
 
-<p>This is well illustrated by this simulation of a zombie outbreak in France (inspired by <a href="http://maxberggren.github.io/2014/11/27/model-of-a-zombie-outbreak/">this blog post</a> by Max Berrgren). France is modelled as a grid (Numpy array) on which all the computations for dispersion and infection are done. At regular intervals, a few Numpy operations tranform the grid into a valid RGB image, and send it to MoviePy.</p>
+<p>This is well illustrated by this simulation of a zombie outbreak in France (inspired by <a href="http://maxberggren.github.io/2014/11/27/model-of-a-zombie-outbreak/">this blog post</a> by Max Berggren). France is modelled as a grid (Numpy array) on which all the computations for dispersion and infection are done. At regular intervals, a few Numpy operations tranform the grid into a valid RGB image, and send it to MoviePy.</p>
 
 <div align="center"><a href="https://gist.github.com/Zulko/6aa898d22e74aa9dafc3">code</a></div>
 <p><img class="center" src="http://i.imgur.com/BsgBP4g.gif" /></p>
