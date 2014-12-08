@@ -38,7 +38,7 @@
         <loc>
             http://Zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/
         </loc>
-        <lastmod>2014-07-30T13:58:01+02:00</lastmod>
+        <lastmod>2014-12-01T07:39:03+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/</loc>
@@ -70,7 +70,7 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/07/26/a-tweets-controlled-python-script/</loc>
-        <lastmod>2014-10-01T09:05:49+02:00</lastmod>
+        <lastmod>2014-12-05T09:57:22+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/09/20/vector-animations-with-python/</loc>
@@ -83,15 +83,19 @@
         <lastmod>2014-11-20T00:23:48+01:00</lastmod>
     </url>
     <url>
+        <loc>http://Zulko.github.io/blog/2014/11/29/data-animations-with-python-and-moviepy/</loc>
+        <lastmod>2014-12-08T09:19:18+01:00</lastmod>
+    </url>
+    <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
         <lastmod>2013-09-19T21:33:12+02:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-11-20T00:23:48+01:00</lastmod>
+        <lastmod>2014-12-08T09:19:18+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-11-20T00:23:48+01:00</lastmod>
+        <lastmod>2014-12-08T09:19:18+01:00</lastmod>
     </url>
 </urlset>

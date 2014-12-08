@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Data | __del__( self )]]></title>
+  <link href="http://Zulko.github.io/blog/categories/data/atom.xml" rel="self"/>
+  <link href="http://Zulko.github.io/"/>
+  <updated>2014-12-08T14:57:29+01:00</updated>
+  <id>http://Zulko.github.io/</id>
+  <author>
+    <name><![CDATA[Zulko]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Data animations with Python and MoviePy]]></title>
+    <link href="http://Zulko.github.io/blog/2014/11/29/data-animations-with-python-and-moviepy/"/>
+    <updated>2014-11-29T22:04:00+01:00</updated>
+    <id>http://Zulko.github.io/blog/2014/11/29/data-animations-with-python-and-moviepy</id>
+    <content type="html"><![CDATA[<p><em>Python has some great data vizualization librairies, but few can render GIFs or video animations. This post shows how to use my video editing library <a href="http://zulko.github.io/moviepy/">MoviePy</a> as a generic animation plugin for any other library.</em></p>
+
+<!-- more -->
+
+<p>MoviePy lets you define custom animations with a function <code>make_frame(t)</code>, which returns the video frame corresponding to time <code>t</code> (in seconds):</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">returns</span> <span class="n">an</span> <span class="n">image</span> <span class="n">of</span> <span class="n">the</span> <span class="n">frame</span> <span class="n">at</span> <span class="n">time</span> <span class="n">t</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="c"># … create the frame with any library</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">frame_for_time_t</span> <span class="c"># (Height x Width x 3) Numpy array&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> <span class="c"># 3-second clip&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;for-the-export-many-optionsformatsoptimizations-are-supported&quot;</span><span class="o">&gt;</span><span class="n">For</span> <span class="n">the</span> <span class="n">export</span><span class="p">,</span> <span class="n">many</span> <span class="n">options</span><span class="o">/</span><span class="n">formats</span><span class="o">/</span><span class="n">optimizations</span> <span class="n">are</span> <span class="n">supported</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="err">“</span><span class="n">my_animation</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span> <span class="c"># export as video</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">my_animation</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span> <span class="c"># export as GIF (slow)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>In previous posts I used this method to <a href="http://zulko.github.io/blog/2014/09/20/vector-animations-with-python/">animate vector graphics</a> (with the library Gizeh), and <a href="http://zulko.github.io/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/">ray-traced 3D scenes</a> (generated by POV-Ray). In this post I cover the scientific libraries Mayavi, Vispy, Matplotlib, Numpy, and Scikit-image.</p>
+
+<h2 id="animations-with-mayavi">Animations with Mayavi</h2>
+
+<p><a href="http://docs.enthought.com/mayavi/mayavi/auto/examples.html">Mayavi</a> is a Python module for interactive 3D data vizualization with a simple interface. In this first example we animate a surface whose elevation depends on the time <code>t</code>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">mayavi.mlab</span> <span class="kn">as</span> <span class="nn">mlab</span>
+</span><span class='line'><span class="kn">import</span>  <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">duration</span><span class="o">=</span> <span class="mi">2</span> <span class="c"># duration of the animation in seconds (it will loop)&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;make-a-figure-with-mayavi&quot;</span><span class="o">&gt;</span><span class="n">MAKE</span> <span class="n">A</span> <span class="n">FIGURE</span> <span class="n">WITH</span> <span class="n">MAYAVI</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">fig_myv</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span><span class="mi">220</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">200</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span>
+</span><span class='line'><span class="n">XX</span><span class="p">,</span> <span class="n">YY</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">)</span>
+</span><span class='line'><span class="n">ZZ</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">XX</span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">+</span><span class="n">YY</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">XX</span><span class="o">+</span><span class="n">d</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;animate-the-figure-with-moviepy-write-an-animated-gif&quot;</span><span class="o">&gt;</span><span class="n">ANIMATE</span> <span class="n">THE</span> <span class="n">FIGURE</span> <span class="n">WITH</span> <span class="n">MOVIEPY</span><span class="p">,</span> <span class="n">WRITE</span> <span class="n">AN</span> <span class="n">ANIMATED</span> <span class="n">GIF</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">mlab</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span> <span class="c"># clear the figure (to reset the colors)</span>
+</span><span class='line'>    <span class="n">mlab</span><span class="o">.</span><span class="n">mesh</span><span class="p">(</span><span class="n">YY</span><span class="p">,</span><span class="n">XX</span><span class="p">,</span><span class="n">ZZ</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">t</span><span class="o">/</span><span class="n">duration</span><span class="p">),</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig_myv</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mlab</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">antialiased</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">sinc</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/5QPNGH7.gif"></p>
+
+<p>Another example with a wireframe mesh whose coordinates and view angle depend on the time :</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">mayavi.mlab</span> <span class="kn">as</span> <span class="nn">mlab</span>
+</span><span class='line'><span class="kn">import</span>  <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span> <span class="c"># duration of the animation in seconds (it will loop)&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;make-a-figure-with-mayavi-1&quot;</span><span class="o">&gt;</span><span class="n">MAKE</span> <span class="n">A</span> <span class="n">FIGURE</span> <span class="n">WITH</span> <span class="n">MAYAVI</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">fig</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">),</span> <span class="n">bgcolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span><span class="mi">100</span><span class="p">)</span>
+</span><span class='line'><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">zz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">u</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">3</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">u</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">u</span><span class="p">)</span> <span class="c"># Points</span>
+</span><span class='line'><span class="n">l</span> <span class="o">=</span> <span class="n">mlab</span><span class="o">.</span><span class="n">plot3d</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">,</span><span class="n">zz</span><span class="p">,</span> <span class="n">representation</span><span class="o">=</span><span class="err">”</span><span class="n">wireframe</span><span class="err">”</span><span class="p">,</span> <span class="n">tube_sides</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">line_width</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">tube_radius</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="n">fig</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;animate-the-figure-with-moviepy-write-an-animated-gif-1&quot;</span><span class="o">&gt;</span><span class="n">ANIMATE</span> <span class="n">THE</span> <span class="n">FIGURE</span> <span class="n">WITH</span> <span class="n">MOVIEPY</span><span class="p">,</span> <span class="n">WRITE</span> <span class="n">AN</span> <span class="n">ANIMATED</span> <span class="n">GIF</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Generates</span> <span class="ow">and</span> <span class="n">returns</span> <span class="n">the</span> <span class="n">frame</span> <span class="k">for</span> <span class="n">time</span> <span class="n">t</span><span class="o">.</span> <span class="err">“””</span>
+</span><span class='line'>    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">3</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">u</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">0.2</span><span class="o">+</span><span class="mf">0.5</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">t</span><span class="o">/</span><span class="n">duration</span><span class="p">))</span>
+</span><span class='line'>    <span class="n">l</span><span class="o">.</span><span class="n">mlab_source</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">)</span> <span class="c"># change y-coordinates of the mesh</span>
+</span><span class='line'>    <span class="n">mlab</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">azimuth</span><span class="o">=</span> <span class="mi">360</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">t</span><span class="o">/</span><span class="n">duration</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span> <span class="c"># camera angle</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mlab</span><span class="o">.</span><span class="n">screenshot</span><span class="p">(</span><span class="n">antialiased</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="c"># return a RGB image&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+</span><span class='line'><span class="c"># Video generation takes 10 seconds, GIF generation takes 25s</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_videofile</span><span class="p">(</span><span class="err">“</span><span class="n">wireframe</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">wireframe</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/SLYGVXI.gif"></p>
+
+<p>As Mayavi relies on the powerful ITK vizualization engine it can also process complex datasets. Here is an animation derived from a <a href="http://docs.enthought.com/mayavi/mayavi/auto/example_mri.html">Mayavi example</a>:</p>
+
+<div align="center"><a href="https://gist.github.com/Zulko/c16a7f7383590d350b70">code</a></div>
+<p><img class="center" src="http://i.imgur.com/EJZELfi.gif" title="" ></p>
+
+<h2 id="animations-with-vispy">Animations with Vispy</h2>
+
+<p><a href="http://vispy.org/gallery.html">Vispy</a> is another interactive 3D data vizualization library, based on OpenGL. As for Mayavi, we first create a figure and a mesh, that we animate with MoviePy.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">vispy</span> <span class="kn">import</span> <span class="n">app</span><span class="p">,</span> <span class="n">scene</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">vispy.gloo.util</span> <span class="kn">import</span> <span class="n">_screenshot</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">SceneCanvas</span><span class="p">(</span><span class="n">keys</span><span class="o">=</span><span class="err">’</span><span class="n">interactive</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">view</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">central_widget</span><span class="o">.</span><span class="n">add_view</span><span class="p">()</span>
+</span><span class='line'><span class="n">view</span><span class="o">.</span><span class="n">set_camera</span><span class="p">(</span><span class="err">‘</span><span class="n">turntable</span><span class="err">’</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="err">’</span><span class="n">perspective</span><span class="err">’</span><span class="p">,</span> <span class="n">up</span><span class="o">=</span><span class="err">’</span><span class="n">z</span><span class="err">’</span><span class="p">,</span> <span class="n">distance</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+</span><span class='line'>                <span class="n">azimuth</span><span class="o">=</span><span class="mf">30.</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="mf">65.</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mo">02</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="o">.</span><span class="mo">02</span><span class="p">)</span>
+</span><span class='line'><span class="n">X</span><span class="p">,</span><span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span><span class="n">yy</span><span class="p">)</span>
+</span><span class='line'><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">X</span><span class="o">&lt;</span><span class="n">strong</span><span class="o">&gt;</span><span class="mi">2</span><span class="o">+</span><span class="n">Y</span><span class="o">&lt;/</span><span class="n">strong</span><span class="o">&gt;</span><span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="n">Z</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">t</span> <span class="p">:</span> <span class="mf">0.1</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="mi">10</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">R</span><span class="o">-</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">t</span><span class="p">)</span>
+</span><span class='line'><span class="n">surface</span> <span class="o">=</span> <span class="n">scene</span><span class="o">.</span><span class="n">visuals</span><span class="o">.</span><span class="n">SurfacePlot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span> <span class="n">xx</span><span class="o">-</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">yy</span><span class="o">+</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span> <span class="n">Z</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+</span><span class='line'>                        <span class="n">shading</span><span class="o">=</span><span class="err">’</span><span class="n">smooth</span><span class="err">’</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">view</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+</span><span class='line'><span class="n">canvas</span><span class="o">.</span><span class="n">show</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;animate-with-moviepy&quot;</span><span class="o">&gt;</span><span class="n">ANIMATE</span> <span class="n">WITH</span> <span class="n">MOVIEPY</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">surface</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">z</span> <span class="o">=</span> <span class="n">Z</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="c"># Update the mathematical surface</span>
+</span><span class='line'>    <span class="n">canvas</span><span class="o">.</span><span class="n">on_draw</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span> <span class="c"># Update the image on Vispy’s canvas</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">_screenshot</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="n">canvas</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">canvas</span><span class="o">.</span><span class="n">size</span><span class="p">[</span><span class="mi">1</span><span class="p">]))[:,:,:</span><span class="mi">3</span><span class="p">]</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">350</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">‘</span><span class="n">sinc_vispy</span><span class="o">.</span><span class="n">gif</span><span class="err">’</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="err">’</span><span class="n">OptimizePlus</span><span class="err">’</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/EbSjT2T.gif" width="280"></p>
+
+<p>Here are more advanced examples (derived from the Vispy gallery) where C code snippets are embedded in the Python code to fine-tune the 3D shaders:</p>
+
+<div align="center"><a href="https://gist.github.com/Zulko/54e5468759396c5cbbd2">code</a></div>
+<p><img class="center" src="http://i.imgur.com/6PNEYB9.gif" title="" ></p>
+
+<div align="center"><a href="https://gist.github.com/Zulko/4dcaf3e38fdc118f22a3">code</a></div>
+<p><img class="center" src="http://i.imgur.com/sSCBkFd.gif" width="280" title="" ></p>
+
+<h2 id="animations-with-matplotlib">Animations with Matplotlib</h2>
+
+<p>The 2D/3D plotting library <a href="http://matplotlib.org/gallery.html">Matplotlib</a> already has an animation module, but I found that MoviePy produces lighter, better quality videos, while being up to two times faster (not sure why, see <a href="https://github.com/matplotlib/matplotlib/issues/3865">here</a> for more details). Here is how you animate Matplotlib with MoviePy:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">moviepy.video.io.bindings</span> <span class="kn">import</span> <span class="n">mplfig_to_npimage</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;draw-a-figure-with-matplotlib&quot;</span><span class="o">&gt;</span><span class="n">DRAW</span> <span class="n">A</span> <span class="n">FIGURE</span> <span class="n">WITH</span> <span class="n">MATPLOTLIB</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">duration</span> <span class="o">=</span> <span class="mi">2</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">fig_mpl</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="err">’</span><span class="n">white</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'><span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">200</span><span class="p">)</span> <span class="c"># the x vector</span>
+</span><span class='line'><span class="n">zz</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">d</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">sinc</span><span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">xx</span><span class="o">+</span><span class="n">d</span><span class="p">)</span> <span class="c"># the (changing) z vector</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="err">“</span><span class="n">Elevation</span> <span class="ow">in</span> <span class="n">y</span><span class="o">=</span><span class="mi">0</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.5</span><span class="p">,</span><span class="mf">2.5</span><span class="p">)</span>
+</span><span class='line'><span class="n">line</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">zz</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;animate-with-moviepy-update-the-curve-for-each-t-make-a-gif&quot;</span><span class="o">&gt;</span><span class="n">ANIMATE</span> <span class="n">WITH</span> <span class="n">MOVIEPY</span> <span class="p">(</span><span class="n">UPDATE</span> <span class="n">THE</span> <span class="n">CURVE</span> <span class="n">FOR</span> <span class="n">EACH</span> <span class="n">t</span><span class="p">)</span><span class="o">.</span> <span class="n">MAKE</span> <span class="n">A</span> <span class="n">GIF</span><span class="o">.&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame_mpl</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">line</span><span class="o">.</span><span class="n">set_ydata</span><span class="p">(</span> <span class="n">zz</span><span class="p">(</span><span class="mi">2</span><span class="o">&lt;</span><span class="n">em</span><span class="o">&gt;</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">&lt;/</span><span class="n">em</span><span class="o">&gt;</span><span class="n">t</span><span class="o">/</span><span class="n">duration</span><span class="p">))</span>  <span class="c"># &amp;lt;= Update the curve</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mplfig_to_npimage</span><span class="p">(</span><span class="n">fig_mpl</span><span class="p">)</span> <span class="c"># RGB image of the figure&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span><span class="n">mpy</span><span class="o">.</span><span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame_mpl</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">duration</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">sinc_mpl</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/6VoT16d.gif"></p>
+
+<p>Matplotlib has many beautiful themes and works well with numerical modules like Pandas or Scikit-Learn. Let us watch a SVM classifier getting a better understanding of the map as the number of training point increases.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">svm</span> <span class="c"># sklearn = scikit-learn</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">sklearn.datasets</span> <span class="kn">import</span> <span class="n">make_moons</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoClip</span>
+</span><span class='line'><span class="kn">from</span> <span class="nn">moviepy.video.io.bindings</span> <span class="kn">import</span> <span class="n">mplfig_to_npimage</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">make_moons</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="n">noise</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="c"># semi-random data&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">500</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">500</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">make_frame</span><span class="p">(</span><span class="n">t</span><span class="p">):</span>
+</span><span class='line'>    <span class="n">ax</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="err">‘</span><span class="n">off</span><span class="err">’</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="err">“</span><span class="n">SVC</span> <span class="n">classification</span><span class="err">”</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">pre</span><span class="o">&gt;&lt;</span><span class="n">code</span><span class="o">&gt;</span><span class="n">classifier</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">SVC</span><span class="p">(</span><span class="n">gamma</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">C</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="c"># the varying weights make the points appear one after the other</span>
+</span><span class='line'><span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="mi">10</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">50</span><span class="p">)))</span>
+</span><span class='line'><span class="n">classifier</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">sample_weight</span><span class="o">=</span><span class="n">weights</span><span class="p">)</span>
+</span><span class='line'><span class="n">Z</span> <span class="o">=</span> <span class="n">classifier</span><span class="o">.</span><span class="n">decision_function</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">xx</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">yy</span><span class="o">.</span><span class="n">ravel</span><span class="p">()])</span>
+</span><span class='line'><span class="n">Z</span> <span class="o">=</span> <span class="n">Z</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">yy</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bone</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">vmin</span><span class="o">=-</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">2.5</span><span class="p">,</span> <span class="n">levels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">20</span><span class="p">))</span>
+</span><span class='line'><span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">X</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">X</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">Y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="o">*</span><span class="n">weights</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">bone</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">mplfig_to_npimage</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</span><span class='line'><span class="o">&lt;/</span><span class="n">code</span><span class="o">&gt;&lt;/</span><span class="n">pre</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">VideoClip</span><span class="p">(</span><span class="n">make_frame</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">svm</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/LuXmWar.gif"></p>
+
+<p>Put simply, the background colors tell us where the classifier thinks the black points and white points belong. At the begining it has no real clue, but as more points appear it progressively understands that they are distributed along moon-shaped regions.</p>
+
+<h2 id="animations-with-numpy">Animations with Numpy</h2>
+
+<p>If you are working with Numpy arrays (<a href="http://www.numpy.org/">Numpy</a> is the central numerical library in Python), you don’t need any external plotting library, you can feed the arrays directly to MoviePy.</p>
+
+<p>This is well illustrated by this simulation of a zombie outbreak in France (inspired by <a href="http://maxberggren.github.io/2014/11/27/model-of-a-zombie-outbreak/">this blog post</a> by Max Berrgren). France is modelled as a grid (Numpy array) on which all the computations for dispersion and infection are done. At regular intervals, a few Numpy operations tranform the grid into a valid RGB image, and send it to MoviePy.</p>
+
+<div align="center"><a href="https://gist.github.com/Zulko/6aa898d22e74aa9dafc3">code</a></div>
+<p><img class="center" src="http://i.imgur.com/BsgBP4g.gif"></p>
+
+<h2 id="putting-animations-together">Putting animations together</h2>
+
+<p>What is better than an animation ? Two animations ! You can take advantage of MoviePy’s video composition capabilities to mix animations from different libraries:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class='line'><span class="c"># We use the GIFs generated earlier to avoid recomputing the animations.</span>
+</span><span class='line'><span class="n">clip_mayavi</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">sinc</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">clip_mpl</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">sinc_mpl</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="n">clip_mayavi</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">clips_array</span><span class="p">([[</span><span class="n">clip_mpl</span><span class="p">,</span> <span class="n">clip_mayavi</span><span class="p">]])</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">sinc_plot</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/AHL6Aa8.gif"></p>
+
+<p>Or for something more artistic:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="c"># Make the white color transparent in clip_mayavi</span>
+</span><span class='line'><span class="n">clip_mayavi2</span> <span class="o">=</span> <span class="p">(</span><span class="n">clip_mayavi</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span> <span class="n">mpy</span><span class="o">.</span><span class="n">vfx</span><span class="o">.</span><span class="n">mask_color</span><span class="p">,</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">])</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">set_opacity</span><span class="p">(</span><span class="o">.</span><span class="mi">4</span><span class="p">)</span> <span class="c"># whole clip is semi-transparent</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mf">0.85</span><span class="o">*</span><span class="n">clip_mpl</span><span class="o">.</span><span class="n">h</span><span class="p">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="n">set_pos</span><span class="p">(</span><span class="err">‘</span><span class="n">center</span><span class="err">’</span><span class="p">))</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">animation</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">clip_mpl</span><span class="p">,</span> <span class="n">clip_mayavi2</span><span class="p">])</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">sinc_plot2</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/ImVN4PR.gif"></p>
+
+<p>It may be a tad too flashy, but sometimes you must give your audience something they can tweet.</p>
+
+<p>You can also annotate the animations, which is useful when comparing different filters or algorithms. Let’s display four image transformations from the library <a href="http://scikit-image.org/">Scikit-image</a>:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.exposure</span> <span class="kn">as</span> <span class="nn">ske</span> <span class="c"># rescaling, histogram eq.</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.filter</span> <span class="kn">as</span> <span class="nn">skf</span> <span class="c"># gaussian blur&lt;/p&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">sinc</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">gray</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span><span class="n">mpy</span><span class="o">.</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span><span class="o">.</span><span class="n">to_mask</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">apply_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Returns</span> <span class="n">a</span> <span class="n">clip</span> <span class="k">with</span> <span class="n">the</span> <span class="n">effect</span> <span class="n">applied</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">title</span><span class="err">”””</span>
+</span><span class='line'>    <span class="n">filtr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">im</span><span class="p">:</span> <span class="n">effect</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">new_clip</span> <span class="o">=</span> <span class="n">gray</span><span class="o">.</span><span class="n">fl_image</span><span class="p">(</span><span class="n">filtr</span><span class="p">)</span><span class="o">.</span><span class="n">to_RGB</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="n">mpy</span><span class="o">.</span><span class="n">TextClip</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="err">”</span><span class="n">Purisa</span><span class="o">-</span><span class="n">Bold</span><span class="err">”</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="err">“</span><span class="n">center</span><span class="err">”</span><span class="p">,</span><span class="err">”</span><span class="n">top</span><span class="err">”</span><span class="p">))</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="n">clip</span><span class="o">.</span><span class="n">duration</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mpy</span><span class="o">.</span><span class="n">CompositeVideoClip</span><span class="p">([</span><span class="n">new_clip</span><span class="p">,</span><span class="n">txt</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;apply-4-different-effects-to-the-original-animation&quot;</span><span class="o">&gt;</span><span class="n">Apply</span> <span class="mi">4</span> <span class="n">different</span> <span class="n">effects</span> <span class="n">to</span> <span class="n">the</span> <span class="n">original</span> <span class="n">animation</span><span class="o">&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">equalized</span> <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">equalize_hist</span><span class="p">,</span> <span class="err">“</span><span class="n">Equalized</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">rescaled</span>  <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">rescale_intensity</span><span class="p">,</span> <span class="err">“</span><span class="n">Rescaled</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">adjusted</span>  <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">adjust_log</span><span class="p">,</span> <span class="err">“</span><span class="n">Adjusted</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">blurred</span>   <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">skf</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">,</span> <span class="err">“</span><span class="n">Blurred</span><span class="err">”</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">h1</span> <span class="nb">id</span><span class="o">=</span><span class="s">&quot;put-the-clips-together-on-a-2x2-grid-and-write-to-a-file&quot;</span><span class="o">&gt;</span><span class="n">Put</span> <span class="n">the</span> <span class="n">clips</span> <span class="n">together</span> <span class="n">on</span> <span class="n">a</span> <span class="mi">2</span><span class="n">x2</span> <span class="n">grid</span><span class="p">,</span> <span class="ow">and</span> <span class="n">write</span> <span class="n">to</span> <span class="n">a</span> <span class="nb">file</span><span class="o">.&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">finalclip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">clips_array</span><span class="p">([[</span> <span class="n">equalized</span><span class="p">,</span> <span class="n">adjusted</span> <span class="p">],</span>
+</span><span class='line'>                             <span class="p">[</span> <span class="n">blurred</span><span class="p">,</span>   <span class="n">rescaled</span> <span class="p">]])</span>
+</span><span class='line'><span class="n">final_clip</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">test2x2</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/cMoPY1d.gif"></p>
+
+<p>If we replace <code>CompositeVideoClip</code> and <code>clips_array</code> by <code>concatenate_videoclips</code> we get a title-effect type animation:</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mpy</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.exposure</span> <span class="kn">as</span> <span class="nn">ske</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">skimage.filter</span> <span class="kn">as</span> <span class="nn">skf</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clip</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">sinc</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">gray</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">fx</span><span class="p">(</span><span class="n">mpy</span><span class="o">.</span><span class="n">vfx</span><span class="o">.</span><span class="n">blackwhite</span><span class="p">)</span><span class="o">.</span><span class="n">to_mask</span><span class="p">()</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="k">def</span> <span class="nf">apply_effect</span><span class="p">(</span><span class="n">effect</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span>
+</span><span class='line'>    <span class="err">“””</span> <span class="n">Returns</span> <span class="n">a</span> <span class="n">clip</span> <span class="k">with</span> <span class="n">the</span> <span class="n">effect</span> <span class="n">applied</span> <span class="ow">and</span> <span class="n">a</span> <span class="n">top</span> <span class="n">label</span><span class="err">”””</span>
+</span><span class='line'>    <span class="n">filtr</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">im</span><span class="p">:</span> <span class="n">effect</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">new_clip</span> <span class="o">=</span> <span class="n">gray</span><span class="o">.</span><span class="n">fl_image</span><span class="p">(</span><span class="n">filtr</span><span class="p">)</span><span class="o">.</span><span class="n">to_RGB</span><span class="p">()</span>
+</span><span class='line'>    <span class="n">txt</span> <span class="o">=</span> <span class="p">(</span><span class="n">mpy</span><span class="o">.</span><span class="n">TextClip</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">font</span><span class="o">=</span><span class="err">”</span><span class="n">Amiri</span><span class="o">-</span><span class="n">Bold</span><span class="err">”</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+</span><span class='line'>                        <span class="n">bg_color</span><span class="o">=</span><span class="err">’</span><span class="n">white</span><span class="err">’</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">new_clip</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="err">“</span><span class="n">center</span><span class="err">”</span><span class="p">))</span>
+</span><span class='line'>           <span class="o">.</span><span class="n">set_duration</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">mpy</span><span class="o">.</span><span class="n">concatenate_videoclips</span><span class="p">([</span><span class="n">txt</span><span class="p">,</span> <span class="n">new_clip</span><span class="p">])</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">equalized</span> <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">equalize_hist</span><span class="p">,</span> <span class="err">“</span><span class="n">Equalized</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">rescaled</span>  <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">rescale_intensity</span><span class="p">,</span> <span class="err">“</span><span class="n">Rescaled</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">adjusted</span>  <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">ske</span><span class="o">.</span><span class="n">adjust_log</span><span class="p">,</span> <span class="err">“</span><span class="n">Adjusted</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">blurred</span>   <span class="o">=</span> <span class="n">apply_effect</span><span class="p">(</span><span class="n">skf</span><span class="o">.</span><span class="n">gaussian_filter</span><span class="p">,</span> <span class="err">“</span><span class="n">Blurred</span><span class="err">”</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">&lt;</span><span class="n">p</span><span class="o">&gt;</span><span class="n">clips</span> <span class="o">=</span> <span class="p">[</span><span class="n">equalized</span><span class="p">,</span> <span class="n">adjusted</span><span class="p">,</span> <span class="n">blurred</span><span class="p">,</span> <span class="n">rescaled</span><span class="p">]</span>
+</span><span class='line'><span class="n">animation</span> <span class="o">=</span> <span class="n">mpy</span><span class="o">.</span><span class="n">concatenate_videoclips</span><span class="p">(</span><span class="n">clips</span><span class="p">)</span>
+</span><span class='line'><span class="n">animation</span><span class="o">.</span><span class="n">write_gif</span><span class="p">(</span><span class="err">“</span><span class="n">sinc_cat</span><span class="o">.</span><span class="n">gif</span><span class="err">”</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+<img class="center" src="http://i.imgur.com/lKJdXhe.gif"></p>
+
+<p>Finally, MoviePy will be particularly practical when dealing with video data, as it is its first job. For our last example we estimate the size of a growing bacterial population by thresholding the video frames and counting the white pixels. The third panel shows that the population size grows exponentially in time.</p>
+
+<div align="center"><a href="https://gist.github.com/Zulko/633c1b0807b37aa52d9c">code</a></div>
+<p><img class="center" src="http://i.imgur.com/uoITKiA.gif"></p>
+
+<h2 id="one-library-to-animate-them-all-">One library to animate them all ?</h2>
+
+<p>I hope to have given you enough recipes to impress your colleagues. Any other library could be animated with MoviePy, as long as its output can be converted to a Numpy array. </p>
+
+<p>Some libraries have their own animation modules, but these are usually a pain to fix and maintain. Thanks to the many users who have tested it in very different contexts, MoviePy seems to have become stable (or people stopped reporting bugs), and can be adapted to many situations. There is still a lot to do, but it would be nice if authors started relying on it for video and GIF rendering, like Pandas and Scikit-Learn rely on Matplotlib for plotting.</p>
+
+<p>For completeness, and because it may better fit your needs, I must mention <a href="http://imageio.github.io/">ImageIO</a>, another Python library with video writing capabilities which focuses on providing a very simple interface to read or write any kind of image, video or volumetric data. For instance you use <code>imwrite()</code> to write any image, <code>mimwrite()</code> for any video/GIF, <code>volwrite()</code> for volumetric data, or simply <code>write()</code> for streamed data.</p>
+
+<p>Cheers, and happy GIFing !</p>
+]]></content>
+  </entry>
+  
+</feed>

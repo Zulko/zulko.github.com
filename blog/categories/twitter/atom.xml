@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Twitter | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/twitter/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-11-20T12:15:12+01:00</updated>
+  <updated>2014-12-08T14:57:29+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -23,7 +23,7 @@
 
 <p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API, which makes them a little complicated to use: you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
 
-<p>If you just want to read the lattest tweets of some Twitter user, it is simpler to parse the HTML of that user’s Twitter page: </p>
+<p>If you just want to read the lattest tweets of some Twitter user, instead of using these libraries, you can simply parse the HTML of that user’s Twitter page: </p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

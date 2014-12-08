@@ -114,7 +114,7 @@
 
 <p>Python modules to interact with Twitter, like <a href="https://github.com/tweepy/tweepy">tweepy</a>, <a href="https://github.com/bear/python-twitter">python-twitter</a>, <a href="https://pypi.python.org/pypi/twitter">twitter</a>, or <a href="https://github.com/ryanmcgrath/twython">twython</a>, all depend on the Twitter API, which makes them a little complicated to use: you must open a Twitter account, register at <em>dev.twitter.com</em>, open a new application there, and at each connection <a href="http://tweepy.readthedocs.org/en/v2.3.0/auth_tutorial.html#auth-tutorial">dance with the OAuth</a>.</p>
 
-<p>If you just want to read the lattest tweets of some Twitter user, it is simpler to parse the HTML of that user’s Twitter page: </p>
+<p>If you just want to read the lattest tweets of some Twitter user, instead of using these libraries, you can simply parse the HTML of that user’s Twitter page: </p>
 
 <div class="bogus-wrapper"><notextile><figure class="code"> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class="line-number">1</span>
 <span class="line-number">2</span>
@@ -264,6 +264,8 @@
   <div class="g-plusone" data-size="medium"></div>
   
   
+    
+  
 </div>
 
     
@@ -293,6 +295,10 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/11/29/data-animations-with-python-and-moviepy/">Data Animations With Python and MoviePy</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/11/13/things-you-can-do-with-python-and-pov-ray/">Things You Can Do With Python and POV-Ray</a>
       </li>
     
@@ -306,10 +312,6 @@
     
       <li class="post">
         <a href="/blog/2014/07/04/automatic-soccer-highlights-compilations-with-python/">Automatic Soccer Highlights Compilations With Python</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/06/21/some-more-videogreping-with-python/">Some More Videogreping With Python</a>
       </li>
     
   </ul>
@@ -335,7 +337,7 @@
 
         github.showRepos({
             user: 'Zulko',
-            count: 3,
+            count: 5,
             skip_forks: true,
             target: '#gh_repos'
         });
