@@ -4,7 +4,7 @@
   <title><![CDATA[Category: transcription, | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/transcription/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2014-12-08T16:01:27+01:00</updated>
+  <updated>2014-12-18T08:24:54+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -24,7 +24,7 @@
 
 <p>Piano rolls are these rolls of perforated paper that you feed to the saloon’s mechanical piano. They have been very popular until the 1950s, and the piano roll repertory counts thousands of arrangements (some by greatest names of jazz) which have never been published in any other form.</p>
 
-<p>Here is <em>Limehouse Nights</em> (~1918), by a 20-years-old George Gershwin:</p>
+<p>Here is <em>Limehouse Nights</em>, recorded circa 1918 by a 20-year-old George Gershwin:</p>
 
 <p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
 
@@ -181,7 +181,7 @@ mean that a periodic pattern is present in the curve:</p>
 
 <p><img class="center" src="/images/rolls_transcription/lum_plus_keycolumns.jpeg"></p>
 
-<p>We can now reduce our image the piano roll to keep only one pixel per hole-column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
+<p>We can now reduce our image of the piano roll to keep only one pixel per hole-column. In the resulting picture, one column gives the time profile of one key in the piano: when it is pressed, and when it is released.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -219,7 +219,7 @@ hole, while the pixel just above them doesn’t.</p>
 
 <p><img class="center" src="/images/rolls_transcription/roll_strikes.jpeg"></p>
 
-<p>This worked quite well: in that picture above red dots indicate key strikes and blue dots indicate key releases. Let us gather all the key strikes in a list.</p>
+<p>This worked quite well: in the picture above red dots indicate key strikes and blue dots indicate key releases. Let us gather all the key strikes in a list.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -268,9 +268,7 @@ piece. Let us first have a look at the times at which the the piano keys are str
 
 <p><img class="center" src="/images/rolls_transcription/number_keys_hit.jpeg"></p>
 
-<p>We observe regularly-spaced peaks corresponding to chords (several notes 
-striken together). In this kind of music, chords are mainly played on 
-the beat. Therefore, computing the main period in the graph above will give us the duration of a beat (or quarter). Let us have a look at the spectrum.</p>
+<p>We observe regularly-spaced peaks corresponding to chords (several notes striken together). In this kind of music, chords are mainly played on the beat. Therefore, computing the main period in the graph above will give us the duration of a beat (or quarter). Let us have a look at the spectrum.</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -491,7 +489,7 @@ Some packages like music21 can do that, but it is also fairly easy to program yo
 </span><span class='line'><span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="err">‘</span><span class="n">lilypond</span> <span class="o">%</span><span class="n">s</span><span class="err">’</span><span class="o">%</span><span class="n">filename</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p>The resulting PDF file starts like this (we only aksed for the right-hand part):</p>
+<p>The resulting PDF file starts like this (we only asked for the right-hand part):</p>
 
 <p><img class="center" src="/images/rolls_transcription/right_hand_ly.jpg"></p>
 
