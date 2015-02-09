@@ -42,7 +42,7 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/</loc>
-        <lastmod>2014-12-18T08:26:21+01:00</lastmod>
+        <lastmod>2014-12-18T08:28:35+01:00</lastmod>
     </url>
     <url>
         <loc>
@@ -84,7 +84,13 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/2014/11/29/data-animations-with-python-and-moviepy/</loc>
-        <lastmod>2014-12-08T16:01:05+01:00</lastmod>
+        <lastmod>2015-02-09T12:50:20+01:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://Zulko.github.io/blog/2015/02/01/extracting-perfectly-looping-gifs-from-videos-with-python-and-moviepy/
+        </loc>
+        <lastmod>2015-02-09T21:33:50+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/robots.txt</loc>
@@ -92,10 +98,10 @@
     </url>
     <url>
         <loc>http://Zulko.github.io/blog/archives/</loc>
-        <lastmod>2014-12-18T08:26:21+01:00</lastmod>
+        <lastmod>2015-02-09T21:33:50+01:00</lastmod>
     </url>
     <url>
         <loc>http://Zulko.github.io/</loc>
-        <lastmod>2014-12-18T08:26:21+01:00</lastmod>
+        <lastmod>2015-02-09T21:33:50+01:00</lastmod>
     </url>
 </urlset>
