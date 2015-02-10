@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Python | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/python/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-09T21:35:44+01:00</updated>
+  <updated>2015-02-10T10:17:13+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -22,24 +22,24 @@
 
 <p><img class="center" src="http://i.imgur.com/g9UBTNM.gif" width="400" title="By ORBO, one of my favorite GIF artists." ></p>
 
-<p>Extracting well-looping segments from a movie requires much patience and will likely leave you like this in front of your computer:</p>
+<p>Finding and extracting well-looping segments from a movie requires much attention and patience, and will likely leave you like this in front of your computer:</p>
 
 <p><img class="center" src="http://i.imgur.com/sLgEFC4.gif"></p>
 
-<p>So I wrote a Python script to automatically find (and extract as GIFs) looping segments in a video file. This post explains the math behind the algorithm and provides a few examples of use.</p>
+<p>To make things easier I wrote a Python script which automates the task. This post explains the math behind the algorithm and provides a few examples of use.</p>
 
 <h2 id="when-is-a-video-segment-well-looping-">When is a video segment well-looping ?</h2>
 
-<p>We will say that a video segment is well-looping when its first and last video frames are <em>very similar</em>. 
+<p>We will say that a video segment loops well when its first and last video frames are very similar. 
 A video frame <script type="math/tex">F</script> can be represented by a sequence of <script type="math/tex">N</script> integers <script type="math/tex">(F[1], \cdots, F[N])</script> whose values indicate the colors of the image’s pixels. For instance, $F[1]$ $F[2]$ and $F[3]$  give the Red, Green, Blue values of the first pixel, $F[4]$, $F[5]$, $F[6]$ define the color of the second pixel, etc. </p>
 
-<p>Given two frames <script type="math/tex">F_1</script>, <script type="math/tex">F_2</script> of a movie, we define the difference between these frames as the sum of the differences between their color values:</p>
+<p>Given two frames <script type="math/tex">F_1</script>, <script type="math/tex">F_2</script> of a same video, we define the difference between these frames as the sum of the differences between their color values:</p>
 
 <script type="math/tex; mode=display"> d(F_1,  F_2) = \sqrt{\sum_{i=1}^N (F_1[i] -  F_2[i])^2}. </script>
 
 <p>We will consider that the two frames are similar when <script type="math/tex">d(F_1,F_2) </script> is under some arbitrary threshold <script type="math/tex">T</script>.</p>
 
-<p>We could have chosen many other definitions for <script type="math/tex">d(F_1, F_2)</script>. This one has the nice advantage that is is a <em>distance</em> in the mathematical sense of the term. It can be seen as a generalization of the distance between two points in a geometrical plan:</p>
+<p>For what follows, it is important to note that <script type="math/tex">d(F_1, F_2)</script> defines a <em>distance</em> between the frames, and can be seen as a generalization of the geometrical distance between two points in a plan:</p>
 
 <p><img class="center" src="/images/loopsvideo/distance.png"></p>
 
@@ -47,29 +47,31 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 
 <h2 id="finding-well-looping-segments">Finding well-looping segments</h2>
 
-<p>In this section we want to find the times (start and end) of all the well-looping sequences of duration 3 seconds or less in a given video. A simple way to do this is to compare each frame of the movie with all the frames in the previous three seconds. When we find two frames whose distance in under some pre-defined threshold <script type="math/tex">T</script>, we add their corresponding times to our list.</p>
+<p>In this section we want to find the times (start and end) of all the well-looping video segments of duration 3 seconds or less in a given video. A simple way to do this is to compare each frame of the movie with all the frames in the previous three seconds. When we find two similar frames (that is, whose distance in under some pre-defined threshold <script type="math/tex">T</script>), we add their corresponding times to our list.</p>
 
-<p>The problem is that  this method requires a huge number of frame comparisons. In a 1h30 video at 25 frames each frame will be compared to the 75 previous frames, resulting in the computation of circa ten million distances, which takes hours. So let us see a few tricks to makes computations faster.</p>
+<p>The problem is that this method requires a huge number of frame comparisons (around ten millions in a standard video) which takes hours. So let us see a few tricks to makes computations faster.</p>
 
-<p><strong>Trick 1: use reduced versions of the frames.</strong> HD videos frames can have millions of pixels. Once reduced to small (150-pixel-wide) thumbnails these frames are still detailed enough for our purpose, and their distance can be computed faster (they also take less place in the RAM).</p>
+<p><strong>Trick 1: use reduced versions of the frames.</strong> HD videos frames can have millions of pixels, so computing the distance between them will require millions of operations. When reduced to small (150-pixel-wide) thumbnails these frames are still detailed enough for our purpose, and their distance can be computed much faster (they also take less place in the RAM).</p>
 
-<p><strong>Trick 2: use triangular inequalities.</strong> With this very efficient trick we will be able to deduce whether two frames match, without having to compute their distance. Triangular inequalities refer to the following properties of the length of a triangle:</p>
+<p><strong>Trick 2: use triangular inequalities.</strong> With this very efficient trick we will be able to deduce whether two frames match, without having to compute their distance. Since <script type="math/tex">d(F_1, F_2)</script> defines a mathematical distance between two frames, many results from classical geometry apply, and in particular the following inequalities on the lengths of a triangle:</p>
 
 <p><img class="center" src="/images/loopsvideo/trineq1.png" width="350">
 <img class="center" src="/images/loopsvideo/trineq2.png" width="320"></p>
 
-<p>The first inequality tells us that if A is very close to B which in turn is very close to C, then A is also close to C. Since <script type="math/tex">d(F_1, F_2)</script> defines a distance between the frames, this triangular inequality also applies and we have</p>
+<p>The first inequality tells us that if A is very close to B which in turn is very close to C, then A is also close to C. In terms of video frames, this becomes:</p>
 
 <script type="math/tex; mode=display">% &lt;![CDATA[
  d(F_1, F_3) < d(F_1,  F_2) + d(F_1, F_3)  %]]&gt;</script>
 
-<p>Which means that if we already know that a frame <script type="math/tex">F_1</script> is very similar to a frame <script type="math/tex">F_2</script>, and that  <script type="math/tex">F_2</script> is very similar to another frame <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very similar.</p>
+<p>In practice we will use it as follows: if we already know that a frame <script type="math/tex">F_1</script> is very similar to a frame <script type="math/tex">F_2</script>, and that  <script type="math/tex">F_2</script> is very similar to another frame <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very similar.</p>
 
-<p>The second inequality tells us that if a point A is very far from B, and B is close to C, then A is also far from C. Or in terms of frames: if <script type="math/tex">F_1</script> is very similar to <script type="math/tex">F_2</script>, and <script type="math/tex">F_2</script> is different from <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very different.</p>
+<p>The second inequality tells us that if a point A is very far from B, and B is close to C, then A is also far from C. Or in terms of frames:</p>
 
 <script type="math/tex; mode=display"> d(F_1, F_3) > d(F_1, F_3) - d(F_1,  F_2) </script>
 
-<p>Actually I don’t apply these inequalities directly to the distances, but to upper and lower bounds of these distances, which I update every time after computing a distance between two frames. For instance the upper and lower bounds of <script type="math/tex">d(F_1, F3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows after computing <script type="math/tex">d(F_1, F_2)</script>:</p>
+<p>If <script type="math/tex">F_1</script> is very similar to <script type="math/tex">F_2</script>, and <script type="math/tex">F_2</script> is different from <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very different.</p>
+
+<p>Now it gets a little more complicated: we will apply these triangular inequalities to get informations on the upper and lower bounds of the distances between frames, which will be updated every time we compute a distance between two frames. For instance, after computing the distance <script type="math/tex">d(F_1, F_2)</script>, the upper and lower bounds of <script type="math/tex">d(F_1, F3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows:</p>
 
 <script type="math/tex; mode=display">
 \mbox{Eq.1}\,
@@ -80,16 +82,16 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 \end{cases}
 </script>
 
-<p>If after an update <script type="math/tex">% &lt;![CDATA[
-\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will need to compute explicity <script type="math/tex">d(F_1, F_3)</script>, which will in turn bring information on other distances, and so on.</p>
+<p>If after the update we have <script type="math/tex">% &lt;![CDATA[
+\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will eventually need to compute explicity <script type="math/tex">d(F_1, F_3)</script>, but then knowing <script type="math/tex">d(F_1, F_3)</script> will in turn enable us to update the bounds on another distance, $d(F<em>1, F</em>4)$, and so on.</p>
 
-<p>In practice, This enables to tell which frames match (have a distance under some threshold <script type="math/tex">T</script>), and which don’t match, while avoiding to compute 80% of the distances. As an illustration, suppose that a video has the following frames in this order:</p>
+<p>As an illustration, suppose that a video has the following frames in this order:</p>
 
 <p><img class="center" src="/images/loopsvideo/action.png"></p>
 
-<p>When the algorithm arrives at <script type="math/tex">F_4</script>, it first computes the distance between this frame and <script type="math/tex">F_3</script> and finds that they don’t match. At this point the algorithm has already found thaft <script type="math/tex">F_3</script> is quite similar to <script type="math/tex">F_2</script> and <script type="math/tex">F_1</script>, so it deduces that neither <script type="math/tex">F_1</script> nor <script type="math/tex">F_2</script> match with <script type="math/tex">F_4</script>.</p>
+<p>When the algorithm arrives at <script type="math/tex">F_4</script>, it first computes the distance between this frame and <script type="math/tex">F_3</script> and finds that they don’t match. At this point the algorithm has already found thaft <script type="math/tex">F_3</script> is quite similar to <script type="math/tex">F_2</script> and <script type="math/tex">F_1</script>, so it deduces that neither <script type="math/tex">F_1</script> nor <script type="math/tex">F_2</script> match with <script type="math/tex">F_4</script> (and, certainly, neither do the dozen frames before ). In practice, this method avoids computing 80% to 90% of the distances between frames.</p>
 
-<p><strong>Trick 3: use an efficient formula for the distance.</strong> When we compute the distance between two frames using the formula from the last section, we need approximately <script type="math/tex">3N</script> operations: <script type="math/tex">N</script> subtractions, <script type="math/tex">N</script> products, and <script type="math/tex">(N-1)</script> additions to obtain the final sum. But the formula for <script type="math/tex">d(F_1, F_2)</script> can also be rewritten under this form, known as the <a href="">cosine law</a>:</p>
+<p><strong>Trick 3: use an efficient formula for the distance.</strong> When we compute the distance between two frames using the formula from the last section, we need approximately <script type="math/tex">3N</script> operations: <script type="math/tex">N</script> subtractions, <script type="math/tex">N</script> products, and <script type="math/tex">(N-1)</script> additions to obtain the final sum. But the formula for <script type="math/tex">d(F_1, F_2)</script> can also be rewritten under this form, known as the <a href="http://en.wikipedia.org/wiki/Law_of_cosines#Vector_formulation">law of cosines</a>:</p>
 
 <script type="math/tex; mode=display">
 d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
@@ -103,7 +105,13 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>The interesting thing with this expression of <script type="math/tex">d(F_1, F_2)</script> is that if we first compute the norm <script type="math/tex">\|F\|</script> of each frame once, we can obtain the distance between any pair of <script type="math/tex">F_1</script> and  <script type="math/tex">F_2</script> simply by computing <script type="math/tex">(F_1 \cdot  F_2)</script>, which requires only <script type="math/tex">2N</script> operations and is therefore 50% faster.</p>
 
-<p>Computing the values <script type="math/tex">\|F\|</script> also enables to initialize the upper and lower bounds on the frame distances (see Trick 2): for two frames <script type="math/tex">F_1</script> and <script type="math/tex">F_2</script>, the triangular inequalities give</p>
+<p>Another advantage of computing <script type="math/tex">\|F\|</script> for each frame is that for two frames <script type="math/tex">F_1</script> and <script type="math/tex">F_2</script> we have</p>
+
+<script type="math/tex; mode=display">
+\mbox{abs}(\|F_1\| - \|F_2\|) \leq d(F_1, F_2) \leq  \|F_1\| + \|F_2\|
+</script>
+
+<p>which provides initial values for the upper and lower bounds on the frame distances used in Trick 2:</p>
 
 <script type="math/tex; mode=display">
 \mbox{Eq.2}\,
@@ -113,7 +121,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 \end{cases}
 </script>
 
-<p><strong>Final algorithm in pseudo-code.</strong> Putting everything together, we obtain this algorithm:</p>
+<p><strong>Final algorithm in pseudo-code.</strong> Putting everything together, we obtain the following algorithm:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -135,16 +143,26 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 <span class='line-number'>18</span>
 <span class='line-number'>19</span>
 <span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
 </span><span class='line'>
 </span><span class='line'>&lt;p>for each frame F1 in the movie:&lt;/p>
 </span><span class='line'>
-</span><span class='line'>&lt;pre>&lt;code>F1 &lt;= downsized( F1 )
+</span><span class='line'>&lt;pre>&lt;code>F1 &lt;- downsized( F1 )
+</span><span class='line'>previous_frames &lt;- list of frames in the 3 seconds before F1
+</span><span class='line'>
 </span><span class='line'>compute and store |F1|
-</span><span class='line'>previous_frames &lt;= frames in the 3 seconds before F1
 </span><span class='line'>
 </span><span class='line'>for each frame F2 in previous_frames:
-</span><span class='line'>    compute upper_F1_F2 and lower_F1_F2 using Eq. 2
+</span><span class='line'>    compute upper_F1_F2 and lower_F1_F2 using Eq.2
+</span><span class='line'>    if upper_F1_F2 &lt; T:
+</span><span class='line'>        mark (F1, F2) as accepted 
+</span><span class='line'>    if lower_F1_F2 &gt; T:
+</span><span class='line'>        mark (F1, F2) as rejected
 </span><span class='line'>
 </span><span class='line'>for each frame F2 in previous_frames:
 </span><span class='line'>    if couple (F1,F2) isn't already accepted or rejected:
@@ -157,28 +175,27 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </span><span class='line'>                mark (F1, F3) as rejected</span></code></pre></td></tr></table></div></figure></notextile></div>
 </code></pre>
 
-<p>Here is the <a href="https://github.com/Zulko/moviepy/blob/1ddd608ccc28cf604ada17c85e2c436dc8ab61b2/moviepy/video/tools/cuts.py#L115-L172">implementation in Python</a>. The computation time may depend on the quality of the video file, but most movies I tried were processed in circa 20 minutes. Impressive right ?</p>
+<p>Here is the <a href="https://github.com/Zulko/moviepy/blob/1ddd608ccc28cf604ada17c85e2c436dc8ab61b2/moviepy/video/tools/cuts.py#L115-L172">implementation in Python</a>. The computation time may depend on the quality of the video file, but most movies I tried were processed in circa 20 minutes. Impressive, right, Eugene ?</p>
 
-<p><img class="center" src="http://i.imgur.com/CpJ4UbL.gif" title="I really wanted to place this GIF somewhere because I’m so proud of it. It’s not every day I get to make a pun in English !" ></p>
+<p><img class="center" src="http://i.imgur.com/CpJ4UbL.gif" title="I really wanted to place this GIF somewhere because I’m so proud of it. It’s not every day I get to make a pun in English. Also: Eugene is “stuck in a loop” of hair. Ah ah ah ah." ></p>
 
 <h2 id="selecting-interesting-segments">Selecting interesting segments</h2>
 
-<p>The previous step finds <em>all</em> pairs of matching frames, including consecutive frames (which often look very much alike) and frames from still segments (tipycally, black screens). So we end up with typically 100000 video segments, most of them uninteresting. Here are a few examples of criteria to filter these segments before extracting GIFs:</p>
+<p>In the previous section we described a method to find <em>all</em> pairs of matching frames, including consecutive frames (which often look very much alike) and frames from still segments (typically, black screens). So we end up with typically a hundred thousand video segments, only a few of which are really interesting, and we must find a way to filter out all the segments we don’t want before extracting GIFs. This filtering operation takes just a few seconds but its success depends greatly on the filtering criteria you use. Here are some examples that work well:</p>
 
 <ul>
-  <li>The first and last frames must match very well (very small distance between them).</li>
   <li>The first and last frames must be separated by at least 0.5 second.</li>
   <li>There must be at least one frame in the sequence which doesn’t match at all with the first frame. This criterion enables to eliminate still segments.</li>
   <li>The start of the first frame must be at least 0.5 seconds after the start of the last extracted segment. This is to avoid doublons (segments which start and end almost at the same times).</li>
 </ul>
 
-<p>Even with these filters you may get many GIFs, most of of them only midly interesting (blinking eyes and such), so the last step is generally a manual filtering which looks like this:</p>
+<p>I try to be not too restrictive (to avoid filtering out good segments by accident) so I generally end up with about 200 GIFs, many of them them only midly interesting (blinking eyes and such). The last step is a manual filtering which looks like this:</p>
 
 <p><img class="center" src="http://i.imgur.com/3y3OI1b.gif"></p>
 
 <h2 id="examples-of-use">Examples of use</h2>
 
-<p>I implemented the algorithm described in the previous sections as a plugin of <a href="http://zulko.github.io/moviepy/">MoviePy</a>. Here is a Python example where we extract looping GIFs from a video file:</p>
+<p>I implemented this algorithm as a plugin of my Python video library <a href="http://zulko.github.io/moviepy/">MoviePy</a>. Here is an example script:</p>
 
 <p><div class='bogus-wrapper'><notextile><figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -273,17 +290,19 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 <img class="center" src="http://i.imgur.com/APJHiej.gif" title="Sea sick ?" ></p>
 
-<p>Note that with MoviePy you can post-process your GIFs to add text:</p>
+<p>With MoviePy you can also post-process your GIFs to add text:</p>
 
 <div align="center"><a href="https://gist.github.com/Zulko/25ea4d949aea5dbf8925">code</a></div>
 <p><img class="center" src="http://i.imgur.com/thrh1TU.gif"></p>
 
-<p>Or use some more advanced tricks:</p>
+<p>And since you read until there, here is a more advanced trick for you:</p>
 
 <div align="center"><a href="https://gist.github.com/Zulko/c70f1469fc0a0cff94cd">code</a></div>
 <p><img class="center" src="http://i.imgur.com/gxEHfLX.gif"></p>
 
-<p>I’ll conclude by pointing out that the algorithm I presented here is not perfect. It works poorly with low-luminosity clips, and sometimes a slight camera movement or a moving object in the background can prevent a segment from looping. While these segments could be easily corrected by a human, they are more difficult to spot and process with an algorithm.</p>
+<h2 id="your-turn-">Your turn !</h2>
+
+<p>The algorithm I presented here is not perfect. It works poorly with low-luminosity clips, and sometimes a slight camera movement or a moving object in the background can prevent a segment from looping. While these segments could be easily corrected by a human, they are more difficult to spot and process with an algorithm.</p>
 
 <p>So my script didn’t completely kill the game, and making looping gifs is still an art. If you have any ideas or remarks on the algorithm, or if you tried it and found some interesting loops in a movie, I’ll be happy to hear about it ! Until then, cheers, and happy GIFing !</p>
 ]]></content>
