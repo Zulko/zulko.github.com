@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Maths | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/maths/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-10T15:56:17+01:00</updated>
+  <updated>2015-02-10T16:11:56+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -267,7 +267,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 <span class='line-number'>6</span>
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="kn">import</span> <span class="nn">moviepy.editor</span> <span class="kn">as</span> <span class="nn">mp</span>
 </span><span class='line'><span class="kn">from</span> <span class="nn">moviepy.video.tools.cuts</span> <span class="kn">import</span> <span class="n">FramesMatches</span>
-</span><span class='line'><span class="n">clip</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">vz</span><span class="o">/</span><span class="n">Vid</span><span class="err">é</span><span class="n">os</span><span class="o">/</span><span class="n">snowwhite</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span>
+</span><span class='line'><span class="n">clip</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">VideoFileClip</span><span class="p">(</span><span class="err">“</span><span class="n">snowwhite</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span>
 </span><span class='line'><span class="n">scenes</span> <span class="o">=</span> <span class="n">FramesMatches</span><span class="o">.</span><span class="n">from_clip</span><span class="p">(</span><span class="n">clip</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">120</span><span class="p">),</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </span><span class='line'><span class="n">selected_scenes</span> <span class="o">=</span> <span class="n">scenes</span><span class="o">.</span><span class="n">select_scenes</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
 </span><span class='line'><span class="n">selected_scenes</span><span class="o">.</span><span class="n">write_gifs</span><span class="p">(</span><span class="n">clip</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">270</span><span class="p">),</span> <span class="err">“</span><span class="n">snow_white</span><span class="err">”</span><span class="p">)</span>
