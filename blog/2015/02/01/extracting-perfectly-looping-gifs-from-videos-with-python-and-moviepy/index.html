@@ -312,7 +312,6 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 <span class="line-number">27</span>
 <span class="line-number">28</span>
 <span class="line-number">29</span>
-<span class="line-number">30</span>
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="kn">from</span> <span class="nn">moviepy.editor</span> <span class="kn">import</span> <span class="n">VideoFileClip</span>
 </span><span class="line"><span class="kn">from</span> <span class="nn">moviepy.video.tools.cuts</span> <span class="kn">import</span> <span class="n">FramesMatches</span>
 </span><span class="line">
@@ -327,21 +326,20 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </span><span class="line"><span class="n">matches</span> <span class="o">=</span> <span class="n">FramesMatches</span><span class="o">.</span><span class="n">from_clip</span><span class="p">(</span><span class="n">clip_small</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># (Optional) Save the matches for later use. </span>
-</span><span class="line"><span class="c"># matches.save(&quot;myvideo.mtc&quot;)</span>
-</span><span class="line"><span class="c"># matches = FramesMatches.load(&quot;myvideo.mtc&quot;)</span>
+</span><span class="line"><span class="c"># matches.save(&quot;myvideo_matches.txt&quot;)</span>
+</span><span class="line"><span class="c"># matches = FramesMatches.load(&quot;myvideo_matches.txt&quot;)</span>
 </span><span class="line">
-</span><span class="line"><span class="c"># Filter the scenes: Take only &gt;1.5 sec scenes where the first</span>
-</span><span class="line"><span class="c"># t and last frame have a per-pixel distance of 1 or less,</span>
-</span><span class="line"><span class="c"># with at least one frame at a distance 2 of the first frame</span>
-</span><span class="line"><span class="c"># (to avoid still scenes), and 0.5 seconds between the starts</span>
-</span><span class="line"><span class="c"># of each segment (to avoid doublons).</span>
+</span><span class="line"><span class="c"># Filter the scenes: keep only segments with duration &gt;1.5 seconds,</span>
+</span><span class="line"><span class="c"># where the first and last frame have a per-pixel distance &lt; 1,</span>
+</span><span class="line"><span class="c"># with at least one frame at a distance 2 of the first frame,</span>
+</span><span class="line"><span class="c"># and with &gt;0.5 seconds between the starts of the selected segments.</span>
 </span><span class="line"><span class="n">selected_scenes</span> <span class="o">=</span> <span class="n">matches</span><span class="o">.</span><span class="n">select_scenes</span><span class="p">(</span><span class="n">match_thr</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 </span><span class="line">    <span class="n">min_time_span</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">nomatch_thr</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">time_distance</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 </span><span class="line">
 </span><span class="line"><span class="c"># The final GIFs will be 450 pixels wide</span>
 </span><span class="line"><span class="n">clip_medium</span> <span class="o">=</span> <span class="n">clip</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">450</span><span class="p">)</span>
 </span><span class="line">
-</span><span class="line"><span class="c"># Write all selected scenes as GIFs in folder &quot;myfolder&quot;</span>
+</span><span class="line"><span class="c"># Extract all the selected scenes as GIFs in folder &quot;myfolder&quot;</span>
 </span><span class="line"><span class="n">selected_scenes</span><span class="o">.</span><span class="n">write_gifs</span><span class="p">(</span><span class="n">clip_medium</span><span class="p">,</span> <span class="s">&quot;myfolder&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
