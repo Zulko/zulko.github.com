@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIF | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gif/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-10T10:40:08+01:00</updated>
+  <updated>2015-02-10T11:25:53+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -61,13 +61,13 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 <p>The first inequality tells us that if A is very close to B which in turn is very close to C, then A is also close to C. In terms of video frames, this becomes:</p>
 
 <script type="math/tex; mode=display">% &lt;![CDATA[
- d(F_1, F_3) < d(F_1,  F_2) + d(F_1, F_3)  %]]&gt;</script>
+ d(F_1, F_3) < d(F_1,  F_2) + d(F_2, F_3)  %]]&gt;</script>
 
 <p>In practice we will use it as follows: if we already know that a frame <script type="math/tex">F_1</script> is very similar to a frame <script type="math/tex">F_2</script>, and that  <script type="math/tex">F_2</script> is very similar to another frame <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very similar.</p>
 
 <p>The second inequality tells us that if a point A is very far from B, and B is close to C, then A is also far from C. Or in terms of frames:</p>
 
-<script type="math/tex; mode=display"> d(F_1, F_3) > d(F_1, F_3) - d(F_1,  F_2) </script>
+<script type="math/tex; mode=display"> d(F_1, F_3) > d(F_2, F_3) - d(F_1,  F_2) </script>
 
 <p>If <script type="math/tex">F_1</script> is very similar to <script type="math/tex">F_2</script>, and <script type="math/tex">F_2</script> is different from <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very different.</p>
 
