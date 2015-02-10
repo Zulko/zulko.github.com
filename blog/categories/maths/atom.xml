@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Maths | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/maths/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-10T10:17:13+01:00</updated>
+  <updated>2015-02-10T10:21:19+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -31,7 +31,7 @@
 <h2 id="when-is-a-video-segment-well-looping-">When is a video segment well-looping ?</h2>
 
 <p>We will say that a video segment loops well when its first and last video frames are very similar. 
-A video frame <script type="math/tex">F</script> can be represented by a sequence of <script type="math/tex">N</script> integers <script type="math/tex">(F[1], \cdots, F[N])</script> whose values indicate the colors of the image’s pixels. For instance, $F[1]$ $F[2]$ and $F[3]$  give the Red, Green, Blue values of the first pixel, $F[4]$, $F[5]$, $F[6]$ define the color of the second pixel, etc. </p>
+A video frame <script type="math/tex">F</script> can be represented by a sequence of <script type="math/tex">N</script> integers <script type="math/tex">(F[1], \cdots, F[N])</script> whose values indicate the colors of the image’s pixels. For instance, <script type="math/tex">F[1]</script> <script type="math/tex">F[2]</script> and <script type="math/tex">F[3]</script>  give the Red, Green, Blue values of the first pixel, <script type="math/tex">F[4]</script>, <script type="math/tex">F[5]</script>, <script type="math/tex">F[6]</script> define the color of the second pixel, etc. </p>
 
 <p>Given two frames <script type="math/tex">F_1</script>, <script type="math/tex">F_2</script> of a same video, we define the difference between these frames as the sum of the differences between their color values:</p>
 
@@ -83,7 +83,7 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 </script>
 
 <p>If after the update we have <script type="math/tex">% &lt;![CDATA[
-\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will eventually need to compute explicity <script type="math/tex">d(F_1, F_3)</script>, but then knowing <script type="math/tex">d(F_1, F_3)</script> will in turn enable us to update the bounds on another distance, $d(F<em>1, F</em>4)$, and so on.</p>
+\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will eventually need to compute explicity <script type="math/tex">d(F_1, F_3)</script>, but then knowing <script type="math/tex">d(F_1, F_3)</script> will in turn enable us to update the bounds on another distance, <script type="math/tex">d(F_1, F_4)</script>, and so on.</p>
 
 <p>As an illustration, suppose that a video has the following frames in this order:</p>
 
