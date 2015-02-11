@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIF | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gif/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-11T18:04:10+01:00</updated>
+  <updated>2015-02-11T19:09:36+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -43,11 +43,11 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 
 <p>We will consider that the two frames are similar when <script type="math/tex">d(F_1,F_2) </script> is under some arbitrary threshold <script type="math/tex">T</script>.</p>
 
-<p>For what follows, it is important to note that <script type="math/tex">d(F_1, F_2)</script> defines a <em>distance</em> between the frames, and can be seen as a generalization of the geometrical distance between two points in a plan:</p>
+<p>For what follows, it is important to note that <script type="math/tex">d(F_1, F_2)</script> defines a <em>distance</em> between the frames, and can be seen as a generalization of the geometrical distance between two points in a plane:</p>
 
 <p><img class="center" src="/images/loopsvideo/distance.png"></p>
 
-<p>As a consequence <script type="math/tex">d(F_1,F_2)</script> has nice mathematical properties which will use in the next section to speed up computations.</p>
+<p>As a consequence <script type="math/tex">d(F_1,F_2)</script> has nice mathematical properties which we will use in the next section to speed up computations.</p>
 
 <h2 id="finding-well-looping-segments">Finding well-looping segments</h2>
 
@@ -75,7 +75,7 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 
 <p>If <script type="math/tex">F_1</script> is very similar to <script type="math/tex">F_2</script>, and <script type="math/tex">F_2</script> is different from <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very different.</p>
 
-<p>Now it gets a little more complicated: we will apply these triangular inequalities to get informations on the upper and lower bounds of the distances between frames, which will be updated every time we compute a distance between two frames. For instance, after computing the distance <script type="math/tex">d(F_1, F_2)</script>, the upper and lower bounds of <script type="math/tex">d(F_1, F_3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows:</p>
+<p>Now it gets a little more complicated: we will apply these triangular inequalities to get information on the upper and lower bounds of the distances between frames, which will be updated every time we compute a distance between two frames. For instance, after computing the distance <script type="math/tex">d(F_1, F_2)</script>, the upper and lower bounds of <script type="math/tex">d(F_1, F_3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows:</p>
 
 <script type="math/tex; mode=display">
 \mbox{Eq.1}\,
