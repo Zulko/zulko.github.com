@@ -4,7 +4,7 @@
   <title><![CDATA[Category: GIF | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/gif/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-10T16:11:56+01:00</updated>
+  <updated>2015-02-11T18:04:10+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -18,7 +18,11 @@
     <link href="http://Zulko.github.io/blog/2015/02/01/extracting-perfectly-looping-gifs-from-videos-with-python-and-moviepy/"/>
     <updated>2015-02-01T15:34:00+01:00</updated>
     <id>http://Zulko.github.io/blog/2015/02/01/extracting-perfectly-looping-gifs-from-videos-with-python-and-moviepy</id>
-    <content type="html"><![CDATA[<p>Looping GIFs are a popular form of art on the Web, with two dedicated forums on Reddit (<a href="http://www.reddit.com/r/perfectloops/">r/perfectloops</a> and <a href="http://www.reddit.com/r/cinemagraphs">r/cinemagraphs</a>) and countless <a href="https://www.tumblr.com/tagged/looping-gif">Tumblr pages</a>.</p>
+    <content type="html"><![CDATA[<p><em>Yet another big problem of the Internet era tackled by Mathematics.</em></p>
+
+<!-- more -->
+
+<p>Looping GIFs are a very popular form of art on the Web, with two dedicated forums on Reddit (<a href="http://www.reddit.com/r/perfectloops/">r/perfectloops</a> and <a href="http://www.reddit.com/r/cinemagraphs">r/cinemagraphs</a>) and countless <a href="https://www.tumblr.com/tagged/looping-gif">Tumblr pages</a>.</p>
 
 <p><img class="center" src="http://i.imgur.com/g9UBTNM.gif" width="400" title="By ORBO, one of my favorite GIF artists." ></p>
 
@@ -65,13 +69,13 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 
 <p>In practice we will use it as follows: if we already know that a frame <script type="math/tex">F_1</script> is very similar to a frame <script type="math/tex">F_2</script>, and that  <script type="math/tex">F_2</script> is very similar to another frame <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very similar.</p>
 
-<p>The second inequality tells us that if a point A is very far from B, and B is close to C, then A is also far from C. Or in terms of frames:</p>
+<p>The second inequality tells us that if a point A is very near from B, and B is far from C, then A is also far from C. Or in terms of frames:</p>
 
 <script type="math/tex; mode=display"> d(F_1, F_3) > d(F_2, F_3) - d(F_1,  F_2) </script>
 
 <p>If <script type="math/tex">F_1</script> is very similar to <script type="math/tex">F_2</script>, and <script type="math/tex">F_2</script> is different from <script type="math/tex">F_3</script>, then we do not need to compute <script type="math/tex">d(F_1,F_3)</script> to know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are also very different.</p>
 
-<p>Now it gets a little more complicated: we will apply these triangular inequalities to get informations on the upper and lower bounds of the distances between frames, which will be updated every time we compute a distance between two frames. For instance, after computing the distance <script type="math/tex">d(F_1, F_2)</script>, the upper and lower bounds of <script type="math/tex">d(F_1, F3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows:</p>
+<p>Now it gets a little more complicated: we will apply these triangular inequalities to get informations on the upper and lower bounds of the distances between frames, which will be updated every time we compute a distance between two frames. For instance, after computing the distance <script type="math/tex">d(F_1, F_2)</script>, the upper and lower bounds of <script type="math/tex">d(F_1, F_3)</script>, denoted <script type="math/tex">\overline{F_1F_3}</script> and <script type="math/tex">\underline{F_1F_3}</script>, can be updated as follows:</p>
 
 <script type="math/tex; mode=display">
 \mbox{Eq.1}\,
@@ -83,7 +87,7 @@ A video frame <script type="math/tex">F</script> can be represented by a sequenc
 </script>
 
 <p>If after the update we have <script type="math/tex">% &lt;![CDATA[
-\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will eventually need to compute explicity <script type="math/tex">d(F_1, F_3)</script>, but then knowing <script type="math/tex">d(F_1, F_3)</script> will in turn enable us to update the bounds on another distance, <script type="math/tex">d(F_1, F_4)</script>, and so on.</p>
+\overline{F_1F_3}<T %]]&gt;</script>, we conclude that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> are a good match. And if at some point <script type="math/tex">\underline{F_1F_3}>T</script>, we know that <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> don’t match. If we cannot decide whether <script type="math/tex">F_1</script> and <script type="math/tex">F_3</script> match using this technique, we will eventually need to compute <script type="math/tex">d(F_1, F_3)</script>, but then knowing <script type="math/tex">d(F_1, F_3)</script> will in turn enable us to update the bounds on another distance, <script type="math/tex">d(F_1, F_4)</script>, and so on.</p>
 
 <p>As an illustration, suppose that a video has the following frames in this order:</p>
 
@@ -148,31 +152,37 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 <span class='line-number'>23</span>
 <span class='line-number'>24</span>
 <span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>&lt;/p>
 </span><span class='line'>
 </span><span class='line'>&lt;p>for each frame F1 in the movie:&lt;/p>
 </span><span class='line'>
 </span><span class='line'>&lt;pre>&lt;code>F1 &lt;- downsized( F1 )
 </span><span class='line'>previous_frames &lt;- list of frames in the 3 seconds before F1
+</span><span class='line'>list_of_matching_couples = []
 </span><span class='line'>
 </span><span class='line'>compute and store |F1|
 </span><span class='line'>
 </span><span class='line'>for each frame F2 in previous_frames:
 </span><span class='line'>    compute upper_F1_F2 and lower_F1_F2 using Eq.2
 </span><span class='line'>    if upper_F1_F2 &lt; T:
-</span><span class='line'>        mark (F1, F2) as accepted 
+</span><span class='line'>        mark (F1, F2) as matching
+</span><span class='line'>        add (F1, F2) to the list_of_matching_couples
 </span><span class='line'>    if lower_F1_F2 &gt; T:
-</span><span class='line'>        mark (F1, F2) as rejected
+</span><span class='line'>        mark (F1, F2) as non-matching
 </span><span class='line'>
 </span><span class='line'>for each frame F2 in previous_frames:
-</span><span class='line'>    if couple (F1,F2) isn't already accepted or rejected:
+</span><span class='line'>    if couple (F1,F2) isn't already marked matching or non-matching:
 </span><span class='line'>        compute d(F1, F2)
 </span><span class='line'>        for each frame F3 after F2 in previous_frames:
 </span><span class='line'>            update upper_F1_F3 and lower_F1_F3 using Eq.1
 </span><span class='line'>            if upper_F1_F3 &lt; T:
-</span><span class='line'>                mark (F1, F3) as accepted 
+</span><span class='line'>                mark (F1, F3) as matching
+</span><span class='line'>                add (F1, F3) to the list_of_matching_couples
 </span><span class='line'>            if lower_F1_F3 &gt; T:
-</span><span class='line'>                mark (F1, F3) as rejected</span></code></pre></td></tr></table></div></figure></notextile></div>
+</span><span class='line'>                mark (F1, F3) as non-matching</span></code></pre></td></tr></table></div></figure></notextile></div>
 </code></pre>
 
 <p>Here is the <a href="https://github.com/Zulko/moviepy/blob/1ddd608ccc28cf604ada17c85e2c436dc8ab61b2/moviepy/video/tools/cuts.py#L115-L172">implementation in Python</a>. The computation time may depend on the quality of the video file, but most movies I tried were processed in circa 20 minutes. Impressive, right, Eugene ?</p>
@@ -181,7 +191,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <h2 id="selecting-interesting-segments">Selecting interesting segments</h2>
 
-<p>In the previous section we described a method to find <em>all</em> pairs of matching frames, including consecutive frames (which often look very much alike) and frames from still segments (typically, black screens). So we end up with typically a hundred thousand video segments, only a few of which are really interesting, and we must find a way to filter out all the segments we don’t want before extracting GIFs. This filtering operation takes just a few seconds but its success depends greatly on the filtering criteria you use. Here are some examples that work well:</p>
+<p>The algorithm described in the previous section finds <em>all</em> pairs of matching frames, including consecutive frames (which often look very much alike) and frames from still segments (typically, black screens). So we end up with typically a hundred thousand video segments, only a few of which are really interesting, and we must find a way to filter out all the segments we don’t want before extracting GIFs. This filtering operation takes just a few seconds but its success depends greatly on the filtering criteria you use. Here are some examples that work well:</p>
 
 <ul>
   <li>The first and last frames must be separated by at least 0.5 second.</li>
