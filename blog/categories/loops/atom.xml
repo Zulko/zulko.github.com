@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Loops | __del__( self )]]></title>
   <link href="http://Zulko.github.io/blog/categories/loops/atom.xml" rel="self"/>
   <link href="http://Zulko.github.io/"/>
-  <updated>2015-02-11T19:09:36+01:00</updated>
+  <updated>2015-02-14T23:33:02+01:00</updated>
   <id>http://Zulko.github.io/</id>
   <author>
     <name><![CDATA[Zulko]]></name>
@@ -196,7 +196,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 <ul>
   <li>The first and last frames must be separated by at least 0.5 second.</li>
   <li>There must be at least one frame in the sequence which doesn’t match at all with the first frame. This criterion enables to eliminate still segments.</li>
-  <li>The start of the first frame must be at least 0.5 seconds after the start of the last extracted segment. This is to avoid doublons (segments which start and end almost at the same times).</li>
+  <li>The start of the first frame must be at least 0.5 seconds after the start of the last extracted segment. This is to avoid duplicates (segments which start and end almost at the same times).</li>
 </ul>
 
 <p>I try to be not too restrictive (to avoid filtering out good segments by accident) so I generally end up with about 200 GIFs, many of them them only midly interesting (blinking eyes and such). The last step is a manual filtering which looks like this:</p>
