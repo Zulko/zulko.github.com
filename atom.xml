@@ -1032,7 +1032,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>Since we are playing around with MoviePy, let’s embed an actual movie in a 3D scene:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/M9R21SquDSk "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/M9R21SquDSk "></iframe></div>
 
 <p>We start with a basic scene:</p>
 
@@ -1203,13 +1203,13 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>In a <a href="http://zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/">previous post</a> I talked about how piano rolls can be scanned and turned into MIDI files (which are some sort of electronic sheet music). Here is a 1997 student project where they used such a MIDI file to animate a 3D piano programatically:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/lVXmtckavDQ "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/lVXmtckavDQ "></iframe></div>
 
 <p>Python has now all the libraries for such a project: we can parse the MIDI file with the package <a href="http://mido.readthedocs.org/en/latest/">mido</a>, and render the piano keyboard with Vapory. We can convert the MIDI file to an MP3 audio file by calling FluidSynth externally and finally use MoviePy to animate everything and incorporate the audio.</p>
 
 <p>Here is <em>Let’s Fall in Love</em>, from a 1933 piano roll arranged by J. Lawrence Cook, and animated with just <a href="https://gist.github.com/Zulko/b910c8b22e8e1c01fae6">~100 lines of code</a>:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div>
 
 <h2 id="final-words">Final words</h2>
 
@@ -2298,7 +2298,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>A good place to find public domain videos with subtitles is the White House channel on Youtube. In what follows I will be working on the 2012 State Of The Union Address:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Zgfi7wnGZlE "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/Zgfi7wnGZlE "></iframe></div>
 
 <p>To get both the video and the subtitles you can use <a href="http://rg3.github.io/youtube-dl/">youtube-dl</a> in a terminal:</p>
 
@@ -2440,7 +2440,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>Here is the result:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/dNme5GR1Al4 "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/dNme5GR1Al4 "></iframe></div>
 
 <p>It is promising, but in some scenes we don’t get to know exactly <em>what should be done</em>, which is frustrating. In the next section we add a little content-awareness to get more relevant cuts.</p>
 
@@ -2486,7 +2486,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>It’s much better:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/0nDgurPQsXc "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/0nDgurPQsXc "></iframe></div>
 
 <p>Note that with just a little more code you could achieve much more. In Videogrep the author uses the Python package <code>pattern</code> to look for advanced phrase constructions, such as all phrases of the form gerund-determiner-adjective-noun.</p>
 
@@ -2525,7 +2525,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </pre></td><td class="code"><pre><code class="python"><span class="line"><span class="n">assemble_cuts</span><span class="p">(</span> <span class="n">find_word</span><span class="p">(</span><span class="s">&quot;Americans&quot;</span><span class="p">),</span> <span class="s">&quot;americans.mp4&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/L59kcu6Zy9Q "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/L59kcu6Zy9Q "></iframe></div>
 
 <p>At least some of the cuts worked properly. If we use much-pronounced words we may find at least one correct cut for each of them and we can build a whole sentence:</p>
 
@@ -2545,7 +2545,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </span><span class="line"><span class="n">assemble_cuts</span><span class="p">(</span><span class="n">cuts</span><span class="p">,</span> <span class="s">&quot;fake_speech.mp4&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/iWRYGULFd_c "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/iWRYGULFd_c "></iframe></div>
 
 <p>Wow ! That seemed <em>so</em> real, and it almost made sense. From there the cuts could be refined by hand, but the script did most of the work and surely deserved, if not a Nobel Peace Prize, fourteen minutes of applause:</p>
 
@@ -2557,7 +2557,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 </span><span class="line"><span class="n">assemble_cuts</span><span class="p">(</span><span class="n">cuts</span><span class="p">,</span> <span class="s">&quot;applause.mp4&quot;</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/81uprP2GzxI "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/81uprP2GzxI "></iframe></div>
 
 ]]></content>
   </entry>
@@ -2573,7 +2573,7 @@ d(F_1,  F_2) = \sqrt{ \|F_1\|_2^2 + \| F_2\|_2^2 - 2 (F_1 \cdot  F_2) },
 
 <p>I just finished this mix of 60 covers of the Cup Song, entirely edited using <a href="http://nbviewer.ipython.org/github/Zulko/--video-editing---Cup-Song-Covers-Mix/blob/master/CupSongsCovers.ipynb">this Python script</a> !</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/rIehsqqYFEM "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/rIehsqqYFEM "></iframe></div>
 
 <p>The code uses extensively <a href="http://zulko.github.io/moviepy/">MoviePy</a>, a video editing library I wrote to automatize simple tasks such as title insertions, concatenations, transitions, etc. With this video I hope to show that MoviePy is becoming mature, and that it can be more than just a FFMPEG wrapper or a <a href="http://zulko.github.io/blog/2014/01/23/making-animated-gifs-from-video-files-with-python/">GIF editor</a>.</p>
 ]]></content>
@@ -2824,7 +2824,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>Let us play around with our new pitch-shifter. We first strike a bowl:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/oXm0CLp40ws "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/oXm0CLp40ws "></iframe></div>
 
 <p>Then we create 50 pitch-shifted derivatives of that sound, ranging from the very low to the very high:</p>
 
@@ -2918,7 +2918,7 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>And we have turned our computer into a piano ! Now, to thank you for reading until there, let me play a little turkish song for you:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/z410eauCnHc "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/z410eauCnHc "></iframe></div>
 
 <p>Here are <a href="https://github.com/Zulko/pianoputer">all the files</a> you need if you want to try this at home. Since not everyone uses Python, I also coded a pianoputer in Javascript/HTML5 (<a href="https://github.com/Zulko/pianoputer.js">here</a>) but it is <em>very far</em> from good. It would be really great if an experienced HTML5/JS/elm developer improved it, or rewrote it from scratch.</p>
 
@@ -2943,13 +2943,13 @@ L, \,\, \mbox{if there is a unique solution, of length $L$.}
 
 <p>Here is <em>Limehouse Nights</em>, played circa 1918 by a 20-year-old George Gershwin:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/VjkS-XHScXU "></iframe></div>
 
 <p>It is cool, it is public domain music, and I want to play it. But like for so many other rolls, there is no published sheet music.</p>
 
 <p>Fortunately, someone else filmed the same performance with a focus on the roll:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/wMsEbYCh7yY "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/wMsEbYCh7yY "></iframe></div>
 
 <p>In this post I show how to turn that video into playable sheet music with the help of a few lines of Python. <a href="#final_result">At the end</a> I provide the sheet music, a human rendition, and a Python package that implements the method (and can also be used to transcribe from MIDI files).</p>
 
@@ -3420,7 +3420,7 @@ which have to be corrected, but still it is pretty cool to have these
 
 <p>After 3 hours of editing (with the Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a>, which I recommend) we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div>
 
 <p>Ok, it’s just the first bars - I am still unhappy with my rendition of the rest, it’s a pretty demanding piece.</p>
 
@@ -3455,7 +3455,7 @@ transcribe from a video of from a midi file (it uses the package
 <p>I have been transcribing rolls as an occasional hobby for years, and I 
 am not the only one: here is 
 <a href="http://piyo.ciao.jp/sm/main.html">another</a> transcriber, and 
-<a href="http://ragtime-france.fr/Ragtime/indexUS.htm">another</a> and yet <a href="http://www.moltoallegro.com">another</a>. Even <em>Limehouse Nights</em> has apparently been <a href="http://www.youtube.com/watch?v=t9o5a7G4l20">recorded</a> in 1992 but the pianist didn’t publish his transcription.</p>
+<a href="http://ragtime-france.fr/Ragtime/indexUS.htm">another</a> and yet <a href="http://www.moltoallegro.com">another</a>. Even <em>Limehouse Nights</em> has apparently been <a href="https://www.youtube.com/watch?v=t9o5a7G4l20">recorded</a> in 1992 but the pianist didn’t publish his transcription.</p>
 
 <p>Most of us transcribe from MIDI files which are made from piano rolls 
 scans (starting from MIDI files is equivalent to starting directly to 
@@ -3479,7 +3479,7 @@ have never been scanned and pushed on the Internet. With this post I wanted to s
 
 <p>For this demo we will make a few GIFs out of this trailer:</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div>
 
 <p>You can download it with this command if you have <a href="http://rg3.github.io/youtube-dl/">Youtube-dl</a> installed:</p>
 
@@ -3751,7 +3751,7 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p>Let’s dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Nh11A41klL4 "></iframe></div>
+<div class="embed-video-container"><iframe src="https://www.youtube.com/embed/Nh11A41klL4 "></iframe></div>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 

@@ -26,13 +26,13 @@
 
 <p>Here is <em>Limehouse Nights</em>, played circa 1918 by a 20-year-old George Gershwin:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/VjkS-XHScXU "></iframe></div></p>
 
 <p>It is cool, it is public domain music, and I want to play it. But like for so many other rolls, there is no published sheet music.</p>
 
 <p>Fortunately, someone else filmed the same performance with a focus on the roll:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/wMsEbYCh7yY "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/wMsEbYCh7yY "></iframe></div></p>
 
 <p>In this post I show how to turn that video into playable sheet music with the help of a few lines of Python. <a href="#final_result">At the end</a> I provide the sheet music, a human rendition, and a Python package that implements the method (and can also be used to transcribe from MIDI files).</p>
 
@@ -506,7 +506,7 @@ which have to be corrected, but still it is pretty cool to have these
 
 <p>After 3 hours of editing (with the Lylipond editor <a href="http://frescobaldi.org/">Frescobaldi</a>, which I recommend) we come to this playable sheet music (<a href="https://github.com/Zulko/-sheet-music--Gerhswin-Limehouse-Nights/blob/master/pdf/Gershwin%20-%20Limehouse%20Nights%20(Piano%20Roll).pdf?raw=true">PDF</a>) and I can tease the keyboard like I’m George Gershwin !</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/V2XCJNZjm4w "></iframe></div></p>
 
 <p>Ok, it’s just the first bars - I am still unhappy with my rendition of the rest, it’s a pretty demanding piece.</p>
 
@@ -541,7 +541,7 @@ transcribe from a video of from a midi file (it uses the package
 <p>I have been transcribing rolls as an occasional hobby for years, and I 
 am not the only one: here is 
 <a href="http://piyo.ciao.jp/sm/main.html">another</a> transcriber, and 
-<a href="http://ragtime-france.fr/Ragtime/indexUS.htm">another</a> and yet <a href="http://www.moltoallegro.com">another</a>. Even <em>Limehouse Nights</em> has apparently been <a href="http://www.youtube.com/watch?v=t9o5a7G4l20">recorded</a> in 1992 but the pianist didn’t publish his transcription.</p>
+<a href="http://ragtime-france.fr/Ragtime/indexUS.htm">another</a> and yet <a href="http://www.moltoallegro.com">another</a>. Even <em>Limehouse Nights</em> has apparently been <a href="https://www.youtube.com/watch?v=t9o5a7G4l20">recorded</a> in 1992 but the pianist didn’t publish his transcription.</p>
 
 <p>Most of us transcribe from MIDI files which are made from piano rolls 
 scans (starting from MIDI files is equivalent to starting directly to 

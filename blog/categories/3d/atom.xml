@@ -164,7 +164,7 @@
 
 <p>Since we are playing around with MoviePy, let’s embed an actual movie in a 3D scene:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/M9R21SquDSk "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/M9R21SquDSk "></iframe></div></p>
 
 <p>We start with a basic scene:</p>
 
@@ -335,13 +335,13 @@ Here is the result:
 
 <p>In a <a href="http://zulko.github.io/blog/2014/02/12/transcribing-piano-rolls/">previous post</a> I talked about how piano rolls can be scanned and turned into MIDI files (which are some sort of electronic sheet music). Here is a 1997 student project where they used such a MIDI file to animate a 3D piano programatically:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/lVXmtckavDQ "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/lVXmtckavDQ "></iframe></div></p>
 
 <p>Python has now all the libraries for such a project: we can parse the MIDI file with the package <a href="http://mido.readthedocs.org/en/latest/">mido</a>, and render the piano keyboard with Vapory. We can convert the MIDI file to an MP3 audio file by calling FluidSynth externally and finally use MoviePy to animate everything and incorporate the audio.</p>
 
 <p>Here is <em>Let’s Fall in Love</em>, from a 1933 piano roll arranged by J. Lawrence Cook, and animated with just <a href="https://gist.github.com/Zulko/b910c8b22e8e1c01fae6">~100 lines of code</a>:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/tCqQhmuwgMg "></iframe></div></p>
 
 <h2 id="final-words">Final words</h2>
 

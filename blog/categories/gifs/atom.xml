@@ -24,7 +24,7 @@
 
 <p>For this demo we will make a few GIFs out of this trailer:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/2Jw-AeaU5WI "></iframe></div></p>
 
 <p>You can download it with this command if you have <a href="http://rg3.github.io/youtube-dl/">Youtube-dl</a> installed:</p>
 
@@ -300,7 +300,7 @@ the clip at t=0.2 seconds, we crop this snapshot to only keep the left half, the
 
 <p>Let’s dive further into the scripting madness: we consider this video around 2’16 (<em>edit: not the video I originally used, it was removed by the Youtube user, I add to find another link</em>):</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Nh11A41klL4 "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/Nh11A41klL4 "></iframe></div></p>
 
 <p>And we will remove the background to make this gif (with transparent background):</p>
 

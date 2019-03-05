@@ -30,7 +30,7 @@
 
 <p>A good place to find public domain videos with subtitles is the White House channel on Youtube. In what follows I will be working on the 2012 State Of The Union Address:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/Zgfi7wnGZlE "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/Zgfi7wnGZlE "></iframe></div></p>
 
 <p>To get both the video and the subtitles you can use <a href="http://rg3.github.io/youtube-dl/">youtube-dl</a> in a terminal:</p>
 
@@ -170,7 +170,7 @@
 
 <p>Here is the result:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/dNme5GR1Al4 "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/dNme5GR1Al4 "></iframe></div></p>
 
 <p>It is promising, but in some scenes we don’t get to know exactly <em>what should be done</em>, which is frustrating. In the next section we add a little content-awareness to get more relevant cuts.</p>
 
@@ -216,7 +216,7 @@
 
 <p>It’s much better:</p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/0nDgurPQsXc "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/0nDgurPQsXc "></iframe></div></p>
 
 <p>Note that with just a little more code you could achieve much more. In Videogrep the author uses the Python package <code>pattern</code> to look for advanced phrase constructions, such as all phrases of the form gerund-determiner-adjective-noun.</p>
 
@@ -254,7 +254,7 @@
 </pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">assemble_cuts</span><span class="p">(</span> <span class="n">find_word</span><span class="p">(</span><span class="err">“</span><span class="n">Americans</span><span class="err">”</span><span class="p">),</span> <span class="err">“</span><span class="n">americans</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/L59kcu6Zy9Q "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/L59kcu6Zy9Q "></iframe></div></p>
 
 <p>At least some of the cuts worked properly. If we use much-pronounced words we may find at least one correct cut for each of them and we can build a whole sentence:</p>
 
@@ -274,7 +274,7 @@
 </span><span class='line'><span class="n">assemble_cuts</span><span class="p">(</span><span class="n">cuts</span><span class="p">,</span> <span class="err">“</span><span class="n">fake_speech</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/iWRYGULFd_c "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/iWRYGULFd_c "></iframe></div></p>
 
 <p>Wow ! That seemed <em>so</em> real, and it almost made sense. From there the cuts could be refined by hand, but the script did most of the work and surely deserved, if not a Nobel Peace Prize, fourteen minutes of applause:</p>
 
@@ -286,7 +286,7 @@
 </span><span class='line'><span class="n">assemble_cuts</span><span class="p">(</span><span class="n">cuts</span><span class="p">,</span> <span class="err">“</span><span class="n">applause</span><span class="o">.</span><span class="n">mp4</span><span class="err">”</span><span class="p">)</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
-<p><div class="embed-video-container"><iframe src="http://www.youtube.com/embed/81uprP2GzxI "></iframe></div></p>
+<p><div class="embed-video-container"><iframe src="https://www.youtube.com/embed/81uprP2GzxI "></iframe></div></p>
 
 ]]></content>
   </entry>
